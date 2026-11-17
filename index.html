@@ -1087,8 +1087,8 @@ const T = {
     backupDone: 'Backup downloaded', restored: n => 'Restored ' + n + ' items', nothingNew: 'Nothing new in that backup', notBackup: 'That file is not a Ping backup',
     ticketsUpdated: 'Ticket links updated', noLink: 'No link in this reminder',
     ticketNone: 'Not set up. Ticket numbers show as plain text.',
-    ticketOk: (ex, link) => `✓ Done! When you write <code>${ex}</code> in a reminder or note, it becomes a link to that ticket. Try it: ${link}`,
-    ticketOkNum: (ex, link) => `✓ Done! Write the ticket number with a few letters and a dash in front, for example <code>${ex}</code>, and it becomes a link. Try it: ${link}`,
+    ticketOk: (ex, link) => `✓ Done! When you write <code>${ex}</code> in a reminder or note, it becomes a link to that ticket. In notes, the link becomes clickable when you switch to Preview (Ctrl+E). Try it: ${link}`,
+    ticketOkNum: (ex, link) => `✓ Done! Write the ticket number with a few letters and a dash in front, for example <code>${ex}</code>, and it becomes a link. In notes, the link becomes clickable when you switch to Preview (Ctrl+E). Try it: ${link}`,
     ticketNotUrl: 'That doesn’t look like a web address. Copy the whole address from the address bar; it starts with https://',
     ticketNoId: 'Couldn’t find a ticket number in that link. Open a single ticket (not a list or board) and copy the address again.',
     ticketsRemoved: 'Ticket numbers are plain text again'
@@ -1162,8 +1162,8 @@ const T = {
     backupDone: 'Säkerhetskopian har laddats ner', restored: n => 'Återställde ' + n + ' objekt', nothingNew: 'Inget nytt i den säkerhetskopian', notBackup: 'Den filen är inte en säkerhetskopia från Ping',
     ticketsUpdated: 'Ärendelänkarna har uppdaterats', noLink: 'Ingen länk i den här påminnelsen',
     ticketNone: 'Inte inställt. Ärendenummer visas som vanlig text.',
-    ticketOk: (ex, link) => `✓ Klart! När du skriver <code>${ex}</code> i en påminnelse eller anteckning blir det en länk till ärendet. Testa: ${link}`,
-    ticketOkNum: (ex, link) => `✓ Klart! Skriv ärendenumret med några bokstäver och ett bindestreck framför, till exempel <code>${ex}</code>, så blir det en länk. Testa: ${link}`,
+    ticketOk: (ex, link) => `✓ Klart! När du skriver <code>${ex}</code> i en påminnelse eller anteckning blir det en länk till ärendet. I anteckningar går länken att klicka på när du byter till Förhandsvisa (Ctrl+E). Testa: ${link}`,
+    ticketOkNum: (ex, link) => `✓ Klart! Skriv ärendenumret med några bokstäver och ett bindestreck framför, till exempel <code>${ex}</code>, så blir det en länk. I anteckningar går länken att klicka på när du byter till Förhandsvisa (Ctrl+E). Testa: ${link}`,
     ticketNotUrl: 'Det där ser inte ut som en webbadress. Kopiera hela adressen från adressfältet; den börjar med https://',
     ticketNoId: 'Hittade inget ärendenummer i länken. Öppna ett enskilt ärende (inte en lista eller tavla) och kopiera adressen igen.',
     ticketsRemoved: 'Ärendenummer visas som vanlig text igen'
