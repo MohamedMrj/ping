@@ -1,0 +1,1856 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ping</title>
+<meta name="description" content="Reminders and notes for engineers: natural-language quick add, cron schedules, tags, Markdown notes.">
+<meta name="theme-color" content="#0d7c72">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='2' y='2' width='60' height='60' rx='15' fill='%230d7c72'/%3E%3Cpath d='M32 13a3 3 0 0 1 3 3v1.5c6 1.4 9.5 6.4 9.5 12.5v8l4 5.5H15.5l4-5.5v-8c0-6.1 3.5-11.1 9.5-12.5V16a3 3 0 0 1 3-3z' fill='white'/%3E%3Cellipse cx='32' cy='49' rx='5' ry='3.6' fill='white'/%3E%3C/svg%3E">
+<style>
+/* Layout: one working column with a tab bar; reminders read like a schedule (time column, then task); notes are an editor/preview pair. */
+:root {
+  --bg: #f4f7f6; --surface: #ffffff; --surface-2: #eef3f2; --ink: #10201e; --muted: #5a6c69; --line: #dbe4e2;
+  --accent: #0d7c72; --accent-ink: #ffffff; --accent-soft: #dcefec;
+  --danger: #c2352b; --danger-soft: #fbe7e5; --warn: #a96200; --warn-soft: #fbefdc; --ok: #1d7a43; --code-bg: #eef3f2;
+  --shadow: 0 10px 30px rgba(16, 32, 30, .14), 0 2px 6px rgba(16, 32, 30, .08);
+  --font: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-display: "Segoe UI Variable Display", "Segoe UI", system-ui, sans-serif;
+  --mono: "Cascadia Code", "Cascadia Mono", Consolas, "SFMono-Regular", monospace;
+  --radius: 10px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d1413; --surface: #141f1d; --surface-2: #1a2725; --ink: #e2ecea; --muted: #93a7a3; --line: #263533;
+    --accent: #3cb5a6; --accent-ink: #062320; --accent-soft: #173a36;
+    --danger: #f07a70; --danger-soft: #3a1d1b; --warn: #e5a54b; --warn-soft: #362817; --ok: #5cc98a; --code-bg: #0f1918;
+    --shadow: 0 10px 30px rgba(0, 0, 0, .5), 0 2px 6px rgba(0, 0, 0, .3);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d1413; --surface: #141f1d; --surface-2: #1a2725; --ink: #e2ecea; --muted: #93a7a3; --line: #263533;
+  --accent: #3cb5a6; --accent-ink: #062320; --accent-soft: #173a36;
+  --danger: #f07a70; --danger-soft: #3a1d1b; --warn: #e5a54b; --warn-soft: #362817; --ok: #5cc98a; --code-bg: #0f1918;
+  --shadow: 0 10px 30px rgba(0, 0, 0, .5), 0 2px 6px rgba(0, 0, 0, .3);
+  color-scheme: dark;
+}
+
+/* Theme: Fjord (cool blue) */
+:root[data-palette="fjord"] {
+  --bg: #f3f5f9; --surface: #ffffff; --surface-2: #e9edf5; --ink: #121826; --muted: #586174; --line: #d9dfea;
+  --accent: #2457c5; --accent-ink: #ffffff; --accent-soft: #e1e9fb;
+  --danger: #c43b3b; --danger-soft: #fbe6e6; --warn: #a35f00; --warn-soft: #fbefda; --ok: #1f7a4a; --code-bg: #eef1f7;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root[data-palette="fjord"]:not([data-theme="light"]) {
+    --bg: #0c111b; --surface: #131a27; --surface-2: #1a2333; --ink: #e3e8f2; --muted: #96a1b8; --line: #263046;
+    --accent: #7ea6ff; --accent-ink: #0b1530; --accent-soft: #1c2a4a;
+    --danger: #f2827a; --danger-soft: #3b1f22; --warn: #e8ad57; --warn-soft: #372a17; --ok: #63cf95; --code-bg: #0f1522;
+    color-scheme: dark;
+  }
+}
+:root[data-palette="fjord"][data-theme="dark"] {
+  --bg: #0c111b; --surface: #131a27; --surface-2: #1a2333; --ink: #e3e8f2; --muted: #96a1b8; --line: #263046;
+  --accent: #7ea6ff; --accent-ink: #0b1530; --accent-soft: #1c2a4a;
+  --danger: #f2827a; --danger-soft: #3b1f22; --warn: #e8ad57; --warn-soft: #372a17; --ok: #63cf95; --code-bg: #0f1522;
+  color-scheme: dark;
+}
+
+/* Theme: Solarized (the classic editor palette) */
+:root[data-palette="solarized"] {
+  --bg: #eee8d5; --surface: #fdf6e3; --surface-2: #f5eedb; --ink: #073642; --muted: #657b83; --line: #ddd5bc;
+  --accent: #268bd2; --accent-ink: #fdf6e3; --accent-soft: #dce8ea;
+  --danger: #dc322f; --danger-soft: #f6dccf; --warn: #a77f00; --warn-soft: #f1e5c0; --ok: #6f8000; --code-bg: #eee8d5;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root[data-palette="solarized"]:not([data-theme="light"]) {
+    --bg: #002b36; --surface: #073642; --surface-2: #0b3d4a; --ink: #e9e2cd; --muted: #93a1a1; --line: #164452;
+    --accent: #4aa3df; --accent-ink: #002b36; --accent-soft: #0e4658;
+    --danger: #f0605d; --danger-soft: #3a2224; --warn: #d0a215; --warn-soft: #33321a; --ok: #a3b81a; --code-bg: #00212b;
+    color-scheme: dark;
+  }
+}
+:root[data-palette="solarized"][data-theme="dark"] {
+  --bg: #002b36; --surface: #073642; --surface-2: #0b3d4a; --ink: #e9e2cd; --muted: #93a1a1; --line: #164452;
+  --accent: #4aa3df; --accent-ink: #002b36; --accent-soft: #0e4658;
+  --danger: #f0605d; --danger-soft: #3a2224; --warn: #d0a215; --warn-soft: #33321a; --ok: #a3b81a; --code-bg: #00212b;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 14.5px/1.45 var(--font); }
+button, input, select, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+[hidden] { display: none !important; }
+a { color: var(--accent); }
+code, kbd, .mono { font-family: var(--mono); }
+
+.app { max-width: 1080px; margin: 0 auto; padding-block: 18px 40px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 16px; }
+
+/* header */
+header { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.brand { display: flex; align-items: center; gap: 10px; margin-right: auto; }
+.brand svg { width: 30px; height: 30px; }
+.brand b { font: 700 21px/1 var(--font-display); letter-spacing: -.02em; }
+.brand small { font: 12px/1 var(--mono); color: var(--muted); }
+.tabs { display: flex; gap: 2px; background: var(--surface-2); padding: 3px; border-radius: 9px; }
+.tabs button { border: 0; background: transparent; padding: 6px 14px; border-radius: 7px; cursor: pointer; color: var(--muted); font-weight: 600; }
+.tabs button[aria-selected="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+.chip { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--muted); cursor: pointer; }
+.chip .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); }
+.chip.on .dot { background: var(--ok); }
+.chip.off { color: var(--warn); border-color: var(--warn); }
+.chip.off .dot { background: var(--warn); }
+.icon-btn { border: 1px solid var(--line); background: var(--surface); width: 30px; height: 30px; border-radius: 8px; cursor: pointer; color: var(--muted); font-weight: 700; }
+
+.banner { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; padding: 10px 14px; border-radius: var(--radius); background: var(--warn-soft); border: 1px solid color-mix(in srgb, var(--warn) 35%, transparent); font-size: 13.5px; }
+.banner p { margin: 0; flex: 1 1 300px; }
+
+/* buttons */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; border: 1px solid var(--line); background: var(--surface); padding: 7px 13px; border-radius: 8px; cursor: pointer; font-weight: 600; white-space: nowrap; }
+.btn:hover { background: var(--surface-2); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.btn.primary:hover { filter: brightness(1.07); }
+.btn.ghost { border-color: transparent; background: transparent; }
+.btn.ghost:hover { background: var(--surface-2); }
+.btn.danger { color: var(--danger); }
+.btn.sm { padding: 4px 9px; font-size: 13px; }
+.btn:disabled { opacity: .5; cursor: default; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.seg button { border: 0; background: var(--surface); padding: 4px 11px; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--muted); }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+
+/* quick add */
+.quick { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px; display: grid; gap: 8px; }
+.quick-row { display: flex; gap: 8px; }
+.quick input { flex: 1; min-width: 0; font-size: 17px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 9px; background: var(--bg); }
+.quick input:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px var(--accent-soft); }
+.preview { font-size: 13.5px; color: var(--muted); min-height: 1.45em; overflow-wrap: anywhere; }
+.preview.ok { color: var(--accent); font-weight: 600; }
+.preview.warn { color: var(--warn); }
+.preview.done { color: var(--ok); font-weight: 600; }
+.preview.err { color: var(--danger); }
+kbd { font-size: 11.5px; line-height: 1; padding: 2px 5px; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; background: var(--surface-2); color: var(--muted); }
+
+/* toolbar */
+.toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.filters { display: flex; gap: 4px; flex-wrap: wrap; }
+.filters button, .tagbar button { border: 1px solid var(--line); background: var(--surface); padding: 4px 11px; border-radius: 999px; cursor: pointer; font-size: 13px; color: var(--muted); }
+.filters button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.tagbar { display: flex; gap: 4px; flex-wrap: wrap; }
+.tagbar button { font-family: var(--mono); font-size: 12px; padding: 3px 9px; }
+.tagbar button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.search { margin-left: auto; padding: 6px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); width: 220px; max-width: 100%; }
+.count { font-size: 13px; color: var(--muted); }
+
+/* list */
+.groups { display: grid; gap: 18px; }
+.group h2 { font: 700 11.5px/1 var(--font); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 0 0 8px 2px; display: flex; gap: 8px; }
+.group h2 .n { opacity: .7; font-weight: 600; }
+.group.overdue h2 { color: var(--danger); }
+.list { list-style: none; margin: 0; padding: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.rem { display: grid; grid-template-columns: 92px minmax(0, 1fr) auto; gap: 14px; align-items: center; padding: 11px 14px; border-top: 1px solid var(--line); }
+.rem:first-child { border-top: 0; }
+.rem:hover { background: color-mix(in srgb, var(--surface-2) 60%, transparent); }
+.rem.sel { background: var(--accent-soft); box-shadow: inset 3px 0 0 var(--accent); }
+.when { display: grid; font-variant-numeric: tabular-nums; }
+.when .t { font: 600 18px/1.1 var(--font-display); }
+.when .d { font-size: 12px; color: var(--muted); }
+.rem .title { font-weight: 600; overflow-wrap: anywhere; display: flex; gap: 8px; align-items: baseline; }
+.rem .meta { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 12.5px; color: var(--muted); margin-top: 3px; }
+.rem .snip { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 46ch; }
+.tag { font-size: 11.5px; font-weight: 600; padding: 1px 7px; border-radius: 999px; background: var(--surface-2); color: var(--muted); white-space: nowrap; }
+.tag.overdue { background: var(--danger-soft); color: var(--danger); }
+.tag.snoozed { background: var(--warn-soft); color: var(--warn); }
+.tag.repeat { background: var(--accent-soft); color: var(--accent); }
+.tag.hash { font-family: var(--mono); font-weight: 500; cursor: pointer; }
+.prio { font: 700 10.5px/1 var(--mono); padding: 3px 5px; border-radius: 4px; flex: none; }
+.prio.p3 { background: var(--danger); color: var(--surface); }
+.prio.p2 { background: var(--warn); color: var(--surface); }
+.palettes { display: flex; gap: 10px; flex-wrap: wrap; }
+.palettes button { display: grid; gap: 8px; justify-items: start; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); cursor: pointer; min-width: 150px; font-weight: 600; }
+.palettes button[aria-pressed="true"] { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); }
+.palettes .sw { display: flex; gap: 4px; }
+.palettes .sw i { width: 18px; height: 18px; border-radius: 50%; border: 1px solid rgba(0, 0, 0, .12); }
+.palettes small { font-weight: 400; color: var(--muted); font-size: 12px; }
+.prio.p1 { background: var(--surface-2); color: var(--muted); }
+.rem.overdue { box-shadow: inset 3px 0 0 var(--danger); }
+.rem.overdue .when .t { color: var(--danger); }
+.rem.done .title { text-decoration: line-through; color: var(--muted); }
+.rem.done .when { opacity: .55; }
+.acts { display: flex; gap: 2px; }
+.empty { text-align: center; padding: 40px 20px; background: var(--surface); border: 1px dashed var(--line); border-radius: 12px; color: var(--muted); display: grid; gap: 12px; justify-items: center; }
+.empty h3 { margin: 0; font: 600 17px var(--font-display); color: var(--ink); }
+.examples { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+.examples .btn { font-family: var(--mono); font-weight: 500; font-size: 12.5px; }
+
+/* popover */
+.pop { position: fixed; z-index: 60; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow); padding: 5px; min-width: 200px; display: grid; }
+.pop button { text-align: left; border: 0; background: none; padding: 7px 10px; border-radius: 6px; cursor: pointer; }
+.pop button:hover, .pop button:focus-visible { background: var(--surface-2); }
+
+/* notes */
+.notes { display: grid; grid-template-columns: 290px minmax(0, 1fr); gap: 14px; min-height: 540px; }
+.note-side { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: 8px; min-height: 0; }
+.note-side .search { width: 100%; margin: 0; }
+.note-list { list-style: none; margin: 0; padding: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow: auto; max-height: 600px; }
+.note-list li { padding: 10px 12px; border-top: 1px solid var(--line); cursor: pointer; }
+.note-list li:first-child { border-top: 0; }
+.note-list li[aria-selected="true"] { background: var(--accent-soft); box-shadow: inset 3px 0 0 var(--accent); }
+.note-list .nt { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.note-list .ns { font-size: 12.5px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.note-main { display: grid; grid-template-rows: auto minmax(0, 1fr); gap: 8px; min-width: 0; }
+.note-bar { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
+.note-bar .status { margin-right: auto; }
+#noteText { width: 100%; min-height: 500px; resize: vertical; padding: 14px 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); font-size: 15px; line-height: 1.6; tab-size: 4; }
+#noteText.mono { font-family: var(--mono); font-size: 13.5px; }
+#noteText:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.md { min-height: 500px; padding: 6px 22px 18px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); overflow-wrap: anywhere; min-width: 0; }
+.md h1, .md h2, .md h3, .md h4 { font-family: var(--font-display); line-height: 1.25; margin: 1.1em 0 .4em; text-wrap: balance; }
+.md h1 { font-size: 22px; } .md h2 { font-size: 18px; } .md h3 { font-size: 15.5px; } .md h4 { font-size: 14.5px; }
+.md p, .md ul, .md ol, .md blockquote, .md table, .md .code { margin: .6em 0; }
+.md ul, .md ol { padding-left: 1.4em; }
+.md li.task { list-style: none; margin-left: -1.3em; }
+.md li.task input { accent-color: var(--accent); margin-right: 6px; }
+.md li.task.checked > span { color: var(--muted); text-decoration: line-through; }
+.md blockquote { border-left: 3px solid var(--line); padding-left: 12px; color: var(--muted); }
+.md :not(pre) > code { background: var(--code-bg); padding: 1px 5px; border-radius: 4px; font-size: .9em; }
+.md .code { position: relative; }
+.md pre { background: var(--code-bg); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; overflow-x: auto; font-size: 13px; line-height: 1.5; margin: 0; }
+.md .code .lang { position: absolute; top: 6px; right: 62px; font: 11px var(--mono); color: var(--muted); }
+.md .code .copy { position: absolute; top: 5px; right: 6px; }
+.md hr { border: 0; border-top: 1px solid var(--line); margin: 1.2em 0; }
+.md .tbl { overflow-x: auto; }
+.md table { border-collapse: collapse; font-size: 13.5px; font-variant-numeric: tabular-nums; }
+.md th, .md td { border: 1px solid var(--line); padding: 5px 10px; text-align: left; }
+.md th { background: var(--surface-2); }
+
+/* settings */
+.settings { display: grid; gap: 14px; max-width: 780px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; display: grid; gap: 10px; }
+.card h3 { margin: 0; font: 600 15.5px var(--font-display); }
+.card p { margin: 0; color: var(--muted); font-size: 13.5px; max-width: 72ch; }
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+label.check { display: flex; gap: 9px; align-items: flex-start; cursor: pointer; }
+label.check input { margin-top: 3px; accent-color: var(--accent); }
+.input { padding: 7px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); min-width: 0; }
+.input.wide { flex: 1 1 340px; font-family: var(--mono); font-size: 13px; }
+
+/* modal */
+.scrim { position: fixed; inset: 0; background: rgba(5, 15, 14, .45); display: grid; place-items: center; z-index: 50; padding: 16px; }
+.modal { background: var(--surface); border-radius: 14px; box-shadow: var(--shadow); width: min(580px, 100%); max-height: calc(100vh - 32px); overflow: auto; padding: 20px; display: grid; gap: 14px; }
+.modal h2 { margin: 0; font: 600 18px var(--font-display); }
+.field { display: grid; gap: 5px; min-width: 0; }
+.field > span { font-size: 12.5px; font-weight: 600; color: var(--muted); }
+.field input[type=text], .field input[type=number], .field input[type=datetime-local], .field select, .field textarea { padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); width: 100%; }
+.field textarea { min-height: 90px; resize: vertical; }
+.two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
+#edTitle { font-size: 16px; }
+#edTags, #edCron { font-family: var(--mono); font-size: 13.5px; }
+.quickchips { display: flex; gap: 5px; flex-wrap: wrap; }
+.rel { font-size: 12.5px; color: var(--muted); }
+.rel.past, .rel.err { color: var(--danger); }
+.runs { font: 12.5px/1.6 var(--mono); color: var(--muted); }
+.modal-foot { display: flex; gap: 8px; align-items: center; }
+.modal-foot .spacer { flex: 1; }
+.keys { display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; font-size: 13.5px; align-items: center; }
+.keys kbd { justify-self: start; }
+
+/* alerts */
+.alerts { position: fixed; right: max(16px, env(safe-area-inset-right, 0px)); bottom: 16px; z-index: 70; display: grid; gap: 10px; width: min(390px, calc(100vw - 32px)); }
+.alert { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); padding: 14px 16px; display: grid; gap: 6px; border-left: 4px solid var(--accent); animation: rise .25s ease-out; }
+.alert.p3 { border-left-color: var(--danger); }
+.alert .k { font: 700 11px/1 var(--font); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); display: flex; justify-content: space-between; gap: 8px; }
+.alert.p3 .k { color: var(--danger); }
+.alert .k button { border: 0; background: none; cursor: pointer; color: var(--muted); font-size: 15px; line-height: 1; padding: 0 2px; }
+.alert .at { font: 600 16.5px var(--font-display); overflow-wrap: anywhere; }
+.alert .an { font-size: 13px; color: var(--muted); white-space: pre-wrap; max-height: 5.5em; overflow: hidden; overflow-wrap: anywhere; }
+@keyframes rise { from { transform: translateY(12px); opacity: .3; } to { transform: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .alert { animation: none; } }
+
+.toast { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 9px 16px; border-radius: 9px; font-weight: 600; z-index: 80; box-shadow: var(--shadow); max-width: calc(100vw - 32px); }
+
+@media (max-width: 720px) {
+  .notes { grid-template-columns: minmax(0, 1fr); }
+  .note-list { max-height: 220px; }
+  .rem { grid-template-columns: 70px minmax(0, 1fr); }
+  .acts { grid-column: 1 / -1; justify-content: flex-end; }
+  .search { margin-left: 0; width: 100%; }
+  .two { grid-template-columns: minmax(0, 1fr); }
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="brand">
+      <svg viewBox="0 0 64 64" aria-hidden="true"><rect x="2" y="2" width="60" height="60" rx="15" fill="var(--accent)"/><path d="M32 13a3 3 0 0 1 3 3v1.5c6 1.4 9.5 6.4 9.5 12.5v8l4 5.5H15.5l4-5.5v-8c0-6.1 3.5-11.1 9.5-12.5V16a3 3 0 0 1 3-3z" fill="var(--accent-ink)"/><ellipse cx="32" cy="49" rx="5" ry="3.6" fill="var(--accent-ink)"/></svg>
+      <b>Ping</b><small id="clock"></small>
+    </div>
+    <button class="chip" id="notifChip" type="button"><span class="dot"></span><span id="notifChipText">Notifications</span></button>
+    <nav class="tabs" role="tablist">
+      <button role="tab" data-tab="reminders" aria-selected="true" type="button">Reminders</button>
+      <button role="tab" data-tab="notes" aria-selected="false" type="button">Notes</button>
+      <button role="tab" data-tab="settings" aria-selected="false" type="button">Settings</button>
+    </nav>
+    <button class="icon-btn" type="button" data-act="keys" title="Keyboard shortcuts (?)" aria-label="Keyboard shortcuts">?</button>
+  </header>
+
+  <div class="banner" id="notifBanner" hidden>
+    <p><strong>Turn on notifications</strong> so reminders show up in the corner of Windows even when this window is behind others. Without them you still get an alert in this window and a sound.</p>
+    <button class="btn primary sm" type="button" data-act="ask-notif">Allow notifications</button>
+    <button class="btn ghost sm" type="button" data-act="hide-banner">Not now</button>
+  </div>
+  <div class="banner" id="fileBanner" hidden>
+    <p><strong>Your save file needs one click to reconnect.</strong> Edge asks for permission again after a restart. Your data is safe in the meantime.</p>
+    <button class="btn primary sm" type="button" data-act="file-reconnect">Reconnect</button>
+  </div>
+
+  <!-- REMINDERS -->
+  <section id="view-reminders">
+    <div class="quick">
+      <div class="quick-row">
+        <input id="quickInput" type="text" autocomplete="off" spellcheck="false" placeholder="Check DAG failures every 30 min #airflow !!" aria-label="New reminder">
+        <button class="btn primary" type="button" data-act="quick-add">Add</button>
+        <button class="btn" type="button" data-act="quick-more">More…</button>
+      </div>
+      <div class="preview" id="quickPreview"></div>
+    </div>
+
+    <div class="toolbar" style="margin-top:14px">
+      <div class="filters" id="filters">
+        <button type="button" data-f="upcoming" aria-pressed="true">Upcoming</button>
+        <button type="button" data-f="today" aria-pressed="false">Today</button>
+        <button type="button" data-f="overdue" aria-pressed="false">Overdue</button>
+        <button type="button" data-f="repeat" aria-pressed="false">Recurring</button>
+        <button type="button" data-f="done" aria-pressed="false">Done</button>
+        <button type="button" data-f="all" aria-pressed="false">All</button>
+      </div>
+      <span class="count" id="count"></span>
+      <input class="search" id="search" type="search" placeholder="Search  /" aria-label="Search reminders">
+    </div>
+    <div class="tagbar" id="tagbar" style="margin-top:8px"></div>
+    <div class="groups" id="groups" style="margin-top:12px"></div>
+  </section>
+
+  <!-- NOTES -->
+  <section id="view-notes" hidden>
+    <div class="notes">
+      <div class="note-side">
+        <input class="search" id="noteSearch" type="search" placeholder="Search notes" aria-label="Search notes">
+        <ul class="note-list" id="noteList" role="listbox" aria-label="Notes"></ul>
+        <div class="row">
+          <button class="btn primary" type="button" data-act="new-note">New note</button>
+          <button class="btn" type="button" data-act="daily-log" title="Today's standup note, filled from your reminders">Daily log</button>
+          <button class="btn danger ghost" type="button" data-act="del-note" id="delNoteBtn">Delete</button>
+        </div>
+      </div>
+      <div class="note-main">
+        <div class="note-bar">
+          <span class="status" id="noteStatus">Start typing to create a note. Markdown works, and it saves automatically.</span>
+          <div class="seg" role="group" aria-label="Note view">
+            <button type="button" data-view="edit" aria-pressed="true">Edit</button>
+            <button type="button" data-view="preview" aria-pressed="false">Preview</button>
+          </div>
+          <button class="btn sm" type="button" data-act="note-pin" id="notePinBtn">Pin</button>
+          <button class="btn sm" type="button" data-act="note-copy" id="noteCopyBtn">Copy</button>
+          <button class="btn sm" type="button" data-act="note-remind" id="noteRemindBtn">Remind me…</button>
+        </div>
+        <textarea id="noteText" spellcheck="false" placeholder="# Title&#10;&#10;Write anything. Markdown works: **bold**, `code`, ```sql blocks```, - [ ] tasks, | tables |" aria-label="Note text"></textarea>
+        <div class="md" id="notePreview" hidden></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SETTINGS -->
+  <section id="view-settings" hidden>
+    <div class="settings">
+      <div class="card">
+        <h3>Notifications</h3>
+        <p id="notifStatus"></p>
+        <div class="row">
+          <button class="btn primary" type="button" data-act="ask-notif">Allow notifications</button>
+          <button class="btn" type="button" data-act="test-alert">Send a test reminder</button>
+        </div>
+        <label class="check"><input type="checkbox" id="setSound"> <span>Play a sound when a reminder is due</span></label>
+      </div>
+      <div class="card" id="installCard" hidden>
+        <h3>Install Ping as an app</h3>
+        <p id="installText">Install Ping as an app to get its own window and taskbar icon, and to be able to start it when you sign in to Windows. It also works offline.</p>
+        <div class="row"><button class="btn primary" type="button" data-act="install-app" id="installBtn">Install Ping</button></div>
+      </div>
+      <div class="card">
+        <h3>Ticket links</h3>
+        <p>Ticket IDs like <code>DATA-123</code> in reminders and notes become links. Use <code>{key}</code> where the ID goes.</p>
+        <div class="row">
+          <input class="input wide" id="setTicket" type="text" spellcheck="false" placeholder="https://yourcompany.atlassian.net/browse/{key}">
+        </div>
+        <p>Azure DevOps example: <code>https://dev.azure.com/org/project/_workitems/edit/{num}</code>. <code>{num}</code> is the number part only.</p>
+      </div>
+      <div class="card">
+        <h3>Look and feel</h3>
+        <div class="palettes" id="paletteSet" role="group" aria-label="Theme">
+          <button type="button" data-palette-set="lagoon" aria-pressed="true"><span class="sw"><i style="background:#0d7c72"></i><i style="background:#f4f7f6"></i><i style="background:#141f1d"></i></span>Lagoon<small>Calm teal, the default</small></button>
+          <button type="button" data-palette-set="fjord" aria-pressed="false"><span class="sw"><i style="background:#2457c5"></i><i style="background:#f3f5f9"></i><i style="background:#131a27"></i></span>Fjord<small>Cool blue and slate</small></button>
+          <button type="button" data-palette-set="solarized" aria-pressed="false"><span class="sw"><i style="background:#268bd2"></i><i style="background:#fdf6e3"></i><i style="background:#002b36"></i></span>Solarized<small>The classic editor palette</small></button>
+        </div>
+        <div class="row">
+          <span class="count">Mode</span>
+          <div class="seg" id="themeSeg" role="group" aria-label="Light or dark mode">
+            <button type="button" data-theme-set="system" aria-pressed="true">System</button>
+            <button type="button" data-theme-set="light" aria-pressed="false">Light</button>
+            <button type="button" data-theme-set="dark" aria-pressed="false">Dark</button>
+          </div>
+        </div>
+        <label class="check"><input type="checkbox" id="setMono"> <span>Monospace font in the note editor</span></label>
+        <label class="check"><input type="checkbox" id="setUtc"> <span>Show the UTC clock next to the name</span></label>
+      </div>
+      <div class="card">
+        <h3>Outlook</h3>
+        <p>Every reminder has an “Outlook” action. It downloads a calendar file; open it and click <em>Save &amp; Close</em> in Outlook. Outlook then reminds you on this PC and your phone, even when Ping is closed. Interval repeats are included; for cron schedules Outlook gets the next run only.</p>
+        <label class="check"><input type="checkbox" id="setIcs"> <span>Download an Outlook calendar entry automatically each time I save a reminder</span></label>
+      </div>
+      <div class="card">
+        <h3>Your data</h3>
+        <p>Everything saves automatically the moment you change it, and stays saved when you close the window. It is kept on this PC only. Reminders pop up only while Ping is open, so minimise it rather than closing it. Anything missed while it was closed appears when you open it again.</p>
+        <div id="fileCard" class="row" hidden>
+          <p style="flex:1 1 100%" id="fileStatus"></p>
+          <button class="btn primary" type="button" data-act="file-create">Create a save file…</button>
+          <button class="btn" type="button" data-act="file-open">Use an existing save file…</button>
+          <button class="btn ghost" type="button" data-act="file-reconnect" id="fileReconnectBtn" hidden>Reconnect</button>
+          <button class="btn ghost danger" type="button" data-act="file-stop" id="fileStopBtn" hidden>Stop using the file</button>
+        </div>
+        <div class="row">
+          <button class="btn" type="button" data-act="export">Download backup (JSON)</button>
+          <button class="btn" type="button" data-act="export-csv">Export reminders (CSV)</button>
+          <button class="btn" type="button" data-act="import">Restore from backup…</button>
+          <input type="file" id="importFile" accept=".json,application/json" hidden>
+          <span class="count" id="dataCount"></span>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- editor -->
+<div class="scrim" id="editor" hidden>
+  <form class="modal" id="editForm" autocomplete="off">
+    <h2 id="edHeading">New reminder</h2>
+    <label class="field"><span>What</span><input type="text" id="edTitle" required placeholder="What do you want to be reminded about?"></label>
+    <div class="field">
+      <span>When</span>
+      <div class="row"><input type="datetime-local" id="edWhen" required style="max-width:240px"> <span class="rel" id="edRel"></span></div>
+      <div class="quickchips" id="edChips">
+        <button class="btn sm" type="button" data-q="15m">+15 min</button>
+        <button class="btn sm" type="button" data-q="1h">+1 hour</button>
+        <button class="btn sm" type="button" data-q="3h">+3 hours</button>
+        <button class="btn sm" type="button" data-q="tonight">Tonight 19:00</button>
+        <button class="btn sm" type="button" data-q="tomorrow">Tomorrow 09:00</button>
+        <button class="btn sm" type="button" data-q="monday">Monday 09:00</button>
+      </div>
+    </div>
+    <div class="two">
+      <label class="field"><span>Repeat</span>
+        <select id="edRepeat">
+          <option value="none">Does not repeat</option>
+          <option value="interval">Every N minutes / hours</option>
+          <option value="daily">Every day</option>
+          <option value="weekdays">Every weekday (Mon–Fri)</option>
+          <option value="weekly">Every week</option>
+          <option value="monthly">Every month</option>
+          <option value="yearly">Every year</option>
+          <option value="cron">Cron schedule</option>
+        </select>
+      </label>
+      <label class="field"><span>Priority</span>
+        <select id="edPrio">
+          <option value="0">None</option>
+          <option value="1">Low</option>
+          <option value="2">Medium</option>
+          <option value="3">High</option>
+        </select>
+      </label>
+    </div>
+    <div class="field" id="edIntervalRow" hidden>
+      <span>Repeat every</span>
+      <div class="row"><input type="number" id="edEvery" min="1" value="30" style="width:110px"><select id="edEveryUnit" class="input"><option value="1">minutes</option><option value="60">hours</option></select></div>
+    </div>
+    <div class="field" id="edCronRow" hidden>
+      <span>Cron expression (minute hour day month weekday)</span>
+      <input type="text" id="edCron" spellcheck="false" placeholder="0 9 * * 1-5">
+      <div class="runs" id="edRuns"></div>
+    </div>
+    <label class="field"><span>Tags</span><input type="text" id="edTags" spellcheck="false" placeholder="#etl #prod"></label>
+    <label class="field"><span>Notes</span><textarea id="edNotes" placeholder="Details, links, ticket IDs…"></textarea></label>
+    <label class="check"><input type="checkbox" id="edIcs"> <span>Also download an Outlook calendar entry</span></label>
+    <div class="modal-foot">
+      <button class="btn danger ghost" type="button" id="edDelete">Delete</button>
+      <span class="spacer"></span>
+      <button class="btn" type="button" data-act="close-editor">Cancel</button>
+      <button class="btn primary" type="submit">Save</button>
+    </div>
+  </form>
+</div>
+
+<!-- keyboard help -->
+<div class="scrim" id="keysDlg" hidden>
+  <div class="modal" role="dialog" aria-label="Keyboard shortcuts">
+    <h2>Keyboard shortcuts</h2>
+    <div class="keys">
+      <kbd>Ctrl K</kbd><span>New reminder (from anywhere)</span>
+      <kbd>Enter</kbd><span>Add the reminder · <kbd>Ctrl Enter</kbd> save as a note</span>
+      <kbd>j / k</kbd><span>Move down / up the list</span>
+      <kbd>x</kbd><span>Mark selected done</span>
+      <kbd>s</kbd><span>Snooze selected</span>
+      <kbd>e</kbd><span>Edit selected</span>
+      <kbd>o</kbd><span>Open the first link in the selected reminder</span>
+      <kbd>Del</kbd><span>Delete selected</span>
+      <kbd>/</kbd><span>Search</span>
+      <kbd>1 2 3</kbd><span>Reminders · Notes · Settings</span>
+      <kbd>Ctrl E</kbd><span>Notes: switch between edit and preview</span>
+      <kbd>Esc</kbd><span>Close dialogs</span>
+    </div>
+    <h2 style="margin-top:6px">Quick add syntax</h2>
+    <div class="keys">
+      <code>tomorrow 10:00</code><span>Dates: today, tomorrow, friday, 25/11, 2026-12-01, dec 24, imorgon, på torsdag</span>
+      <code>in 45 min</code><span>Relative: in 2h, in 3 days, om 20 min</span>
+      <code>14:00 UTC</code><span>Times in UTC are converted to your local time</span>
+      <code>every 30 min</code><span>Intervals: every 2h, every hour</span>
+      <code>every weekday kl 9</code><span>Repeats: every day, every monday, every month, varje vecka</span>
+      <code>cron `0 9 * * 1-5`</code><span>Cron schedule (minute hour day month weekday)</span>
+      <code>#etl #prod</code><span>Tags</span>
+      <code>!!! or p1</code><span>Priority: ! low, !! medium, !!! high</span>
+    </div>
+    <div class="modal-foot"><span class="spacer"></span><button class="btn primary" type="button" data-act="close-keys">Close</button></div>
+  </div>
+</div>
+
+<div class="alerts" id="alerts" aria-live="assertive"></div>
+<div class="pop" id="pop" hidden></div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+/*PARSER-START*/
+// ---------------------------------------------------------------- cron
+const Cron = (() => {
+  const NAMES = [null, null, null,
+    { jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, oct: 10, nov: 11, dec: 12 },
+    { sun: 0, mon: 1, tue: 2, wed: 3, thu: 4, fri: 5, sat: 6 }];
+  const RANGES = [[0, 59], [0, 23], [1, 31], [1, 12], [0, 7]];
+  const LABEL = ['minute', 'hour', 'day of month', 'month', 'weekday'];
+  function field(txt, i) {
+    const [lo, hi] = RANGES[i], set = new Set(), names = NAMES[i];
+    const val = v => { v = v.toLowerCase(); if (names && v in names) return names[v]; if (!/^\d+$/.test(v)) throw new Error(`“${v}” is not valid in the ${LABEL[i]} field`); return +v; };
+    for (const part of txt.split(',')) {
+      const [range, stepTxt] = part.split('/');
+      const step = stepTxt === undefined ? 1 : +stepTxt;
+      if (!(step >= 1)) throw new Error(`Bad step “${stepTxt}” in the ${LABEL[i]} field`);
+      let a, b;
+      if (range === '*') { a = lo; b = hi; }
+      else if (range.includes('-')) { [a, b] = range.split('-').map(val); }
+      else { a = val(range); b = stepTxt === undefined ? a : hi; }
+      if (a < lo || b > hi || a > b) throw new Error(`${range} is out of range for the ${LABEL[i]} field (${lo}–${hi})`);
+      for (let v = a; v <= b; v += step) set.add(i === 4 && v === 7 ? 0 : v);
+    }
+    return set;
+  }
+  function parse(expr) {
+    const f = String(expr || '').trim().split(/\s+/);
+    if (f.length !== 5) throw new Error('A cron expression has 5 fields: minute hour day month weekday');
+    const [min, hour, dom, mon, dow] = f.map(field);
+    return { min, hour, dom, mon, dow, domAny: f[2] === '*', dowAny: f[4] === '*' };
+  }
+  function next(c, afterMs) {
+    if (typeof c === 'string') c = parse(c);
+    const d = new Date(afterMs); d.setSeconds(0, 0); d.setMinutes(d.getMinutes() + 1);
+    for (let i = 0; i < 200000; i++) {
+      if (!c.mon.has(d.getMonth() + 1)) { d.setMonth(d.getMonth() + 1, 1); d.setHours(0, 0, 0, 0); continue; }
+      const domOk = c.dom.has(d.getDate()), dowOk = c.dow.has(d.getDay());
+      const dayOk = c.domAny && c.dowAny ? true : c.domAny ? dowOk : c.dowAny ? domOk : (domOk || dowOk);
+      if (!dayOk) { d.setDate(d.getDate() + 1); d.setHours(0, 0, 0, 0); continue; }
+      if (!c.hour.has(d.getHours())) { d.setHours(d.getHours() + 1, 0, 0, 0); continue; }
+      if (!c.min.has(d.getMinutes())) { d.setMinutes(d.getMinutes() + 1, 0, 0); continue; }
+      return d.getTime();
+    }
+    return null;
+  }
+  return { parse, next };
+})();
+
+// ---------------------------------------------------------------- quick-add parser (English + Swedish)
+const QuickParser = (() => {
+  const L = '[\\p{L}\\p{N}_]';
+  const WB = `(?:(?<=${L})(?!${L})|(?<!${L})(?=${L}))`;   // Unicode-aware \b
+  const R = (p, f = 'iu') => new RegExp(p.replace(/\\b/g, WB).replace(/\\w/g, L), f);
+
+  const DAY = 'monday|tuesday|wednesday|thursday|friday|saturday|sunday|måndag|tisdag|onsdag|torsdag|fredag|lördag|söndag|mon|tue|tues|wed|thu|thur|thurs|fri';
+  const MON = 'january|february|march|april|may|june|july|august|september|october|november|december|januari|februari|mars|maj|juni|juli|augusti|oktober|jan|feb|mar|apr|jun|jul|aug|sept|sep|oct|okt|nov|dec';
+  const SUF = String.raw`(?:\s+(?:at\s+|kl\.?\s*|klockan\s+|@\s*)?(?<h>\d{1,2})(?:[:.](?<mi>\d{2}))?(?:\s*(?<ap>am|pm))?)?(?!\w)`;
+
+  const cut = (s, m) => s.slice(0, m.index) + ' ' + s.slice(m.index + m[0].length);
+  const dayIndex = w => {
+    w = w.toLowerCase();
+    const p = [['sun', 'sön'], ['mon', 'mån'], ['tue', 'tis'], ['wed', 'ons'], ['thu', 'tor'], ['fri', 'fre'], ['sat', 'lör']];
+    for (let i = 0; i < 7; i++) if (p[i].some(x => w.startsWith(x))) return i;
+    return 0;
+  };
+  const monthIndex = w => ({ jan: 0, feb: 1, mar: 2, apr: 3, may: 4, maj: 4, jun: 5, jul: 6, aug: 7, sep: 8, oct: 9, okt: 9, nov: 10, dec: 11 })[w.toLowerCase().slice(0, 3)];
+  const num = v => { v = (v || '').toLowerCase(); if (!v || ['a', 'an', 'one', 'en', 'ett'].includes(v)) return 1; const n = parseFloat(v.replace(',', '.')); return isNaN(n) ? 1 : n; };
+  const mkTime = (h, mi, ap) => {
+    let hh = parseInt(h, 10), mm = mi ? parseInt(mi, 10) : 0;
+    ap = (ap || '').toLowerCase();
+    if (ap.startsWith('p') && hh < 12) hh += 12;
+    if (ap.startsWith('a') && hh === 12) hh = 0;
+    if (isNaN(hh) || hh > 23 || mm > 59) return null;
+    return hh * 60 + mm;
+  };
+  const sufTime = m => (m.groups && m.groups.h) ? mkTime(m.groups.h, m.groups.mi, m.groups.ap) : null;
+  const mkDate = (y, mo, d, today, yearGiven) => {
+    if (mo < 0 || mo > 11 || d < 1 || d > 31) return null;
+    if (y < 100) y += 2000;
+    let dt = new Date(y, mo, d);
+    if (dt.getMonth() !== mo) return null;
+    if (!yearGiven && dt < today) dt = new Date(y + 1, mo, d);
+    return dt;
+  };
+  const addDays = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
+  const CRON_TOK = String.raw`(?:[\d*][\d*,/\-]*|[a-z]{3}(?:[\-,][a-z]{3})*)`;
+
+  function parse(input, now = new Date()) {
+    const res = { title: '', when: null, repeat: 'none', every: null, cron: null, tags: [], priority: 0, error: null };
+    if (!input || !input.trim()) return res;
+    let s = ' ' + input + ' ';
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    let date = null, absolute = null, time = null, weekday = -1, evening = false, utc = false, m;
+
+    // tags and priority
+    s = s.replace(new RegExp(String.raw`(?<=^|\s)#([\p{L}\p{N}_][\p{L}\p{N}_\-/.]*)`, 'gu'), (_, t) => {
+      t = t.replace(/[.\-/]+$/, '').toLowerCase();
+      if (t && !res.tags.includes(t)) res.tags.push(t);
+      return ' ';
+    });
+    m = s.match(/(?<=^|\s)(!{1,3})(?=\s|$)/u);
+    if (m) { res.priority = m[1].length; s = cut(s, m); }
+    else { m = s.match(/(?<=^|\s)p([1-3])(?=\s|$)/iu); if (m) { res.priority = 4 - +m[1]; s = cut(s, m); } }
+
+    // cron
+    m = s.match(R(String.raw`\bcron\s*(?::\s*)?(?:"([^"]+)"|'([^']+)'|\x60([^\x60]+)\x60|\(([^)]+)\)|(${CRON_TOK}(?:\s+${CRON_TOK}){4}))`));
+    if (m) {
+      const expr = (m[1] || m[2] || m[3] || m[4] || m[5]).trim();
+      try { Cron.parse(expr); res.repeat = 'cron'; res.cron = expr; s = cut(s, m); }
+      catch (e) { res.error = e.message; }
+    }
+
+    // utc marker
+    m = s.match(R(String.raw`\b(?:utc|gmt)\b`));
+    if (m) { utc = true; s = cut(s, m); }
+
+    // intervals: "every 30 min", "every 2h", "every hour", "varje timme"
+    if (res.repeat === 'none') {
+      m = s.match(R(String.raw`\b(?:every|each|varje)\s+(?:(\d+(?:[.,]\d+)?)\s*)?(minutes?|mins?|m|hours?|hrs?|hr|h|minuter|minut|timmar|timme|tim|t)\b`));
+      if (m) {
+        const n = num(m[1]), u = m[2].toLowerCase();
+        const minutes = Math.round((u[0] === 'm' ? n : n * 60));
+        if (minutes >= 1) { res.repeat = 'interval'; res.every = minutes; s = cut(s, m); }
+      }
+    }
+
+    // repetition by calendar
+    if (res.repeat === 'none') {
+      m = s.match(R(String.raw`\b(?:every|each|varje)\s+(?<d>${DAY})` + SUF));
+      if (m) { res.repeat = 'weekly'; weekday = dayIndex(m.groups.d); time = sufTime(m); s = cut(s, m); }
+      else {
+        const pats = [
+          [String.raw`\b(?:every\s+weekday|on\s+weekdays|weekdays|varje\s+vardag|på\s+vardagar|vardagar)\b`, 'weekdays'],
+          [String.raw`\b(?:every\s+day|everyday|each\s+day|daily|varje\s+dag|dagligen)\b`, 'daily'],
+          [String.raw`\b(?:every\s+week|each\s+week|weekly|varje\s+vecka)\b`, 'weekly'],
+          [String.raw`\b(?:every\s+month|each\s+month|monthly|varje\s+månad|månadsvis)\b`, 'monthly'],
+          [String.raw`\b(?:every\s+year|each\s+year|yearly|annually|varje\s+år|årligen)\b`, 'yearly']];
+        for (const [p, k] of pats) { m = s.match(R(p)); if (m) { res.repeat = k; s = cut(s, m); break; } }
+      }
+    }
+
+    // relative
+    m = s.match(R(String.raw`\b(?:in\s+(?:a\s+)?half\s+(?:an?\s+)?hour|om\s+en\s+halvtimm[ea])\b`));
+    if (m) { absolute = new Date(now.getTime() + 30 * 60000); s = cut(s, m); }
+    else {
+      m = s.match(R(String.raw`\b(?:in|om)\s+(\d+(?:[.,]\d+)?|an?|one|en|ett)\s*(minutes?|mins?|m|minuter|minut|hours?|hrs?|hr|h|timmar|timme|tim|t|days?|d|dagar|dag|weeks?|w|veckor|vecka|v|months?|månader|månad)\b`));
+      if (m) {
+        const n = num(m[1]), u = m[2].toLowerCase();
+        if (u.startsWith('mo') || u.startsWith('må')) { absolute = new Date(now); absolute.setMonth(absolute.getMonth() + Math.max(1, Math.round(n))); }
+        else if (u[0] === 'm') absolute = new Date(now.getTime() + n * 60000);
+        else if (u[0] === 'h' || u[0] === 't') absolute = new Date(now.getTime() + n * 3600000);
+        else if (u[0] === 'd') absolute = new Date(now.getTime() + n * 86400000);
+        else absolute = new Date(now.getTime() + n * 7 * 86400000);
+        s = cut(s, m);
+      }
+    }
+
+    // day words
+    m = s.match(R(String.raw`(?:\b(?:the\s+)?day\s+after\s+tomorrow|\b(?:i\s+)?övermorgon)` + SUF));
+    if (m) { date = addDays(today, 2); time = time ?? sufTime(m); s = cut(s, m); }
+    else {
+      m = s.match(R(String.raw`\b(?:tomorrow|tmrw|tmr|imorgon|imorn|imorrn|i\s+morgon)` + SUF));
+      if (m) { date = addDays(today, 1); time = time ?? sufTime(m); s = cut(s, m); }
+    }
+    m = s.match(R(String.raw`\b(?:tonight|this\s+evening|ikväll|i\s+kväll)` + SUF));
+    if (m) {
+      evening = true; if (!date) date = today;
+      let t = sufTime(m); if (t !== null && t < 12 * 60) t += 12 * 60;
+      time = time ?? t; s = cut(s, m);
+    }
+    m = s.match(R(String.raw`\b(?:today|idag|i\s+dag)` + SUF));
+    if (m) { if (!date) date = today; time = time ?? sufTime(m); s = cut(s, m); }
+    if (weekday < 0) {
+      m = s.match(R(String.raw`\b(?:on\s+|next\s+|this\s+|nästa\s+|på\s+)?(?<d>${DAY})` + SUF));
+      if (m) { weekday = dayIndex(m.groups.d); time = time ?? sufTime(m); s = cut(s, m); }
+    }
+
+    // explicit times
+    if (time === null) {
+      m = s.match(R(String.raw`(?:\b(?:at|kl\.?|klockan|from)|@)\s*(\d{1,2})(?:[:.](\d{2}))?(?:\s*(am|pm))?(?!\w)`))
+        || s.match(R(String.raw`\b(\d{1,2}):(\d{2})(?:\s*(am|pm))?(?!\w)`))
+        || s.match(R(String.raw`\b(\d{1,2})()\s*(am|pm)\b`));
+      if (m) { const t = mkTime(m[1], m[2], m[3]); if (t !== null) { time = t; s = cut(s, m); } }
+    }
+    if (time === null) {
+      m = s.match(R(String.raw`\b(?:at\s+)?(?:noon|midday)\b`));
+      if (m) { time = 12 * 60; s = cut(s, m); }
+    }
+
+    // explicit dates
+    if (!date) {
+      m = s.match(R(String.raw`\b(\d{4})-(\d{1,2})-(\d{1,2})\b`));
+      if (m) { date = mkDate(+m[1], +m[2] - 1, +m[3], today, true); if (date) s = cut(s, m); }
+    }
+    if (!date) {
+      m = s.match(R(String.raw`\b(?:on\s+)?(?:the\s+|den\s+)?(\d{1,2})(?:st|nd|rd|th|:e|:a)?\s+(?:of\s+)?(${MON})\.?(?:\s+(\d{4}))?\b`));
+      if (m) { const yg = !!m[3]; date = mkDate(yg ? +m[3] : today.getFullYear(), monthIndex(m[2]), +m[1], today, yg); if (date) s = cut(s, m); }
+    }
+    if (!date) {
+      m = s.match(R(String.raw`\b(?:on\s+)?(${MON})\.?\s+(\d{1,2})(?:st|nd|rd|th)?(?:,?\s+(\d{4}))?\b`));
+      if (m) { const yg = !!m[3]; date = mkDate(yg ? +m[3] : today.getFullYear(), monthIndex(m[1]), +m[2], today, yg); if (date) s = cut(s, m); }
+    }
+    if (!date) {
+      m = s.match(R(String.raw`\b(?:on\s+|den\s+)?(\d{1,2})[/.](\d{1,2})(?:[/.](\d{2,4}))?\b`));
+      if (m) { const yg = !!m[3]; date = mkDate(yg ? +m[3] : today.getFullYear(), +m[2] - 1, +m[1], today, yg); if (date) s = cut(s, m); }
+    }
+    if (time === null) {
+      m = s.match(R(String.raw`\b([01]?\d|2[0-3])\.([0-5]\d)\b`));
+      if (m) { time = mkTime(m[1], m[2], ''); s = cut(s, m); }
+    }
+
+    // combine
+    const at = (d, t) => utc
+      ? new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), Math.floor(t / 60), t % 60))
+      : new Date(d.getFullYear(), d.getMonth(), d.getDate(), Math.floor(t / 60), t % 60);
+    if (res.repeat === 'cron') {
+      const n = Cron.next(res.cron, now.getTime());
+      res.when = n ? new Date(n) : null;
+      if (!n) res.error = 'That cron schedule never runs';
+    }
+    else if (absolute) { absolute.setSeconds(absolute.getSeconds(), 0); res.when = absolute; }
+    else if (res.repeat === 'interval' && !date && time === null && weekday < 0 && !evening) {
+      const w = new Date(now.getTime() + res.every * 60000); w.setSeconds(0, 0); res.when = w;
+    }
+    else if (date || time !== null || weekday >= 0 || evening || res.repeat !== 'none') {
+      let d = date || today;
+      if (!date && weekday >= 0) d = addDays(today, (weekday - today.getDay() + 7) % 7);
+      const t = time ?? (evening ? 19 * 60 : 9 * 60);
+      let w = at(d, t);
+      if (w <= now && !date) w = at(addDays(d, weekday >= 0 ? 7 : 1), t);
+      if (res.repeat === 'weekdays') while (w.getDay() === 0 || w.getDay() === 6) w = at(addDays(w, 1), t);
+      res.when = w;
+    }
+
+    // title cleanup
+    let title = s.replace(/\s+/g, ' ').trim();
+    title = title.replace(R(String.raw`^(?:please\s+)?(?:remind\s+me\s+(?:to\s+|about\s+|that\s+)?|påminn\s+mig\s+(?:om\s+att\s+|om\s+|att\s+)?)`), '');
+    let prev;
+    do {
+      prev = title;
+      title = title.replace(/^[\s,;:\-–.]+|[\s,;:\-–.]+$/g, '');
+      title = title.replace(R(String.raw`(?:^|\s)(?:on|at|by|the|kl|klockan|den|på|from)$`), '');
+      title = title.replace(R(String.raw`^(?:on|at|by|kl|den|på)\s`), '');
+    } while (title !== prev);
+    if (title) title = title[0].toUpperCase() + title.slice(1);
+    res.title = title;
+    return res;
+  }
+  return { parse };
+})();
+/*PARSER-END*/
+
+// ---------------------------------------------------------------- state
+// Storage keys keep their original names so existing data carries over.
+const KEY = 'reminder-by-me.v1';
+const FIRED_KEY = 'reminder-by-me.fired';
+const $ = id => document.getElementById(id);
+
+function normalize(j) {
+  j = j && typeof j === 'object' ? j : {};
+  if (!Array.isArray(j.reminders)) j.reminders = [];
+  if (!Array.isArray(j.notes)) j.notes = [];
+  j.reminders.forEach(r => { if (!Array.isArray(r.tags)) r.tags = []; r.priority = r.priority || 0; });
+  j.notes.forEach(n => { n.pinned = !!n.pinned; });
+  j.settings = Object.assign({ sound: true, icsOnSave: false, bannerHidden: false, ticketUrl: '', theme: 'system', palette: 'lagoon', mono: true, utcClock: true }, j.settings || {});
+  return j;
+}
+function load() { try { return normalize(JSON.parse(localStorage.getItem(KEY))); } catch (e) { return normalize(null); } }
+let S = load();
+function save() {
+  S.savedAt = Date.now();
+  try { localStorage.setItem(KEY, JSON.stringify(S)); }
+  catch (e) { toast('Could not save: ' + e.message); }
+  scheduleFileSave();
+}
+try { navigator.storage && navigator.storage.persist && navigator.storage.persist(); } catch (e) { }
+const uid = () => (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2));
+
+// ---------------------------------------------------------------- save file on disk (optional mirror)
+const fileApi = 'showSaveFilePicker' in window && 'indexedDB' in window;
+const FILE_TYPES = [{ description: 'Ping data', accept: { 'application/json': ['.json'] } }];
+let fileHandle = null, fileState = 'none', fileError = '', fileSavedAt = null, fileTimer = null;
+const kv = (() => {
+  let dbp;
+  const open = () => dbp ||= new Promise((res, rej) => {
+    const r = indexedDB.open('reminder-by-me', 1);
+    r.onupgradeneeded = () => r.result.createObjectStore('kv');
+    r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
+  });
+  const run = (mode, fn) => open().then(db => new Promise((res, rej) => {
+    const t = db.transaction('kv', mode), req = fn(t.objectStore('kv'));
+    t.oncomplete = () => res(req && req.result); t.onerror = () => rej(t.error);
+  }));
+  return { get: k => run('readonly', s => s.get(k)), set: (k, v) => run('readwrite', s => s.put(v, k)), del: k => run('readwrite', s => s.delete(k)) };
+})();
+function scheduleFileSave() {
+  if (!fileHandle || fileState === 'needs-permission') return;
+  clearTimeout(fileTimer); fileTimer = setTimeout(writeFile, 600);
+}
+async function writeFile() {
+  fileTimer = null;
+  if (!fileHandle) return;
+  try {
+    if (await fileHandle.queryPermission({ mode: 'readwrite' }) !== 'granted') { fileState = 'needs-permission'; updateFileUi(); return; }
+    const w = await fileHandle.createWritable();
+    await w.write(JSON.stringify(S, null, 2)); await w.close();
+    fileState = 'ok'; fileSavedAt = Date.now();
+  } catch (e) { fileState = 'error'; fileError = e.message; }
+  updateFileUi();
+}
+async function loadFromFileIfNewer() {
+  const txt = await (await fileHandle.getFile()).text();
+  if (!txt.trim()) return false;
+  const d = normalize(JSON.parse(txt));
+  if ((d.savedAt || 0) <= (S.savedAt || 0)) return false;
+  S = d; curNote = null;
+  try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { }
+  renderAll();
+  toast('Loaded your latest data from the save file');
+  return true;
+}
+async function useFile(h, readFirst) {
+  fileHandle = h;
+  try { await kv.set('file', h); } catch (e) { }
+  if (readFirst) { try { await loadFromFileIfNewer(); } catch (e) { toast('That file is not a Ping save file'); fileHandle = null; await kv.del('file').catch(() => { }); updateFileUi(); return; } }
+  await writeFile();
+  if (fileState === 'ok') toast('Saving to ' + h.name);
+}
+async function fileCreate() {
+  try { await useFile(await showSaveFilePicker({ suggestedName: 'Ping-data.json', types: FILE_TYPES }), false); }
+  catch (e) { if (e.name !== 'AbortError') toast('Could not create the file: ' + e.message); }
+}
+async function fileOpen() {
+  try { const [h] = await showOpenFilePicker({ types: FILE_TYPES }); await useFile(h, true); }
+  catch (e) { if (e.name !== 'AbortError') toast('Could not open the file: ' + e.message); }
+}
+async function fileReconnect() {
+  if (!fileHandle) return;
+  try {
+    if (await fileHandle.requestPermission({ mode: 'readwrite' }) === 'granted') {
+      fileState = 'ok';
+      try { await loadFromFileIfNewer(); } catch (e) { }
+      await writeFile();
+    }
+  } catch (e) { fileState = 'error'; fileError = e.message; }
+  updateFileUi();
+}
+async function fileStop() {
+  fileHandle = null; fileState = 'none';
+  try { await kv.del('file'); } catch (e) { }
+  updateFileUi(); toast('Stopped saving to the file. The file itself is kept');
+}
+async function initFile() {
+  if (!fileApi) { updateFileUi(); return; }
+  try { fileHandle = await kv.get('file') || null; } catch (e) { fileHandle = null; }
+  if (fileHandle) {
+    try {
+      if (await fileHandle.queryPermission({ mode: 'readwrite' }) === 'granted') {
+        fileState = 'ok';
+        try { await loadFromFileIfNewer(); } catch (e) { }
+        await writeFile();
+      } else fileState = 'needs-permission';
+    } catch (e) { fileState = 'error'; fileError = e.message; }
+  }
+  updateFileUi();
+}
+function updateFileUi() {
+  $('fileCard').hidden = !fileApi;
+  const has = !!fileHandle;
+  $('fileStopBtn').hidden = !has;
+  $('fileReconnectBtn').hidden = !(has && fileState === 'needs-permission');
+  $('fileBanner').hidden = !(has && fileState === 'needs-permission');
+  const st = $('fileStatus');
+  if (!has) st.textContent = 'Extra safety: also keep a save file on your PC, for example in Documents or a synced folder. It updates with every change and survives even if Edge’s data is cleared.';
+  else if (fileState === 'ok') st.textContent = '✓ Also saving to “' + fileHandle.name + '”' + (fileSavedAt ? ', last saved ' + fmtTime(new Date(fileSavedAt)) : '') + '.';
+  else if (fileState === 'needs-permission') st.textContent = 'Save file “' + fileHandle.name + '” needs one click to reconnect (Edge asks again after a restart).';
+  else st.textContent = 'Couldn’t write to “' + fileHandle.name + '”: ' + fileError;
+}
+
+// ---------------------------------------------------------------- dates
+const fmtTime = d => d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+const sod = d => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+const dayDiff = d => Math.round((sod(d) - sod(new Date())) / 86400000);
+function fmtDay(d) {
+  const n = dayDiff(d);
+  if (n === 0) return 'Today';
+  if (n === 1) return 'Tomorrow';
+  if (n === -1) return 'Yesterday';
+  const o = { weekday: 'short', day: 'numeric', month: 'short' };
+  if (d.getFullYear() !== new Date().getFullYear()) o.year = 'numeric';
+  return d.toLocaleDateString('en-GB', o);
+}
+const fmtWhen = d => fmtDay(d) + ' ' + fmtTime(d);
+const fmtUtc = d => d.toISOString().slice(11, 16) + ' UTC';
+const isoDate = d => { const p = n => String(n).padStart(2, '0'); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`; };
+function relative(d) {
+  let ms = d - Date.now(); const past = ms < 0; ms = Math.abs(ms);
+  const min = ms / 60000;
+  if (min < 1) return past ? 'just now' : 'in under a minute';
+  let t;
+  if (min < 60) t = Math.floor(min) + ' min';
+  else if (min < 1440) { const h = Math.floor(min / 60), m = Math.floor(min % 60); t = (m && h < 10) ? `${h} h ${m} min` : h + ' h'; }
+  else if (min < 1440 * 14) { const dd = Math.round(min / 1440); t = dd + (dd === 1 ? ' day' : ' days'); }
+  else if (min < 1440 * 60) t = Math.round(min / 10080) + ' weeks';
+  else t = Math.round(min / 43800) + ' months';
+  return past ? t + ' ago' : 'in ' + t;
+}
+const fmtEvery = m => m % 60 === 0 ? (m === 60 ? 'Every hour' : `Every ${m / 60} h`) : `Every ${m} min`;
+function repeatLabel(r) {
+  switch (r.repeat) {
+    case 'interval': return fmtEvery(r.every || 60);
+    case 'cron': return 'cron ' + r.cron;
+    case 'daily': return 'Every day';
+    case 'weekdays': return 'Weekdays';
+    case 'weekly': return 'Every week';
+    case 'monthly': return 'Every month';
+    case 'yearly': return 'Every year';
+    default: return '';
+  }
+}
+function nextAfter(r, fromMs, nowMs) {
+  // next occurrence strictly after nowMs, following the schedule anchored at fromMs
+  if (r.repeat === 'cron') { try { return Cron.next(r.cron, nowMs); } catch (e) { return null; } }
+  if (r.repeat === 'interval') { const step = (r.every || 60) * 60000; return fromMs + (Math.floor((nowMs - fromMs) / step) + 1) * step; }
+  const d = new Date(fromMs);
+  while (d.getTime() <= nowMs) {
+    switch (r.repeat) {
+      case 'daily': d.setDate(d.getDate() + 1); break;
+      case 'weekdays': do { d.setDate(d.getDate() + 1); } while (d.getDay() === 0 || d.getDay() === 6); break;
+      case 'weekly': d.setDate(d.getDate() + 7); break;
+      case 'monthly': d.setMonth(d.getMonth() + 1); break;
+      case 'yearly': d.setFullYear(d.getFullYear() + 1); break;
+      default: return fromMs;
+    }
+  }
+  return d.getTime();
+}
+const nextAlert = r => (r.snoozeUntil != null && (r.fired || r.snoozeUntil < r.due)) ? r.snoozeUntil : r.due;
+const isOverdue = r => !r.done && r.repeat === 'none' && r.fired && r.snoozeUntil == null;
+const isSnoozed = r => !r.done && r.snoozeUntil != null;
+const toLocalInput = ms => { const d = new Date(ms); const p = n => String(n).padStart(2, '0'); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`; };
+function defaultDue() { const d = new Date(Date.now() + 3600000); d.setSeconds(0, 0); d.setMinutes(Math.ceil(d.getMinutes() / 5) * 5); return d.getTime(); }
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+const PRIO = ['', 'Low', 'Med', 'High'];
+
+// ---------------------------------------------------------------- links, ticket IDs, markdown
+const URL_RE = /\bhttps?:\/\/[^\s<>"'`)\]]+[^\s<>"'`)\].,;:!?]/g;
+const TICKET_RE = /\b([A-Z][A-Z0-9]{1,9})-(\d{1,7})\b/g;
+function ticketHref(key, n) {
+  const t = (S.settings.ticketUrl || '').trim();
+  if (!t) return null;
+  return t.replace('{key}', key).replace('{num}', n);
+}
+// Escapes text, then turns URLs and ticket IDs into links.
+function linkify(text) {
+  const parts = []; let last = 0; const src = String(text ?? '');
+  const found = [];
+  src.replace(URL_RE, (u, i) => { found.push([i, u.length, `<a href="${esc(u)}" target="_blank" rel="noopener">${esc(u)}</a>`]); return u; });
+  src.replace(TICKET_RE, (k, key, n, i) => {
+    const href = ticketHref(key, n);
+    if (href && !found.some(([a, l]) => i >= a && i < a + l)) found.push([i, k.length, `<a href="${esc(href)}" target="_blank" rel="noopener">${esc(k)}</a>`]);
+    return k;
+  });
+  found.sort((a, b) => a[0] - b[0]);
+  for (const [i, l, html] of found) { if (i < last) continue; parts.push(esc(src.slice(last, i)), html); last = i + l; }
+  parts.push(esc(src.slice(last)));
+  return parts.join('');
+}
+function firstLink(text) {
+  const src = String(text ?? ''); URL_RE.lastIndex = 0; TICKET_RE.lastIndex = 0;
+  const u = src.match(URL_RE); if (u) return u[0];
+  const t = TICKET_RE.exec(src); TICKET_RE.lastIndex = 0;
+  return t ? ticketHref(t[1], t[2]) : null;
+}
+function inlineMd(text) {
+  const codes = [];
+  let s = String(text).replace(/`([^`]+)`/g, (_, c) => { codes.push(c); return `\u0000${codes.length - 1}\u0000`; });
+  const links = [];
+  s = s.replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, (_, t, u) => { links.push([t, u]); return `\u0001${links.length - 1}\u0001`; });
+  s = linkify(s);
+  s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>').replace(/(^|[^*\w])\*([^*\s][^*]*)\*/g, '$1<em>$2</em>')
+       .replace(/(^|\W)_([^_\s][^_]*)_(?=\W|$)/g, '$1<em>$2</em>').replace(/~~([^~]+)~~/g, '<del>$1</del>');
+  s = s.replace(/\u0001(\d+)\u0001/g, (_, i) => `<a href="${esc(links[i][1])}" target="_blank" rel="noopener">${esc(links[i][0])}</a>`);
+  return s.replace(/\u0000(\d+)\u0000/g, (_, i) => `<code>${esc(codes[i])}</code>`);
+}
+function renderMarkdown(src) {
+  const lines = String(src).replace(/\r\n/g, '\n').split('\n');
+  const out = []; let i = 0, list = null, para = [];
+  const flushPara = () => { if (para.length) { out.push('<p>' + para.map(inlineMd).join('<br>') + '</p>'); para = []; } };
+  const closeList = () => { if (list) { out.push(`</${list}>`); list = null; } };
+  while (i < lines.length) {
+    const line = lines[i];
+    let m;
+    if ((m = line.match(/^\s*```\s*([\w+#.-]*)\s*$/))) {
+      flushPara(); closeList();
+      const lang = m[1], code = []; i++;
+      while (i < lines.length && !/^\s*```\s*$/.test(lines[i])) code.push(lines[i++]);
+      i++;
+      out.push(`<div class="code">${lang ? `<span class="lang">${esc(lang)}</span>` : ''}<button class="btn sm copy" type="button" data-copy>Copy</button><pre><code>${esc(code.join('\n'))}</code></pre></div>`);
+      continue;
+    }
+    if (/^\s*\|.*\|\s*$/.test(line) && i + 1 < lines.length && /^\s*\|?\s*:?-{2,}/.test(lines[i + 1])) {
+      flushPara(); closeList();
+      const cells = l => l.trim().replace(/^\||\|$/g, '').split('|').map(c => c.trim());
+      const head = cells(line); i += 2; const rows = [];
+      while (i < lines.length && /^\s*\|.*\|\s*$/.test(lines[i])) rows.push(cells(lines[i++]));
+      out.push(`<div class="tbl"><table><thead><tr>${head.map(c => `<th>${inlineMd(c)}</th>`).join('')}</tr></thead><tbody>${rows.map(r => `<tr>${r.map(c => `<td>${inlineMd(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`);
+      continue;
+    }
+    if ((m = line.match(/^(#{1,4})\s+(.*)$/))) { flushPara(); closeList(); out.push(`<h${m[1].length}>${inlineMd(m[2])}</h${m[1].length}>`); i++; continue; }
+    if (/^\s*(-{3,}|\*{3,})\s*$/.test(line)) { flushPara(); closeList(); out.push('<hr>'); i++; continue; }
+    if ((m = line.match(/^>\s?(.*)$/))) { flushPara(); closeList(); out.push(`<blockquote>${inlineMd(m[1])}</blockquote>`); i++; continue; }
+    if ((m = line.match(/^\s*[-*+]\s+\[([ xX])\]\s+(.*)$/))) {
+      flushPara(); if (list !== 'ul') { closeList(); out.push('<ul>'); list = 'ul'; }
+      const on = m[1] !== ' ';
+      out.push(`<li class="task${on ? ' checked' : ''}"><input type="checkbox" data-line="${i}"${on ? ' checked' : ''}><span>${inlineMd(m[2])}</span></li>`);
+      i++; continue;
+    }
+    if ((m = line.match(/^\s*[-*+]\s+(.*)$/))) { flushPara(); if (list !== 'ul') { closeList(); out.push('<ul>'); list = 'ul'; } out.push(`<li>${inlineMd(m[1])}</li>`); i++; continue; }
+    if ((m = line.match(/^\s*\d+[.)]\s+(.*)$/))) { flushPara(); if (list !== 'ol') { closeList(); out.push('<ol>'); list = 'ol'; } out.push(`<li>${inlineMd(m[1])}</li>`); i++; continue; }
+    if (!line.trim()) { flushPara(); closeList(); i++; continue; }
+    closeList(); para.push(line); i++;
+  }
+  flushPara(); closeList();
+  return out.join('\n') || '<p style="color:var(--muted)">Nothing to preview yet.</p>';
+}
+async function copyText(text) {
+  try { await navigator.clipboard.writeText(text); toast('Copied'); }
+  catch (e) {
+    const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); toast('Copied'); } catch (e2) { toast('Copy failed. Select the text and press Ctrl+C'); }
+    ta.remove();
+  }
+}
+
+// ---------------------------------------------------------------- toast & popover
+let toastTimer;
+function toast(msg) { const t = $('toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => t.hidden = true, 2600); }
+
+function snoozeOptions() {
+  const now = new Date(), o = [];
+  const at = (days, h) => { const d = sod(now); d.setDate(d.getDate() + days); d.setHours(h, 0, 0, 0); return d.getTime(); };
+  o.push(['5 minutes', Date.now() + 5 * 60000], ['10 minutes', Date.now() + 10 * 60000], ['30 minutes', Date.now() + 30 * 60000],
+         ['1 hour', Date.now() + 3600000], ['3 hours', Date.now() + 3 * 3600000]);
+  if (now.getHours() < 18) o.push(['This evening (19:00)', at(0, 19)]);
+  o.push(['Tomorrow 09:00', at(1, 9)]);
+  const toMon = ((1 - now.getDay() + 7) % 7) || 7;
+  o.push(['Next Monday 09:00', at(toMon, 9)]);
+  return o;
+}
+function openPop(anchor, items) {
+  const pop = $('pop');
+  pop.innerHTML = '';
+  items.forEach(([label, fn]) => { const b = document.createElement('button'); b.type = 'button'; b.textContent = label; b.onclick = () => { closePop(); fn(); }; pop.appendChild(b); });
+  pop.hidden = false;
+  const r = anchor.getBoundingClientRect(), pw = pop.offsetWidth, ph = pop.offsetHeight;
+  pop.style.left = Math.max(8, Math.min(r.left, innerWidth - pw - 8)) + 'px';
+  pop.style.top = (r.bottom + ph + 8 > innerHeight ? Math.max(8, r.top - ph - 4) : r.bottom + 4) + 'px';
+  pop.querySelector('button').focus();
+}
+const closePop = () => { $('pop').hidden = true; };
+document.addEventListener('mousedown', e => { if (!$('pop').hidden && !$('pop').contains(e.target)) closePop(); });
+
+// ---------------------------------------------------------------- actions
+const find = id => S.reminders.find(r => r.id === id);
+function changed() { save(); renderReminders(); updateTitle(); }
+function complete(r) { if (r.repeat === 'none') { r.done = true; r.completedAt = Date.now(); } r.snoozeUntil = null; closeAlert(r.id); changed(); }
+function stopRepeating(r) { r.done = true; r.completedAt = Date.now(); r.snoozeUntil = null; closeAlert(r.id); changed(); }
+function reopen(r) { r.done = false; r.completedAt = null; r.fired = r.due <= Date.now(); changed(); }
+function snooze(r, until) { r.snoozeUntil = until; r.done = false; closeAlert(r.id); changed(); toast('Snoozed until ' + fmtWhen(new Date(until))); }
+function remove(r) { S.reminders = S.reminders.filter(x => x !== r); closeAlert(r.id); changed(); toast('Reminder deleted'); }
+function newReminder(fields) {
+  return Object.assign({ id: uid(), title: '', notes: '', due: defaultDue(), repeat: 'none', every: null, cron: null, tags: [], priority: 0,
+    done: false, fired: false, snoozeUntil: null, created: Date.now(), completedAt: null }, fields);
+}
+function askDone(r) {
+  if (r.repeat === 'none') complete(r);
+  else if (confirm('Stop repeating “' + r.title + '”?')) stopRepeating(r);
+}
+
+// ---------------------------------------------------------------- quick add
+const quickInput = $('quickInput'), quickPreview = $('quickPreview');
+function describe(p) {
+  if (!p.when) return null;
+  let s = '⏰ ' + fmtWhen(p.when) + '  (' + relative(p.when) + ')';
+  if (p.repeat !== 'none') s += '  ·  ' + repeatLabel(p);
+  if (p.priority) s += '  ·  ' + PRIO[p.priority] + ' priority';
+  if (p.tags.length) s += '  ·  ' + p.tags.map(t => '#' + t).join(' ');
+  if (p.title) s += '  ·  “' + p.title + '”';
+  return s;
+}
+function updateQuickPreview() {
+  const t = quickInput.value.trim();
+  quickPreview.className = 'preview';
+  if (!t) { quickPreview.innerHTML = 'Write it like you would say it. <kbd>Enter</kbd> adds it, <kbd>Ctrl Enter</kbd> saves it as a note, <kbd>?</kbd> shows the syntax: <code>every 30 min</code>, <code>cron `0 9 * * 1-5`</code>, <code>#tag</code>, <code>!!!</code>'; return; }
+  const p = QuickParser.parse(t), d = describe(p);
+  if (p.error) { quickPreview.classList.add('err'); quickPreview.textContent = p.error; }
+  else if (d) { quickPreview.classList.add('ok'); quickPreview.textContent = d; }
+  else { quickPreview.classList.add('warn'); quickPreview.textContent = 'No time found yet. Enter lets you pick one, or add “tomorrow 9:00”, “in 20 min” or “every 2h”.'; }
+}
+function quickSubmit(mode) { // 0 add, 1 note, 2 editor
+  const t = quickInput.value.trim();
+  if (!t) { quickInput.focus(); return; }
+  if (mode === 1) {
+    const n = { id: uid(), text: t, created: Date.now(), modified: Date.now(), pinned: false };
+    S.notes.unshift(n); save(); renderNotes();
+    quickInput.value = ''; updateQuickPreview();
+    quickPreview.className = 'preview done'; quickPreview.textContent = '✓ Saved as a note';
+    return;
+  }
+  const p = QuickParser.parse(t);
+  if (p.error && mode === 0) { quickPreview.className = 'preview err'; quickPreview.textContent = p.error; return; }
+  const r = newReminder({ title: p.title || t, repeat: p.repeat, every: p.every, cron: p.cron, tags: p.tags, priority: p.priority,
+    due: p.when ? p.when.getTime() : defaultDue() });
+  if (mode === 2 || !p.when) { openEditor(r, true, () => { quickInput.value = ''; updateQuickPreview(); }); return; }
+  S.reminders.push(r); changed();
+  if (S.settings.icsOnSave) downloadIcs(r);
+  quickInput.value = ''; updateQuickPreview();
+  quickPreview.className = 'preview done';
+  quickPreview.textContent = '✓ Set for ' + fmtWhen(new Date(r.due)) + '  (' + relative(new Date(r.due)) + ')' + (r.repeat !== 'none' ? '  ·  ' + repeatLabel(r) : '');
+  maybeAskNotif();
+}
+quickInput.addEventListener('input', updateQuickPreview);
+quickInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter') { e.preventDefault(); quickSubmit(e.ctrlKey || e.metaKey ? 1 : 0); }
+  else if (e.key === 'Escape') { quickInput.value = ''; updateQuickPreview(); quickInput.blur(); }
+});
+
+// ---------------------------------------------------------------- reminders list
+let filter = 'upcoming', tagFilter = null, selId = null;
+$('filters').addEventListener('click', e => {
+  const b = e.target.closest('button[data-f]'); if (!b) return;
+  filter = b.dataset.f;
+  $('filters').querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+  renderReminders();
+});
+$('search').addEventListener('input', renderReminders);
+$('search').addEventListener('keydown', e => { if (e.key === 'Escape') { $('search').value = ''; renderReminders(); $('search').blur(); } });
+$('tagbar').addEventListener('click', e => {
+  const b = e.target.closest('button[data-tag]'); if (!b) return;
+  tagFilter = tagFilter === b.dataset.tag ? null : b.dataset.tag; renderReminders();
+});
+
+function groupOf(r) {
+  if (r.done) return 'done';
+  const n = nextAlert(r);
+  if (isOverdue(r) || n < sod(new Date()).getTime()) return 'overdue';
+  const dd = dayDiff(new Date(n));
+  return dd <= 0 ? 'today' : dd === 1 ? 'tomorrow' : dd < 7 ? 'week' : 'later';
+}
+const GROUPS = [['overdue', 'Overdue'], ['today', 'Today'], ['tomorrow', 'Tomorrow'], ['week', 'Next 7 days'], ['later', 'Later'], ['done', 'Done']];
+const EXAMPLES = ['Review PR DATA-142 tomorrow 10:00 #review', 'Check pipeline runs every 30 min #etl !!', 'Standup cron `45 8 * * 1-5`', 'Deploy window friday 14:00 UTC #prod !!!', 'Ring mamma imorgon 18'];
+
+function visibleReminders() {
+  const q = $('search').value.trim().toLowerCase();
+  const tomorrow = sod(new Date()).getTime() + 86400000;
+  return S.reminders.filter(r => {
+    if (tagFilter && !r.tags.includes(tagFilter)) return false;
+    if (q && !(r.title + ' ' + r.notes + ' ' + r.tags.map(t => '#' + t).join(' ')).toLowerCase().includes(q)) return false;
+    switch (filter) {
+      case 'upcoming': return !r.done;
+      case 'today': return !r.done && (isOverdue(r) || nextAlert(r) < tomorrow);
+      case 'overdue': return isOverdue(r);
+      case 'repeat': return r.repeat !== 'none';
+      case 'done': return r.done;
+      default: return true;
+    }
+  });
+}
+function renderTagbar() {
+  const counts = {};
+  S.reminders.filter(r => !r.done).forEach(r => r.tags.forEach(t => counts[t] = (counts[t] || 0) + 1));
+  if (tagFilter && !counts[tagFilter]) counts[tagFilter] = 0;
+  const tags = Object.keys(counts).sort();
+  $('tagbar').innerHTML = tags.map(t => `<button type="button" data-tag="${esc(t)}" aria-pressed="${t === tagFilter}">#${esc(t)} <span style="opacity:.6">${counts[t]}</span></button>`).join('');
+  $('tagbar').hidden = !tags.length;
+}
+function renderReminders() {
+  renderTagbar();
+  const items = visibleReminders();
+  const open = items.filter(r => !r.done).sort((a, b) => (nextAlert(a) - nextAlert(b)) || (b.priority - a.priority));
+  const done = items.filter(r => r.done).sort((a, b) => (b.completedAt || b.due) - (a.completedAt || a.due));
+  const by = {};
+  [...open, ...done].forEach(r => (by[groupOf(r)] ||= []).push(r));
+
+  const overdue = S.reminders.filter(isOverdue).length, upcoming = S.reminders.filter(r => !r.done && !isOverdue(r)).length;
+  $('count').textContent = upcoming + ' upcoming' + (overdue ? ' · ' + overdue + ' overdue' : '');
+
+  const g = $('groups');
+  if (!items.length) {
+    const fresh = S.reminders.length === 0;
+    g.innerHTML = `<div class="empty"><h3>${fresh ? 'No reminders yet' : 'Nothing matches'}</h3>
+      <div>${fresh ? 'Type one in the box above and press Enter. Click an example to try it:' : 'Try another filter, tag or search.'}</div>
+      ${fresh ? `<div class="examples">${EXAMPLES.map(x => `<button class="btn sm" type="button" data-example="${esc(x)}">${esc(x)}</button>`).join('')}</div>` : ''}</div>`;
+    return;
+  }
+  g.innerHTML = GROUPS.filter(([k]) => by[k]).map(([k, label]) => `
+    <section class="group ${k}"><h2>${label} <span class="n">${by[k].length}</span></h2>
+      <ul class="list">${by[k].map(rowHtml).join('')}</ul></section>`).join('');
+}
+function rowHtml(r) {
+  const n = new Date(nextAlert(r));
+  const cls = [r.done ? 'done' : isOverdue(r) ? 'overdue' : '', r.id === selId ? 'sel' : ''].join(' ');
+  const tags = [];
+  if (isOverdue(r)) tags.push(`<span class="tag overdue">Overdue · ${esc(relative(new Date(r.due)))}</span>`);
+  else if (isSnoozed(r)) tags.push(`<span class="tag snoozed">Snoozed · ${esc(relative(new Date(r.snoozeUntil)))}</span>`);
+  else if (!r.done) tags.push(`<span>${esc(relative(n))}</span>`);
+  else tags.push(`<span>Done ${r.completedAt ? esc(fmtWhen(new Date(r.completedAt))) : ''}</span>`);
+  if (r.repeat !== 'none') tags.push(`<span class="tag repeat${r.repeat === 'cron' ? ' mono' : ''}">${esc(repeatLabel(r))}</span>`);
+  r.tags.forEach(t => tags.push(`<span class="tag hash" data-tagclick="${esc(t)}">#${esc(t)}</span>`));
+  if (r.notes) tags.push(`<span class="snip">${linkify(r.notes.split('\n')[0])}</span>`);
+  const acts = r.done
+    ? `<button class="btn sm ghost" type="button" data-act="reopen">Reopen</button>`
+    : `<button class="btn sm" type="button" data-act="done" title="${r.repeat === 'none' ? 'Mark as done (x)' : 'Stop repeating'}">✓ Done</button>
+       <button class="btn sm ghost" type="button" data-act="snooze" title="Snooze (s)">Snooze</button>
+       <button class="btn sm ghost" type="button" data-act="ics" title="Download as an Outlook calendar entry">Outlook</button>`;
+  return `<li class="rem ${cls}" data-id="${r.id}">
+    <div class="when"><span class="t">${fmtTime(n)}</span><span class="d">${esc(fmtDay(n))}</span></div>
+    <div><div class="title">${r.priority ? `<span class="prio p${r.priority}">${PRIO[r.priority].toUpperCase()}</span>` : ''}<span>${linkify(r.title)}</span></div><div class="meta">${tags.join('')}</div></div>
+    <div class="acts">${acts}
+      <button class="btn sm ghost" type="button" data-act="edit" title="Edit (e)">Edit</button>
+      <button class="btn sm ghost danger" type="button" data-act="delete" title="Delete (Del)" aria-label="Delete">✕</button></div></li>`;
+}
+$('groups').addEventListener('click', e => {
+  const ex = e.target.closest('[data-example]');
+  if (ex) { quickInput.value = ex.dataset.example; updateQuickPreview(); quickInput.focus(); return; }
+  if (e.target.closest('a')) return;
+  const tc = e.target.closest('[data-tagclick]');
+  if (tc) { tagFilter = tc.dataset.tagclick; renderReminders(); return; }
+  const li = e.target.closest('.rem'); if (!li) return;
+  const r = find(li.dataset.id); if (!r) return;
+  selId = r.id; markSel();
+  const b = e.target.closest('button[data-act]'); if (!b) return;
+  switch (b.dataset.act) {
+    case 'done': askDone(r); break;
+    case 'reopen': reopen(r); break;
+    case 'snooze': openPop(b, snoozeOptions().map(([l, t]) => [l, () => snooze(r, t)])); break;
+    case 'ics': downloadIcs(r); break;
+    case 'edit': openEditor(r, false); break;
+    case 'delete': if (confirm('Delete “' + r.title + '”?')) remove(r); break;
+  }
+});
+$('groups').addEventListener('dblclick', e => {
+  const li = e.target.closest('.rem'); if (!li || e.target.closest('button, a')) return;
+  const r = find(li.dataset.id); if (r) openEditor(r, false);
+});
+function markSel() { document.querySelectorAll('.rem').forEach(li => li.classList.toggle('sel', li.dataset.id === selId)); }
+function moveSel(delta) {
+  const rows = [...document.querySelectorAll('#groups .rem')]; if (!rows.length) return;
+  let i = rows.findIndex(li => li.dataset.id === selId);
+  i = i < 0 ? (delta > 0 ? 0 : rows.length - 1) : Math.max(0, Math.min(rows.length - 1, i + delta));
+  selId = rows[i].dataset.id; markSel(); rows[i].scrollIntoView({ block: 'nearest' });
+}
+
+// ---------------------------------------------------------------- editor
+let edCtx = null;
+function openEditor(r, isNew, onSaved) {
+  edCtx = { r, isNew, onSaved };
+  $('edHeading').textContent = isNew ? 'New reminder' : 'Edit reminder';
+  $('edTitle').value = r.title || '';
+  $('edWhen').value = toLocalInput(r.due);
+  $('edRepeat').value = r.repeat || 'none';
+  const ev = r.every || 30;
+  if (ev % 60 === 0) { $('edEvery').value = ev / 60; $('edEveryUnit').value = '60'; } else { $('edEvery').value = ev; $('edEveryUnit').value = '1'; }
+  $('edCron').value = r.cron || '0 9 * * 1-5';
+  $('edPrio').value = String(r.priority || 0);
+  $('edTags').value = (r.tags || []).map(t => '#' + t).join(' ');
+  $('edNotes').value = r.notes || '';
+  $('edIcs').checked = !!S.settings.icsOnSave;
+  $('edDelete').hidden = isNew;
+  updateRepeatRows(); updateRel();
+  $('editor').hidden = false;
+  setTimeout(() => { $('edTitle').focus(); $('edTitle').select(); }, 0);
+}
+function closeEditor() { $('editor').hidden = true; edCtx = null; }
+function updateRel() {
+  const v = $('edWhen').value; const rel = $('edRel');
+  if (!v) { rel.textContent = ''; return; }
+  const d = new Date(v);
+  rel.textContent = relative(d) + '  ·  ' + fmtUtc(d);
+  rel.classList.toggle('past', d < new Date() && $('edRepeat').value !== 'cron');
+}
+function updateRepeatRows() {
+  const k = $('edRepeat').value;
+  $('edIntervalRow').hidden = k !== 'interval';
+  $('edCronRow').hidden = k !== 'cron';
+  $('edWhen').disabled = k === 'cron';
+  if (k === 'cron') updateCronRuns();
+}
+function updateCronRuns() {
+  const out = $('edRuns');
+  try {
+    const c = Cron.parse($('edCron').value);
+    let t = Date.now(); const runs = [];
+    for (let i = 0; i < 4; i++) { t = Cron.next(c, t); if (!t) break; runs.push(new Date(t)); }
+    if (!runs.length) throw new Error('That schedule never runs');
+    out.classList.remove('rel', 'err');
+    out.innerHTML = 'Next runs: ' + runs.map(d => esc(fmtWhen(d))).join('  ·  ');
+    $('edWhen').value = toLocalInput(runs[0].getTime()); updateRel();
+    return runs[0].getTime();
+  } catch (e) { out.classList.add('rel', 'err'); out.textContent = e.message; return null; }
+}
+$('edWhen').addEventListener('input', updateRel);
+$('edRepeat').addEventListener('change', updateRepeatRows);
+$('edCron').addEventListener('input', updateCronRuns);
+$('edChips').addEventListener('click', e => {
+  const b = e.target.closest('button[data-q]'); if (!b) return;
+  const now = new Date(); now.setSeconds(0, 0); let d;
+  const at = (days, h) => { const x = sod(new Date()); x.setDate(x.getDate() + days); x.setHours(h, 0, 0, 0); return x; };
+  switch (b.dataset.q) {
+    case '15m': d = new Date(now.getTime() + 15 * 60000); break;
+    case '1h': d = new Date(now.getTime() + 3600000); break;
+    case '3h': d = new Date(now.getTime() + 3 * 3600000); break;
+    case 'tonight': d = at(0, 19); break;
+    case 'tomorrow': d = at(1, 9); break;
+    case 'monday': d = at(((1 - now.getDay() + 7) % 7) || 7, 9); break;
+  }
+  if ($('edRepeat').value === 'cron') $('edRepeat').value = 'none', updateRepeatRows();
+  $('edWhen').value = toLocalInput(d.getTime()); updateRel();
+});
+$('editForm').addEventListener('submit', e => {
+  e.preventDefault();
+  if (!edCtx) return;
+  let title = $('edTitle').value.trim();
+  const notes = $('edNotes').value.trim();
+  if (!title) title = (notes.split('\n').find(l => l.trim()) || '').trim();
+  if (!title) { $('edTitle').focus(); toast('Write what the reminder is about'); return; }
+  const repeat = $('edRepeat').value;
+  let due = new Date($('edWhen').value).getTime(), every = null, cron = null;
+  if (repeat === 'cron') {
+    cron = $('edCron').value.trim().replace(/\s+/g, ' ');
+    due = updateCronRuns();
+    if (!due) { $('edCron').focus(); toast('Fix the cron expression first'); return; }
+  }
+  if (repeat === 'interval') {
+    every = Math.round(parseFloat($('edEvery').value) * +$('edEveryUnit').value);
+    if (!(every >= 1)) { $('edEvery').focus(); toast('Enter how often it repeats'); return; }
+  }
+  if (isNaN(due)) { $('edWhen').focus(); toast('Pick a date and time'); return; }
+  const { r, isNew, onSaved } = edCtx;
+  if (due <= Date.now() && repeat === 'none' && due !== r.due &&
+      !confirm('That time has already passed, so the reminder will pop up right away. Save anyway?')) return;
+  const tags = [...new Set($('edTags').value.split(/[\s,]+/).map(t => t.replace(/^#/, '').toLowerCase()).filter(Boolean))];
+  const timing = due !== r.due || repeat !== r.repeat || every !== r.every || cron !== r.cron;
+  Object.assign(r, { title, notes, due, repeat, every, cron, tags, priority: +$('edPrio').value });
+  if (isNew) { r.fired = false; r.done = false; r.snoozeUntil = null; S.reminders.push(r); }
+  else if (timing) { r.fired = false; r.snoozeUntil = null; r.done = false; r.completedAt = null; closeAlert(r.id); }
+  const ics = $('edIcs').checked;
+  closeEditor(); changed();
+  if (ics) downloadIcs(r);
+  toast(isNew ? 'Set for ' + fmtWhen(new Date(r.due)) : 'Saved');
+  if (onSaved) onSaved();
+  maybeAskNotif();
+});
+$('edDelete').addEventListener('click', () => {
+  if (edCtx && confirm('Delete “' + edCtx.r.title + '”?')) { const r = edCtx.r; closeEditor(); remove(r); }
+});
+$('editor').addEventListener('mousedown', e => { if (e.target === $('editor')) closeEditor(); });
+
+// ---------------------------------------------------------------- Outlook (.ics)
+function icsDate(ms) { const d = new Date(ms), p = n => String(n).padStart(2, '0'); return `${d.getFullYear()}${p(d.getMonth() + 1)}${p(d.getDate())}T${p(d.getHours())}${p(d.getMinutes())}00`; }
+function icsUtc(ms) { return new Date(ms).toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, ''); }
+function icsText(s) { return String(s).replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\r?\n/g, '\\n'); }
+function fold(line) { const out = []; while (line.length > 73) { out.push(line.slice(0, 73)); line = ' ' + line.slice(73); } out.push(line); return out.join('\r\n'); }
+function downloadFile(name, content, type) {
+  const blob = new Blob([content], { type });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+}
+function downloadIcs(r) {
+  let rr = { daily: 'FREQ=DAILY', weekdays: 'FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR', weekly: 'FREQ=WEEKLY', monthly: 'FREQ=MONTHLY', yearly: 'FREQ=YEARLY' }[r.repeat];
+  if (r.repeat === 'interval') rr = (r.every % 60 === 0) ? `FREQ=HOURLY;INTERVAL=${r.every / 60}` : `FREQ=MINUTELY;INTERVAL=${r.every}`;
+  const start = r.repeat === 'none' ? nextAlert(r) : r.due;
+  const desc = [r.notes, r.tags.length ? r.tags.map(t => '#' + t).join(' ') : ''].filter(Boolean).join('\n\n');
+  const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Ping//EN', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH',
+    'BEGIN:VEVENT', 'UID:' + r.id + '@ping-reminders', 'DTSTAMP:' + icsUtc(Date.now()),
+    'DTSTART:' + icsDate(start), 'DTEND:' + icsDate(start + 15 * 60000),
+    'SUMMARY:' + icsText(r.title)];
+  if (desc) lines.push('DESCRIPTION:' + icsText(desc));
+  if (rr) lines.push('RRULE:' + rr);
+  if (r.priority) lines.push('PRIORITY:' + ({ 3: 1, 2: 5, 1: 9 })[r.priority]);
+  lines.push('TRANSP:TRANSPARENT', 'X-MICROSOFT-CDO-BUSYSTATUS:FREE',
+    'BEGIN:VALARM', 'ACTION:DISPLAY', 'DESCRIPTION:' + icsText(r.title), 'TRIGGER:-PT0M', 'END:VALARM',
+    'END:VEVENT', 'END:VCALENDAR');
+  downloadFile((r.title.replace(/[\\/:*?"<>|]+/g, ' ').trim().slice(0, 60) || 'reminder') + '.ics', lines.map(fold).join('\r\n') + '\r\n', 'text/calendar');
+  toast(r.repeat === 'cron' ? 'Downloaded the next run only (Outlook can’t read cron). Open it and click Save & Close' : 'Calendar file downloaded. Open it and click Save & Close in Outlook');
+}
+function exportCsv() {
+  const q = v => { v = String(v ?? ''); return /[",\n\r]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+  const iso = ms => ms ? new Date(ms).toISOString() : '';
+  const head = ['id', 'title', 'next_alert_utc', 'due_utc', 'repeat', 'every_min', 'cron', 'tags', 'priority', 'done', 'completed_at_utc', 'created_utc', 'notes'];
+  const rows = S.reminders.map(r => [r.id, r.title, iso(nextAlert(r)), iso(r.due), r.repeat, r.every ?? '', r.cron ?? '', r.tags.join(' '), r.priority, r.done, iso(r.completedAt), iso(r.created), r.notes]);
+  downloadFile('ping-reminders-' + isoDate(new Date()) + '.csv', '\ufeff' + [head, ...rows].map(r => r.map(q).join(',')).join('\r\n'), 'text/csv');
+  toast('CSV downloaded');
+}
+
+// ---------------------------------------------------------------- notifications, sound, alerts
+const canNotify = () => 'Notification' in window;
+function updateNotifUi() {
+  const chip = $('notifChip'), txt = $('notifChipText'), st = $('notifStatus');
+  const perm = canNotify() ? Notification.permission : 'unsupported';
+  chip.classList.toggle('on', perm === 'granted');
+  chip.classList.toggle('off', perm !== 'granted');
+  txt.textContent = perm === 'granted' ? 'Notifications on' : perm === 'denied' ? 'Notifications blocked' : perm === 'unsupported' ? 'In-window alerts only' : 'Turn on notifications';
+  st.textContent = perm === 'granted' ? 'Windows notifications are on. Reminders also appear as an alert in this window.'
+    : perm === 'denied' ? 'Edge is blocking notifications for this page. Click the icon left of the address, set Notifications to Allow, then reload. Until then you get in-window alerts and a sound.'
+    : perm === 'unsupported' ? 'This browser can’t show notifications for this page, so reminders appear as an alert inside this window, with a sound.'
+    : 'Allow notifications so reminders reach you even when this window is behind others.';
+  $('notifBanner').hidden = !(perm === 'default' && !S.settings.bannerHidden);
+  st.textContent += ` (Running in ${browserName()}${isLocalFile ? ' from a local file' : ''}. Each browser keeps its own copy of your reminders, so always open Ping the same way.)`;
+}
+const browserName = () => navigator.brave ? 'Brave' : /Edg\//.test(navigator.userAgent) ? 'Edge' : /Chrome\//.test(navigator.userAgent) ? 'Chrome' : /Firefox\//.test(navigator.userAgent) ? 'Firefox' : 'this browser';
+const isLocalFile = location.protocol === 'file:';
+async function askNotif() {
+  if (!canNotify()) { toast('Notifications are not available here; in-window alerts will be used'); return; }
+  let answer;
+  try { answer = await Notification.requestPermission(); } catch (e) { answer = 'error'; }
+  updateNotifUi();
+  if (Notification.permission === 'granted') {
+    toast('Notifications are on. Sending a test…');
+    try { new Notification('Ping notifications work', { body: 'Reminders will appear like this.', tag: 'ping-test' }); } catch (e) { }
+    return;
+  }
+  // The browser did not keep the choice: say so instead of silently doing nothing.
+  const why = isLocalFile
+    ? `${browserName()} answered “${answer}”, so it didn’t keep your choice. Browsers often refuse to save notification permission for pages opened as a local file. Until that’s solved you still get the alert in this window and a sound.`
+    : `${browserName()} answered “${answer}”. Check that notifications are allowed for this site and that Windows notifications are on for ${browserName()}.`;
+  $('notifStatus').textContent = why;
+  toast('Notifications were not turned on. See Settings for details');
+}
+function maybeAskNotif() { if (canNotify() && Notification.permission === 'default') askNotif(); }
+$('notifChip').addEventListener('click', () => { if (canNotify() && Notification.permission === 'default') askNotif(); else showTab('settings'); });
+
+let audioCtx = null;
+function unlockAudio() { try { audioCtx ||= new (window.AudioContext || window.webkitAudioContext)(); if (audioCtx.state === 'suspended') audioCtx.resume(); } catch (e) { } }
+['pointerdown', 'keydown'].forEach(ev => addEventListener(ev, unlockAudio, { capture: true }));
+function chime(urgent) {
+  if (!S.settings.sound) return;
+  try {
+    unlockAudio(); const c = audioCtx; if (!c) return;
+    const notes = urgent ? [[1046.5, 0], [1046.5, 0.22], [1568, 0.44], [1568, 0.66]] : [[880, 0], [1318.5, 0.18], [1760, 0.36]];
+    notes.forEach(([f, t]) => {
+      const o = c.createOscillator(), g = c.createGain();
+      o.type = 'sine'; o.frequency.value = f;
+      g.gain.setValueAtTime(0.0001, c.currentTime + t);
+      g.gain.exponentialRampToValueAtTime(0.25, c.currentTime + t + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + t + 0.6);
+      o.connect(g).connect(c.destination); o.start(c.currentTime + t); o.stop(c.currentTime + t + 0.65);
+    });
+  } catch (e) { }
+}
+
+const openAlerts = new Map();
+function showAlert(r, occurrence) {
+  closeAlert(r.id);
+  const el = document.createElement('div');
+  el.className = 'alert' + (r.priority === 3 ? ' p3' : ''); el.setAttribute('role', 'alertdialog');
+  const occ = new Date(occurrence);
+  el.innerHTML = `<div class="k"><span>${r.priority === 3 ? 'High priority · ' : ''}${esc(fmtWhen(occ))} · ${esc(fmtUtc(occ))}${r.repeat !== 'none' ? ' · ' + esc(repeatLabel(r)) : ''}</span>
+      <button type="button" data-a="x" title="Dismiss (keeps it in the list)" aria-label="Dismiss">✕</button></div>
+    <div class="at">${linkify(r.title)}</div>${r.notes ? `<div class="an">${linkify(r.notes)}</div>` : ''}
+    ${r.tags.length ? `<div class="row">${r.tags.map(t => `<span class="tag hash">#${esc(t)}</span>`).join('')}</div>` : ''}
+    <div class="row"><button class="btn primary sm" type="button" data-a="done">${r.repeat === 'none' ? '✓ Done' : 'OK'}</button>
+      <button class="btn sm" type="button" data-a="snooze">Snooze</button>
+      <button class="btn ghost sm" type="button" data-a="edit">Edit</button></div>`;
+  el.addEventListener('click', e => {
+    const b = e.target.closest('button[data-a]'); if (!b) return;
+    const cur = find(r.id);
+    if (!cur) { closeAlert(r.id); return; }
+    if (b.dataset.a === 'x') closeAlert(r.id);
+    else if (b.dataset.a === 'done') cur.repeat === 'none' ? complete(cur) : closeAlert(r.id);
+    else if (b.dataset.a === 'snooze') openPop(b, snoozeOptions().map(([l, t]) => [l, () => snooze(cur, t)]));
+    else if (b.dataset.a === 'edit') openEditor(cur, false);
+  });
+  $('alerts').prepend(el);
+  openAlerts.set(r.id, { el, notif: null });
+  updateTitle();
+  return openAlerts.get(r.id);
+}
+function closeAlert(id) {
+  const a = openAlerts.get(id); if (!a) return;
+  a.el.remove(); try { a.notif && a.notif.close(); } catch (e) { }
+  openAlerts.delete(id); updateTitle();
+}
+function fire(r, occurrence) {
+  const a = showAlert(r, occurrence);
+  chime(r.priority === 3);
+  if (canNotify() && Notification.permission === 'granted') {
+    try {
+      const body = fmtWhen(new Date(occurrence)) + (r.tags.length ? '  ' + r.tags.map(t => '#' + t).join(' ') : '') + (r.notes ? '\n' + r.notes.slice(0, 140) : '');
+      const n = new Notification((r.priority === 3 ? '‼ ' : '') + r.title, { body, tag: r.id, requireInteraction: true });
+      n.onclick = () => { window.focus(); n.close(); };
+      a.notif = n;
+    } catch (e) { }
+  }
+}
+// Several open windows must not all fire the same reminder.
+function claim(key) {
+  let m = {};
+  try { m = JSON.parse(localStorage.getItem(FIRED_KEY)) || {}; } catch (e) { }
+  if (m[key]) return false;
+  const cutoff = Date.now() - 3 * 86400000;
+  for (const k in m) if (m[k] < cutoff) delete m[k];
+  m[key] = Date.now();
+  try { localStorage.setItem(FIRED_KEY, JSON.stringify(m)); } catch (e) { }
+  return true;
+}
+function check() {
+  const now = Date.now(); let dirty = false;
+  for (const r of S.reminders) {
+    if (r.done) continue;
+    if (r.snoozeUntil != null && r.snoozeUntil <= now) {
+      const at = r.snoozeUntil; r.snoozeUntil = null; dirty = true;
+      if (claim(r.id + '@s' + at)) fire(r, now);
+      continue;
+    }
+    if (!r.fired && r.due <= now) {
+      const occ = r.due;
+      if (r.repeat !== 'none') {
+        const n = nextAfter(r, r.due, now);
+        if (n == null) r.fired = true; else r.due = n;
+      } else r.fired = true;
+      dirty = true;
+      if (claim(r.id + '@' + occ)) fire(r, occ);
+    }
+  }
+  if (dirty) changed();
+}
+
+let flashOn = false;
+function updateTitle() {
+  const n = S.reminders.filter(isOverdue).length;
+  document.title = (flashOn ? '🔔 ' + openAlerts.size + ' reminder' + (openAlerts.size === 1 ? '' : 's') + ' · ' : (n ? `(${n}) ` : '')) + 'Ping';
+}
+setInterval(() => {
+  flashOn = document.hidden && openAlerts.size > 0 ? !flashOn : false; updateTitle();
+  $('clock').textContent = S.settings.utcClock ? new Date().toISOString().slice(11, 16) + ' UTC' : '';
+}, 1000);
+
+// ---------------------------------------------------------------- notes
+let curNote = null, noteTimer = null, noteView = 'edit';
+const noteText = $('noteText');
+const noteTitle = n => { const l = (n.text || '').split('\n').map(x => x.trim()).filter(Boolean); return l[0] ? l[0].replace(/^#+\s*/, '').slice(0, 80) : '(empty note)'; };
+const notePreviewText = n => { const l = (n.text || '').split('\n').map(x => x.trim()).filter(Boolean); return (l[1] || '').replace(/^[#>*\-\s]+/, ''); };
+function sortedNotes() { return S.notes.slice().sort((a, b) => (b.pinned - a.pinned) || (b.modified - a.modified)); }
+function renderNotes() {
+  const q = $('noteSearch').value.trim().toLowerCase();
+  const list = sortedNotes().filter(n => !q || (n.text || '').toLowerCase().includes(q));
+  $('noteList').innerHTML = list.length ? list.map(n => `<li role="option" data-id="${n.id}" aria-selected="${curNote && curNote.id === n.id}">
+      <div class="nt">${n.pinned ? '📌 ' : ''}${esc(noteTitle(n))}</div><div class="ns">${esc(fmtWhen(new Date(n.modified)))}${notePreviewText(n) ? ' · ' + esc(notePreviewText(n)) : ''}</div></li>`).join('')
+    : `<li style="cursor:default;color:var(--muted)">${q ? 'No notes match.' : 'No notes yet.'}</li>`;
+  ['delNoteBtn', 'noteRemindBtn', 'notePinBtn', 'noteCopyBtn'].forEach(id => $(id).disabled = !curNote);
+  $('notePinBtn').textContent = curNote && curNote.pinned ? 'Unpin' : 'Pin';
+  $('dataCount').textContent = S.reminders.length + ' reminders · ' + S.notes.length + ' notes';
+}
+function setNoteView(v) {
+  noteView = v;
+  document.querySelectorAll('.seg [data-view]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.view === v)));
+  noteText.hidden = v !== 'edit';
+  $('notePreview').hidden = v !== 'preview';
+  if (v === 'preview') $('notePreview').innerHTML = renderMarkdown(noteText.value);
+  else noteText.focus();
+}
+document.querySelector('.seg [data-view]').parentElement.addEventListener('click', e => { const b = e.target.closest('[data-view]'); if (b) setNoteView(b.dataset.view); });
+$('notePreview').addEventListener('click', e => {
+  const cb = e.target.closest('input[type=checkbox][data-line]');
+  if (cb && curNote) {
+    const lines = curNote.text.replace(/\r\n/g, '\n').split('\n'), i = +cb.dataset.line;
+    lines[i] = lines[i].replace(/\[([ xX])\]/, (_, c) => c === ' ' ? '[x]' : '[ ]');
+    curNote.text = noteText.value = lines.join('\n'); curNote.modified = Date.now(); save();
+    $('notePreview').innerHTML = renderMarkdown(curNote.text); renderNotes();
+    return;
+  }
+  const cp = e.target.closest('[data-copy]');
+  if (cp) copyText(cp.parentElement.querySelector('code').textContent);
+});
+function loadNote(n) {
+  flushNote();
+  curNote = n || null;
+  noteText.value = curNote ? curNote.text : '';
+  $('noteStatus').textContent = curNote ? 'Edited ' + fmtWhen(new Date(curNote.modified)) + ' · saves automatically' : 'Start typing to create a note. Markdown works, and it saves automatically.';
+  if (noteView === 'preview') $('notePreview').innerHTML = renderMarkdown(noteText.value);
+  renderNotes();
+}
+function flushNote() {
+  if (noteTimer) { clearTimeout(noteTimer); noteTimer = null; save(); }
+  if (curNote && !curNote.text.trim()) { S.notes = S.notes.filter(n => n !== curNote); curNote = null; save(); }
+}
+noteText.addEventListener('input', () => {
+  if (!curNote) { curNote = { id: uid(), text: '', created: Date.now(), modified: Date.now(), pinned: false }; S.notes.unshift(curNote); }
+  curNote.text = noteText.value; curNote.modified = Date.now();
+  $('noteStatus').textContent = 'Saving…';
+  clearTimeout(noteTimer);
+  noteTimer = setTimeout(() => { noteTimer = null; save(); $('noteStatus').textContent = 'Saved ✓ ' + fmtTime(new Date()); renderNotes(); }, 250);
+});
+noteText.addEventListener('keydown', e => {
+  if (e.key === 'Tab' && !e.ctrlKey && !e.altKey) {
+    e.preventDefault();
+    const s = noteText.selectionStart, en = noteText.selectionEnd;
+    noteText.setRangeText('    ', s, en, 'end'); noteText.dispatchEvent(new Event('input'));
+  }
+});
+$('noteList').addEventListener('click', e => {
+  const li = e.target.closest('li[data-id]'); if (!li) return;
+  loadNote(S.notes.find(n => n.id === li.dataset.id));
+});
+$('noteSearch').addEventListener('input', renderNotes);
+function newNote(text) {
+  flushNote();
+  $('noteSearch').value = '';
+  if (text) {
+    curNote = { id: uid(), text, created: Date.now(), modified: Date.now(), pinned: false };
+    S.notes.unshift(curNote); save(); loadNote(curNote);
+  } else {
+    curNote = null; noteText.value = '';
+    $('noteStatus').textContent = 'New note. Start typing.';
+    renderNotes();
+  }
+  setNoteView('edit');
+}
+function dailyLog() {
+  const today = isoDate(new Date());
+  const existing = S.notes.find(n => n.daily === today);
+  if (existing) { loadNote(existing); setNoteView('preview'); toast('Opened today’s log'); return; }
+  const start = sod(new Date()).getTime(), yStart = start - 86400000, end = start + 86400000;
+  const doneRecently = S.reminders.filter(r => r.done && r.completedAt >= yStart).sort((a, b) => a.completedAt - b.completedAt);
+  const dueToday = S.reminders.filter(r => !r.done && (isOverdue(r) || nextAlert(r) < end)).sort((a, b) => nextAlert(a) - nextAlert(b));
+  const tagStr = r => r.tags.length ? ' ' + r.tags.map(t => '#' + t).join(' ') : '';
+  const text = [
+    `# Daily log ${today}`, '',
+    '## Done', ...(doneRecently.length ? doneRecently.map(r => `- ${r.title}${tagStr(r)}`) : ['- ']), '',
+    '## Today', ...(dueToday.length ? dueToday.map(r => `- [ ] ${fmtTime(new Date(nextAlert(r)))} ${r.title}${tagStr(r)}`) : ['- [ ] ']), '',
+    '## Blockers', '- ', '',
+    '## Notes', ''].join('\n');
+  newNote(text);
+  curNote.daily = today; save();
+  toast('Daily log created from your reminders');
+}
+
+// ---------------------------------------------------------------- tabs, settings & global buttons
+function showTab(name) {
+  document.querySelectorAll('.tabs button').forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === name)));
+  ['reminders', 'notes', 'settings'].forEach(v => $('view-' + v).hidden = v !== name);
+  if (name !== 'notes') flushNote();
+  if (name === 'notes') { renderNotes(); if (!curNote && S.notes.length) loadNote(sortedNotes()[0]); }
+  if (name === 'reminders') quickInput.focus();
+}
+const currentTab = () => document.querySelector('.tabs [aria-selected="true"]').dataset.tab;
+document.querySelector('.tabs').addEventListener('click', e => { const b = e.target.closest('button[data-tab]'); if (b) showTab(b.dataset.tab); });
+
+function applyTheme() {
+  const t = S.settings.theme;
+  if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t; else delete document.documentElement.dataset.theme;
+  const p = S.settings.palette || 'lagoon';
+  if (p === 'lagoon') delete document.documentElement.dataset.palette; else document.documentElement.dataset.palette = p;
+  document.querySelectorAll('[data-theme-set]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.themeSet === t)));
+  document.querySelectorAll('[data-palette-set]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.paletteSet === p)));
+}
+$('themeSeg').addEventListener('click', e => { const b = e.target.closest('[data-theme-set]'); if (!b) return; S.settings.theme = b.dataset.themeSet; save(); applyTheme(); });
+$('paletteSet').addEventListener('click', e => { const b = e.target.closest('[data-palette-set]'); if (!b) return; S.settings.palette = b.dataset.paletteSet; save(); applyTheme(); });
+
+document.addEventListener('click', e => {
+  const b = e.target.closest('button[data-act]');
+  if (!b || b.closest('#groups')) return;
+  switch (b.dataset.act) {
+    case 'quick-add': quickSubmit(0); break;
+    case 'quick-more': quickInput.value.trim() ? quickSubmit(2) : openEditor(newReminder({}), true); break;
+    case 'ask-notif': askNotif(); break;
+    case 'hide-banner': S.settings.bannerHidden = true; save(); updateNotifUi(); break;
+    case 'test-alert': fire(newReminder({ id: 'test-' + uid(), title: 'This is a test reminder', notes: 'If you can see this, reminders work.', tags: ['test'] }), Date.now()); break;
+    case 'close-editor': closeEditor(); break;
+    case 'keys': $('keysDlg').hidden = false; break;
+    case 'close-keys': $('keysDlg').hidden = true; break;
+    case 'new-note': newNote(); break;
+    case 'daily-log': dailyLog(); break;
+    case 'del-note':
+      if (curNote && (!curNote.text.trim() || confirm('Delete the note “' + noteTitle(curNote) + '”?'))) {
+        S.notes = S.notes.filter(n => n !== curNote); curNote = null; clearTimeout(noteTimer); noteTimer = null; save(); loadNote(null); toast('Note deleted');
+      }
+      break;
+    case 'note-pin': if (curNote) { curNote.pinned = !curNote.pinned; save(); renderNotes(); } break;
+    case 'note-copy': if (curNote) copyText(curNote.text); break;
+    case 'note-remind':
+      if (curNote) { flushNote(); if (curNote) openEditor(newReminder({ title: noteTitle(curNote), notes: curNote.text }), true); }
+      break;
+    case 'export':
+      downloadFile('ping-backup-' + isoDate(new Date()) + '.json', JSON.stringify(S, null, 2), 'application/json');
+      toast('Backup downloaded'); break;
+    case 'export-csv': exportCsv(); break;
+    case 'import': $('importFile').click(); break;
+    case 'install-app':
+      if (installPrompt) { installPrompt.prompt(); installPrompt.userChoice.finally(() => { installPrompt = null; updateInstallUi(); }); }
+      break;
+    case 'file-create': fileCreate(); break;
+    case 'file-open': fileOpen(); break;
+    case 'file-reconnect': fileReconnect(); break;
+    case 'file-stop': fileStop(); break;
+  }
+});
+$('keysDlg').addEventListener('mousedown', e => { if (e.target === $('keysDlg')) $('keysDlg').hidden = true; });
+$('importFile').addEventListener('change', async e => {
+  const f = e.target.files[0]; e.target.value = '';
+  if (!f) return;
+  try {
+    const data = normalize(JSON.parse(await f.text()));
+    let added = 0;
+    for (const r of data.reminders) if (!find(r.id)) { S.reminders.push(r); added++; }
+    for (const n of data.notes) if (!S.notes.some(x => x.id === n.id)) { S.notes.push(n); added++; }
+    save(); changed(); renderNotes();
+    toast(added ? 'Restored ' + added + ' items' : 'Nothing new in that backup');
+  } catch (err) { toast('That file is not a Ping backup'); }
+});
+$('setSound').addEventListener('change', e => { S.settings.sound = e.target.checked; save(); if (e.target.checked) chime(); });
+$('setIcs').addEventListener('change', e => { S.settings.icsOnSave = e.target.checked; save(); });
+$('setMono').addEventListener('change', e => { S.settings.mono = e.target.checked; save(); noteText.classList.toggle('mono', S.settings.mono); });
+$('setUtc').addEventListener('change', e => { S.settings.utcClock = e.target.checked; save(); });
+$('setTicket').addEventListener('change', e => { S.settings.ticketUrl = e.target.value.trim(); save(); renderReminders(); toast('Ticket links updated'); });
+
+// ---------------------------------------------------------------- keyboard
+const typing = el => el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || el.isContentEditable);
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    if (!$('pop').hidden) closePop();
+    else if (!$('keysDlg').hidden) $('keysDlg').hidden = true;
+    else if (!$('editor').hidden) closeEditor();
+    return;
+  }
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); closeEditor(); showTab('reminders'); quickInput.focus(); quickInput.select(); return; }
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'e' && currentTab() === 'notes') { e.preventDefault(); setNoteView(noteView === 'edit' ? 'preview' : 'edit'); return; }
+  if (e.ctrlKey || e.metaKey || e.altKey || typing(document.activeElement) || !$('editor').hidden || !$('keysDlg').hidden) return;
+  if (e.key === '?') { $('keysDlg').hidden = false; return; }
+  if (e.key === '1') return showTab('reminders');
+  if (e.key === '2') return showTab('notes');
+  if (e.key === '3') return showTab('settings');
+  if (currentTab() !== 'reminders') return;
+  const r = selId && find(selId);
+  switch (e.key) {
+    case '/': e.preventDefault(); $('search').focus(); break;
+    case 'n': case 'c': e.preventDefault(); quickInput.focus(); break;
+    case 'j': case 'ArrowDown': e.preventDefault(); moveSel(1); break;
+    case 'k': case 'ArrowUp': e.preventDefault(); moveSel(-1); break;
+    case 'x': if (r) r.done ? reopen(r) : askDone(r); break;
+    case 'e': case 'Enter': if (r) openEditor(r, false); break;
+    case 's': if (r && !r.done) { const li = document.querySelector(`.rem[data-id="${r.id}"] [data-act="snooze"]`) || document.querySelector(`.rem[data-id="${r.id}"]`); if (li) openPop(li, snoozeOptions().map(([l, t]) => [l, () => snooze(r, t)])); } break;
+    case 'o': if (r) { const u = firstLink(r.title + ' ' + r.notes); if (u) window.open(u, '_blank', 'noopener'); else toast('No link in this reminder'); } break;
+    case 'Delete': if (r && confirm('Delete “' + r.title + '”?')) remove(r); break;
+  }
+});
+
+// ---------------------------------------------------------------- sync, saving on close
+addEventListener('storage', e => {
+  if (e.key !== KEY || document.activeElement === noteText) return;
+  const keepId = curNote && curNote.id;
+  S = load();
+  curNote = keepId ? S.notes.find(n => n.id === keepId) || null : null;
+  renderReminders(); renderNotes(); updateTitle();
+});
+function saveNow() {
+  if (noteTimer) { clearTimeout(noteTimer); noteTimer = null; }
+  if (curNote && !curNote.text.trim()) { S.notes = S.notes.filter(n => n !== curNote); curNote = null; }
+  S.savedAt = Date.now();
+  try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { }
+  if (fileHandle && fileState === 'ok') writeFile();
+}
+addEventListener('pagehide', saveNow);
+addEventListener('beforeunload', saveNow);
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) saveNow();
+  else { check(); renderReminders(); }
+});
+function renderAll() {
+  $('setSound').checked = S.settings.sound;
+  $('setIcs').checked = S.settings.icsOnSave;
+  $('setMono').checked = S.settings.mono;
+  $('setUtc').checked = S.settings.utcClock;
+  $('setTicket').value = S.settings.ticketUrl || '';
+  noteText.classList.toggle('mono', S.settings.mono);
+  applyTheme();
+  renderReminders(); renderNotes(); updateTitle(); updateNotifUi();
+}
+
+// ---------------------------------------------------------------- installable app (when served over https)
+let installPrompt = null;
+const isInstalled = () => matchMedia('(display-mode: standalone)').matches || matchMedia('(display-mode: window-controls-overlay)').matches;
+function updateInstallUi() {
+  const card = $('installCard');
+  if (isLocalFile) { card.hidden = true; return; }
+  card.hidden = false;
+  if (isInstalled()) {
+    $('installText').textContent = 'Ping is installed as an app. To start it when you sign in, open edge://apps, click the ⋯ on Ping, and turn on “Auto-start on device login”.';
+    $('installBtn').hidden = true;
+  } else if (installPrompt) {
+    $('installBtn').hidden = false;
+  } else {
+    $('installText').textContent = 'To install Ping as an app, click the “App available” icon at the right of the address bar (or ⋯ menu → Apps → Install Ping). You get its own window and taskbar icon, and it can start when you sign in.';
+    $('installBtn').hidden = true;
+  }
+}
+addEventListener('beforeinstallprompt', e => { e.preventDefault(); installPrompt = e; updateInstallUi(); });
+addEventListener('appinstalled', () => { installPrompt = null; updateInstallUi(); toast('Ping is installed'); });
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+  navigator.serviceWorker.register('sw.js').catch(e => console.warn('Service worker not registered', e));
+}
+
+// ---------------------------------------------------------------- start
+updateInstallUi();
+renderAll();
+updateQuickPreview();
+initFile();
+check();                                // catch up on anything missed while closed
+setInterval(check, 5000);
+setInterval(() => { if (!document.hidden && $('editor').hidden) renderReminders(); if (!quickInput.value.trim() || document.activeElement !== quickInput) updateQuickPreview(); }, 30000);
+quickInput.focus();
+</script>
+</body>
+</html>
