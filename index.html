@@ -610,7 +610,7 @@ details.adv[open] { display: grid; gap: 8px; }
           <button class="btn primary" type="button" data-act="setup-create" data-i18n="setupCreate">Välj plats och spara</button>
           <button class="btn" type="button" data-act="setup-open" data-i18n="setupOpen">Jag har redan en sparfil</button>
         </div>
-        <p class="hint" data-i18n="setupHint">Har du använt Ping på en annan dator eller i en annan webbläsare? Välj ”Jag har redan en sparfil” och öppna Ping-data.json, så kommer allt tillbaka.</p>
+        <p class="hint" data-i18n="setupHint">Vill du ha samma påminnelser och anteckningar på flera datorer eller i flera webbläsare? Lägg filen i en mapp som synkas, till exempel OneDrive. Välj sedan ”Jag har redan en sparfil” i de andra webbläsarna och öppna samma Ping-data.json. Ändringar förs över automatiskt.</p>
         <div><button class="btn ghost sm" type="button" data-act="setup-skip" data-i18n="setupSkip">Hoppa över (rekommenderas inte)</button></div>
       </div>
       <div id="setupFileNo" class="setup-step" hidden>
@@ -1002,7 +1002,7 @@ const T = {
     setupLi3: 'Nothing is sent to the internet. Not to GitHub, not to the municipality and not to whoever built the app. The file stays in your own folder.',
     setupLi4: 'The file is plain text you can open and read yourself, and you can stop using it whenever you like under Settings.',
     setupCreate: 'Choose a place and save', setupOpen: 'I already have a save file',
-    setupHint: 'Used Ping on another computer or in another browser? Choose “I already have a save file” and open Ping-data.json, and everything comes back.',
+    setupHint: 'Want the same reminders and notes on several computers or in several browsers? Put the file in a folder that syncs, such as OneDrive. Then choose “I already have a save file” in the other browsers and open the same Ping-data.json. Changes carry over automatically.',
     setupSkip: 'Skip (not recommended)', next: 'Next',
     setupNoFileBrave: 'Brave turns this off by default. You can turn it on: paste <code>brave://flags/#file-system-access-api</code> into the address bar, choose <strong>Enabled</strong> and restart Brave. Then run the save setup again.',
     setupNotifOn: '✓ Notifications are already on in this browser.',step2: 'Step 2 of 2', setupT2: 'Get a notification when it’s time',
@@ -1033,10 +1033,10 @@ const T = {
     persisted: '✓ The browser has promised not to clear Ping’s data on its own.',
     notPersisted: 'The browser may clear Ping’s data if the disk gets very full. A save file protects you against that.',
     confirmSnap: d => `Replace everything in Ping with the copy from ${d}? You can undo this right after.`, restoredSnap: d => 'Restored the copy from ' + d,
-    undo: 'Undo', undone: 'Undone', loadedFromFile: 'Loaded your latest data from the save file', notPingFile: 'That file is not a Ping save file',
+    undo: 'Undo', undone: 'Undone', loadedFromFile: 'Picked up changes from the save file', notPingFile: 'That file is not a Ping save file',
     savingTo: n => 'Saving to ' + n, couldNotCreate: e => 'Could not create the file: ' + e, couldNotOpen: e => 'Could not open the file: ' + e,
     fileStopped: 'Stopped saving to the file. The file itself is kept',
-    fileNone: 'Extra safety: also keep a save file on your PC, for example in Documents or a synced folder. It updates with every change and survives even if the browser’s data is cleared.',
+    fileNone: 'Extra safety: also keep a save file on your PC. It updates with every change and survives even if the browser’s data is cleared. Put it in a OneDrive folder and you can use the same reminders and notes on several computers and browsers: choose “Use an existing save file” in each of them.',
     fileOk: (n, w) => `✓ Also saving to “${n}”${w ? ', last saved ' + w : ''}.`,
     fileNeeds: n => `Save file “${n}” needs one click to reconnect (the browser asks again after a restart).`,
     fileErr: (n, e) => `Couldn’t write to “${n}”: ${e}`,
@@ -1107,10 +1107,10 @@ const T = {
     persisted: '✓ Webbläsaren har lovat att inte rensa Pings data på egen hand.',
     notPersisted: 'Webbläsaren kan rensa Pings data om disken blir väldigt full. En sparfil skyddar dig mot det.',
     confirmSnap: d => `Ersätta allt i Ping med kopian från ${d}? Du kan ångra direkt efteråt.`, restoredSnap: d => 'Återställde kopian från ' + d,
-    undo: 'Ångra', undone: 'Ångrat', loadedFromFile: 'Läste in dina senaste data från sparfilen', notPingFile: 'Den filen är inte en sparfil från Ping',
+    undo: 'Ångra', undone: 'Ångrat', loadedFromFile: 'Hämtade ändringar från sparfilen', notPingFile: 'Den filen är inte en sparfil från Ping',
     savingTo: n => 'Sparar till ' + n, couldNotCreate: e => 'Kunde inte skapa filen: ' + e, couldNotOpen: e => 'Kunde inte öppna filen: ' + e,
     fileStopped: 'Slutade spara till filen. Själva filen finns kvar',
-    fileNone: 'Extra säkerhet: ha också en sparfil på datorn, till exempel i Dokument eller en synkad mapp. Den uppdateras vid varje ändring och finns kvar även om webbläsarens data rensas.',
+    fileNone: 'Extra säkerhet: ha också en sparfil på datorn. Den uppdateras vid varje ändring och finns kvar även om webbläsarens data rensas. Lägger du den i en OneDrive-mapp kan du använda samma påminnelser och anteckningar på flera datorer och i flera webbläsare: välj ”Använd en befintlig sparfil” i var och en.',
     fileOk: (n, w) => `✓ Sparar också till ”${n}”${w ? ', senast sparad ' + w : ''}.`,
     fileNeeds: n => `Sparfilen ”${n}” behöver ett klick för att återanslutas (webbläsaren frågar igen efter en omstart).`,
     fileErr: (n, e) => `Kunde inte skriva till ”${n}”: ${e}`,
@@ -1196,10 +1196,63 @@ function applyLang() {
   document.querySelectorAll('[data-lang-set]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.langSet === lang())));
 }
 
+/*SYNC-START*/
+// Sync through one shared save file (e.g. in OneDrive) used by several browsers or computers.
+// Every reminder and note carries `updated` (set whenever it changes) and a deletion leaves a tombstone in
+// `deleted` (id -> time), so the two sides combine item by item: the newest version of each item wins.
+const SHARED_SETTINGS = ['ticketUrl', 'ticketExample', 'sound', 'icsOnSave', 'mono', 'utcClock', 'lang', 'theme', 'palette'];
+const TOMBSTONE_MS = 90 * 86400000;
+const itemStamp = x => x.updated || x.modified || x.created || 0;
+const sharedSettings = st => { const o = {}; for (const k of SHARED_SETTINGS) o[k] = (st || {})[k]; return o; };
+const itemJson = x => JSON.stringify(Object.assign({}, x, { updated: undefined }));
+function mergeData(local, remote, now = Date.now()) {
+  const deleted = Object.assign({}, local.deleted);
+  for (const [id, ts] of Object.entries(remote.deleted || {})) if (!(deleted[id] >= ts)) deleted[id] = ts;
+  for (const id in deleted) if (deleted[id] < now - TOMBSTONE_MS) delete deleted[id];
+  const combine = (a, b) => {
+    const m = new Map();
+    for (const x of a) m.set(x.id, x);
+    for (const y of b) { const x = m.get(y.id); if (!x || itemStamp(y) > itemStamp(x)) m.set(y.id, y); }
+    return [...m.values()].filter(x => !(deleted[x.id] >= itemStamp(x)));
+  };
+  const out = Object.assign({}, local, { reminders: combine(local.reminders, remote.reminders || []), notes: combine(local.notes, remote.notes || []), deleted });
+  if ((remote.settingsUpdated || 0) > (local.settingsUpdated || 0)) {
+    out.settings = Object.assign({}, local.settings, sharedSettings(remote.settings));
+    out.settingsUpdated = remote.settingsUpdated;
+  }
+  return out;
+}
+// The part two devices must agree on (device-only settings and save times left out).
+function syncKey(d) {
+  const byId = a => a.slice().sort((x, y) => x.id < y.id ? -1 : x.id > y.id ? 1 : 0);
+  return JSON.stringify([byId(d.reminders), byId(d.notes), Object.keys(d.deleted || {}).sort().map(k => [k, d.deleted[k]]),
+    sharedSettings(d.settings), d.settingsUpdated || 0]);
+}
+// Baseline = how every item looked at the last save; stampChanges compares against it before each save.
+function makeBase(d) {
+  const items = new Map();
+  for (const x of [...d.reminders, ...d.notes]) items.set(x.id, itemJson(x));
+  return { items, settings: JSON.stringify(sharedSettings(d.settings)) };
+}
+function stampChanges(d, base, now = Date.now()) {
+  const seen = new Set();
+  for (const x of [...d.reminders, ...d.notes]) {
+    seen.add(x.id);
+    const j = itemJson(x);
+    if (base.items.get(x.id) !== j) { x.updated = now; base.items.set(x.id, j); }
+  }
+  if (!d.deleted || typeof d.deleted !== 'object') d.deleted = {};
+  for (const id of [...base.items.keys()]) if (!seen.has(id)) { d.deleted[id] = now; base.items.delete(id); }
+  const ss = JSON.stringify(sharedSettings(d.settings));
+  if (base.settings !== ss) { d.settingsUpdated = now; base.settings = ss; }
+}
+/*SYNC-END*/
+
 function normalize(j) {
   j = j && typeof j === 'object' ? j : {};
   if (!Array.isArray(j.reminders)) j.reminders = [];
   if (!Array.isArray(j.notes)) j.notes = [];
+  if (!j.deleted || typeof j.deleted !== 'object') j.deleted = {};
   j.reminders.forEach(r => { if (!Array.isArray(r.tags)) r.tags = []; r.priority = r.priority || 0; });
   j.notes.forEach(n => { n.pinned = !!n.pinned; });
   j.settings = Object.assign({ sound: true, icsOnSave: false, bannerHidden: false, ticketUrl: '', theme: 'system', palette: 'lagoon', mono: true, utcClock: true, lang: 'sv' }, j.settings || {});
@@ -1207,10 +1260,13 @@ function normalize(j) {
 }
 function load() { try { return normalize(JSON.parse(localStorage.getItem(KEY))); } catch (e) { return normalize(null); } }
 let S = load();
+let base = makeBase(S);                  // what S looked like at the last save or load (see stampChanges)
+const rebase = () => { base = makeBase(S); };
 let isActiveWindow = !navigator.locks;   // only the window holding the editor lock may write (see claimWindow)
 let lastSavedAt = null, lastSaveError = '';
 function save() {
   if (!isActiveWindow) return;
+  stampChanges(S, base);
   S.savedAt = Date.now();
   try { localStorage.setItem(KEY, JSON.stringify(S)); lastSavedAt = S.savedAt; lastSaveError = ''; }
   catch (e) { lastSaveError = e.message; toast(t('saveFailed', e.message)); }
@@ -1301,35 +1357,68 @@ const kv = (() => {
 })();
 function scheduleFileSave() {
   if (!fileHandle || fileState === 'needs-permission') return;
-  clearTimeout(fileTimer); fileTimer = setTimeout(writeFile, 600);
+  clearTimeout(fileTimer); fileTimer = setTimeout(syncFile, 600);
 }
-async function writeFile() {
+// Read the file, merge it with this browser's data, and write back only if the file is missing something.
+// The file may have been changed by another browser or computer (through OneDrive or similar) since the last look.
+let syncBusy = false, syncAgain = false;
+async function syncFile() {
   fileTimer = null;
   if (!fileHandle || !isActiveWindow) return;
+  if (syncBusy) { syncAgain = true; return; }
+  if (!$('editor').hidden) return;        // never swap data under an open editor; the next sync picks it up
+  syncBusy = true;
   try {
-    if (await fileHandle.queryPermission({ mode: 'readwrite' }) !== 'granted') { fileState = 'needs-permission'; updateFileUi(); return; }
-    const w = await fileHandle.createWritable();
-    await w.write(JSON.stringify(S, null, 2)); await w.close();
+    if (await fileHandle.queryPermission({ mode: 'readwrite' }) !== 'granted') { fileState = 'needs-permission'; return; }
+    const txt = await (await fileHandle.getFile()).text();
+    let remote = null;
+    if (txt.trim()) remote = normalize(JSON.parse(txt));   // a half-synced or broken file throws: leave it alone, retry later
+    if (remote) {
+      const merged = mergeData(S, remote);
+      if (syncKey(merged) !== syncKey(S)) { applyMerged(merged); toast(t('loadedFromFile')); }
+    }
+    if (!remote || syncKey(S) !== syncKey(remote)) {
+      S.savedAt = Date.now();
+      const w = await fileHandle.createWritable();
+      await w.write(JSON.stringify(S, null, 2)); await w.close();
+    }
     fileState = 'ok'; fileSavedAt = Date.now();
   } catch (e) { fileState = 'error'; fileError = e.message; }
-  updateFileUi();
+  finally {
+    syncBusy = false; updateFileUi();
+    if (syncAgain) { syncAgain = false; scheduleFileSave(); }
+  }
 }
-async function loadFromFileIfNewer() {
-  const txt = await (await fileHandle.getFile()).text();
-  if (!txt.trim()) return false;
-  const d = normalize(JSON.parse(txt));
-  if ((d.savedAt || 0) <= (S.savedAt || 0)) return false;
-  S = d; curNote = null;
-  try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { }
+// Put merged data in place without disturbing what the person is doing right now.
+function applyMerged(m) {
+  const old = curNote, typing = document.activeElement === noteText && !!old;
+  S = m; rebase();
+  curNote = old ? S.notes.find(n => n.id === old.id) || null : null;
+  if (typing) {
+    if (!curNote) { curNote = old; S.notes.unshift(old); }          // deleted elsewhere while being typed in: keep it
+    if (curNote.text !== noteText.value) { curNote.text = noteText.value; curNote.modified = Date.now(); }
+  }
+  save();                                 // stamps only what was kept from the typing above
   renderAll();
-  toast(t('loadedFromFile'));
-  return true;
+  if (!typing) {
+    noteText.value = curNote ? curNote.text : '';
+    if (noteView === 'preview') $('notePreview').innerHTML = renderMarkdown(noteText.value);
+    updateNoteStatus();
+  }
+  for (const id of [...openAlerts.keys()]) { const r = find(id); if (!r || r.done) closeAlert(id); }
+}
+// A save file picked by the person must look like Ping data before it is merged in.
+async function readPingFile(h) {
+  const txt = await (await h.getFile()).text();
+  if (!txt.trim()) return;
+  const j = JSON.parse(txt);
+  if (!j || typeof j !== 'object' || !(Array.isArray(j.reminders) || Array.isArray(j.notes))) throw new Error('not ping');
 }
 async function useFile(h, readFirst) {
-  fileHandle = h;
+  if (readFirst) { try { await readPingFile(h); } catch (e) { toast(t('notPingFile')); return; } }
+  fileHandle = h; fileState = 'ok';
   try { await kv.set('file', h); } catch (e) { }
-  if (readFirst) { try { await loadFromFileIfNewer(); } catch (e) { toast(t('notPingFile')); fileHandle = null; await kv.del('file').catch(() => { }); updateFileUi(); return; } }
-  await writeFile();
+  await syncFile();
   if (fileState === 'ok') toast(t('savingTo', h.name));
 }
 async function fileCreate() {
@@ -1345,8 +1434,7 @@ async function fileReconnect() {
   try {
     if (await fileHandle.requestPermission({ mode: 'readwrite' }) === 'granted') {
       fileState = 'ok';
-      try { await loadFromFileIfNewer(); } catch (e) { }
-      await writeFile();
+      await syncFile();
     }
   } catch (e) { fileState = 'error'; fileError = e.message; }
   updateFileUi();
@@ -1363,17 +1451,11 @@ async function initFile() {
     try {
       if (await fileHandle.queryPermission({ mode: 'readwrite' }) === 'granted') {
         fileState = 'ok';
-        await syncWithFile();
+        await syncFile();
       } else fileState = 'needs-permission';
     } catch (e) { fileState = 'error'; fileError = e.message; }
   }
   updateFileUi();
-}
-// Take the file's data if it is newer, then write ours. Only the editing window does this.
-async function syncWithFile() {
-  if (!isActiveWindow || !fileHandle || fileState !== 'ok') return;
-  try { await loadFromFileIfNewer(); } catch (e) { }
-  await writeFile();
 }
 function updateFileUi() {
   $('fileCard').hidden = !fileApi;
@@ -2351,7 +2433,7 @@ function setActiveWindow(on) {
   if (!on && was && noteTimer) saveNow();
   isActiveWindow = on;
   $('lockDlg').hidden = on;
-  if (on && !was) { S = load(); curNote = null; renderAll(); check(); syncWithFile().then(maybeOnboard); }
+  if (on && !was) { S = load(); rebase(); curNote = null; renderAll(); check(); syncFile().then(maybeOnboard); }
   if (!on) [...openAlerts.keys()].forEach(closeAlert);
 }
 let fileInitDone = false;
@@ -2445,7 +2527,7 @@ document.addEventListener('keydown', e => {
 addEventListener('storage', e => {
   if (e.key !== KEY || document.activeElement === noteText) return;
   const keepId = curNote && curNote.id;
-  S = load();
+  S = load(); rebase();
   curNote = keepId ? S.notes.find(n => n.id === keepId) || null : null;
   renderReminders(); renderNotes(); updateTitle();
 });
@@ -2453,16 +2535,20 @@ function saveNow() {
   if (!isActiveWindow) return;   // a window that isn't editing must never overwrite newer data
   if (noteTimer) { clearTimeout(noteTimer); noteTimer = null; }
   if (curNote && !curNote.text.trim()) { S.notes = S.notes.filter(n => n !== curNote); curNote = null; }
+  stampChanges(S, base);
   S.savedAt = Date.now();
   try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { }
-  if (fileHandle && fileState === 'ok') writeFile();
+  if (fileHandle && fileState === 'ok') syncFile();
 }
 addEventListener('pagehide', saveNow);
 addEventListener('beforeunload', saveNow);
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) saveNow();
-  else { check(); renderReminders(); }
+  else { check(); renderReminders(); syncFile(); }
 });
+// Pick up changes made on another computer: when Ping gets focus, and every 30 seconds while it is on screen.
+addEventListener('focus', () => syncFile());
+setInterval(() => { if (!document.hidden && fileHandle && fileState !== 'needs-permission') syncFile(); }, 30000);
 function renderAll() {
   $('setSound').checked = S.settings.sound;
   $('setIcs').checked = S.settings.icsOnSave;
