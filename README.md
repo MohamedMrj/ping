@@ -2,7 +2,7 @@
 
 Reminders and notes for engineers. It runs in your browser and can be installed as an app. There's no account, and your reminders and notes never leave your computer: they're stored in your own browser.
 
-**Open Ping:** https://YOUR-GITHUB-USERNAME.github.io/ping/
+**Open Ping:** https://mohamedmr.github.io/ping/
 
 ## Get started (about 1 minute)
 1. Open the link above in **Microsoft Edge**.
