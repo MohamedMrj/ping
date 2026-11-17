@@ -242,6 +242,11 @@ label.check { display: flex; gap: 9px; align-items: flex-start; cursor: pointer;
 label.check input { margin-top: 3px; accent-color: var(--accent); }
 .input { padding: 7px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); min-width: 0; }
 .input.wide { flex: 1 1 340px; font-family: var(--mono); font-size: 13px; }
+details.adv summary { cursor: pointer; font-size: 13px; color: var(--muted); }
+details.adv[open] { display: grid; gap: 8px; }
+#ticketResult { margin: 0; font-size: 13.5px; overflow-wrap: anywhere; }
+#ticketResult.ok { color: var(--ok); }
+#ticketResult.err { color: var(--danger); }
 
 /* modal */
 .scrim { position: fixed; inset: 0; background: rgba(5, 15, 14, .45); display: grid; place-items: center; z-index: 50; padding: 16px; }
@@ -322,6 +327,11 @@ label.check input { margin-top: 3px; accent-color: var(--accent); }
     <p data-i18n="bannerNotif"><strong>Slå på aviseringar</strong> så att dina påminnelser syns i hörnet av skärmen, även när Ping ligger bakom andra fönster. Ping använder dem bara för påminnelser som du själv skapat, och inget skickas via internet.</p>
     <button class="btn primary sm" type="button" data-act="ask-notif" data-i18n="allowNotif">Tillåt aviseringar</button>
     <button class="btn ghost sm" type="button" data-act="hide-banner" data-i18n="notNow">Inte nu</button>
+  </div>
+  <div class="banner" id="backupBanner" hidden>
+    <p data-i18n="bannerBackup"><strong>Dags att spara en säkerhetskopia.</strong> Dina påminnelser och anteckningar finns bara i den här webbläsaren. Ladda ner en kopia och lägg den i Dokument, så kan du alltid få tillbaka allt med ”Återställ från säkerhetskopia” under Inställningar.</p>
+    <button class="btn primary sm" type="button" data-act="export" data-i18n="backupNow">Ladda ner säkerhetskopia</button>
+    <button class="btn ghost sm" type="button" data-act="backup-later" data-i18n="later">Påminn mig i morgon</button>
   </div>
   <div class="banner" id="fileBanner" hidden>
     <p data-i18n="bannerFile"><strong>Ping behöver ett klick för att fortsätta spara i din fil.</strong> Webbläsaren frågar om lov igen efter en omstart. Det är en säkerhetsfunktion, inte ett fel. Välj gärna ”Tillåt vid varje besök” så slipper du frågan. Inget har försvunnit, allt finns kvar i webbläsaren under tiden.</p>
@@ -406,12 +416,23 @@ label.check input { margin-top: 3px; accent-color: var(--accent); }
         <label class="check"><input type="checkbox" id="setSound"> <span data-i18n="soundLabel">Spela ett ljud när en påminnelse är dags</span></label>
       </div>
       <div class="card">
-        <h3 data-i18n="ticketsH">Ärendelänkar</h3>
-        <p data-i18n="ticketsP">Ärende-ID:n som <code>DATA-123</code> i påminnelser och anteckningar blir länkar. Skriv <code>{key}</code> där ID:t ska stå.</p>
+        <h3 data-i18n="ticketsH">Klickbara ärendenummer</h3>
+        <p data-i18n="ticketsP">Använder ni ett ärendesystem, till exempel Jira, Azure DevOps eller ett supportsystem? Då kan Ping göra ärendenummer som <code>DATA-123</code> i dina påminnelser och anteckningar till länkar som öppnar ärendet direkt. Behöver du inte det kan du hoppa över det här.</p>
+        <ol class="steps">
+          <li data-i18n="ticketsS1">Öppna ett ärende, vilket som helst, i webbläsaren.</li>
+          <li data-i18n="ticketsS2">Klicka i adressfältet högst upp och kopiera adressen (Ctrl+C).</li>
+          <li data-i18n="ticketsS3">Klistra in den här (Ctrl+V). Ping räknar ut resten.</li>
+        </ol>
         <div class="row">
-          <input class="input wide" id="setTicket" type="text" spellcheck="false" placeholder="https://yourcompany.atlassian.net/browse/{key}">
+          <input class="input wide" id="ticketPaste" type="text" spellcheck="false" autocomplete="off" placeholder="Klistra in länken till ett ärende här" aria-label="Länk till ett ärende" data-i18n-ph="ticketPastePh" data-i18n-aria="ticketPasteAria">
+          <button class="btn ghost danger" type="button" data-act="ticket-clear" id="ticketClear" hidden data-i18n="ticketClear">Ta bort länkningen</button>
         </div>
-        <p data-i18n="ticketsAdo">Exempel för Azure DevOps: <code>https://dev.azure.com/org/project/_workitems/edit/{num}</code>. <code>{num}</code> är bara siffrorna.</p>
+        <p id="ticketResult"></p>
+        <details class="adv">
+          <summary data-i18n="ticketsAdv">Avancerat: skriv mallen själv</summary>
+          <p data-i18n="ticketsAdvP">Skriv <code>{key}</code> där hela ärende-ID:t ska stå, eller <code>{num}</code> för bara siffrorna. Exempel för Azure DevOps: <code>https://dev.azure.com/org/project/_workitems/edit/{num}</code></p>
+          <div class="row"><input class="input wide" id="setTicket" type="text" spellcheck="false" placeholder="https://yourcompany.atlassian.net/browse/{key}" aria-label="Länkmall" data-i18n-aria="ticketTplAria"></div>
+        </details>
       </div>
       <div class="card">
         <h3 data-i18n="lookH">Utseende</h3>
@@ -584,12 +605,22 @@ label.check input { margin-top: 3px; accent-color: var(--accent); }
           <li data-i18n="setupLi4">Filen är vanlig text som du kan öppna och läsa själv, och du kan sluta använda den när du vill under Inställningar.</li>
         </ul>
       </details>
-      <div class="row">
-        <button class="btn primary" type="button" data-act="setup-create" data-i18n="setupCreate">Välj plats och spara</button>
-        <button class="btn" type="button" data-act="setup-open" data-i18n="setupOpen">Jag har redan en sparfil</button>
+      <div id="setupFileOk">
+        <div class="row">
+          <button class="btn primary" type="button" data-act="setup-create" data-i18n="setupCreate">Välj plats och spara</button>
+          <button class="btn" type="button" data-act="setup-open" data-i18n="setupOpen">Jag har redan en sparfil</button>
+        </div>
+        <p class="hint" data-i18n="setupHint">Har du använt Ping på en annan dator eller i en annan webbläsare? Välj ”Jag har redan en sparfil” och öppna Ping-data.json, så kommer allt tillbaka.</p>
+        <div><button class="btn ghost sm" type="button" data-act="setup-skip" data-i18n="setupSkip">Hoppa över (rekommenderas inte)</button></div>
       </div>
-      <p class="hint" data-i18n="setupHint">Har du använt Ping på en annan dator eller i en annan webbläsare? Välj ”Jag har redan en sparfil” och öppna Ping-data.json, så kommer allt tillbaka.</p>
-      <div><button class="btn ghost sm" type="button" data-act="setup-skip" data-i18n="setupSkip">Hoppa över (rekommenderas inte)</button></div>
+      <div id="setupFileNo" class="setup-step" hidden>
+        <p class="banner" id="setupNoFileText"></p>
+        <p class="hint" id="setupNoFileBrave" hidden data-i18n="setupNoFileBrave">I Brave är funktionen avstängd från början. Du kan slå på den: klistra in <code>brave://flags/#file-system-access-api</code> i adressfältet, välj <strong>Enabled</strong> och starta om Brave. Kör sedan sparguiden igen.</p>
+        <div class="row">
+          <button class="btn primary" type="button" data-act="export" data-i18n="export">Ladda ner säkerhetskopia (JSON)</button>
+          <button class="btn" type="button" data-act="setup-skip" data-i18n="next">Nästa</button>
+        </div>
+      </div>
     </div>
     <div id="setupStep2" class="setup-step" hidden>
       <p class="step" data-i18n="step2">Steg 2 av 2</p>
@@ -600,9 +631,13 @@ label.check input { margin-top: 3px; accent-color: var(--accent); }
         <li data-i18n="setupLi6">Aviseringarna skapas här på din dator. Inget skickas via internet.</li>
         <li data-i18n="setupLi7">Du kan stänga av dem när du vill i webbläsarens inställningar.</li>
       </ul>
-      <div class="row">
+      <p class="banner" id="setupNotifState" hidden></p>
+      <div class="row" id="setupNotifAsk">
         <button class="btn primary" type="button" data-act="setup-notif" data-i18n="allowNotif">Tillåt aviseringar</button>
         <button class="btn" type="button" data-act="setup-done" data-i18n="notNow">Inte nu</button>
+      </div>
+      <div class="row" id="setupNotifDone" hidden>
+        <button class="btn primary" type="button" data-act="setup-done" data-i18n="finished">Klar</button>
       </div>
       <p class="hint" data-i18n="setupHint2">Tips: minimera Ping i stället för att stänga det. Påminnelser kommer bara när Ping är igång. Under Inställningar finns en guide för att öppna Ping automatiskt när webbläsaren startar.</p>
     </div>
@@ -625,11 +660,10 @@ label.check input { margin-top: 3px; accent-color: var(--accent); }
     <p data-i18n="startupP2">En webbsida får inte ändra webbläsarens inställningar själv. Det är en säkerhetsregel, så du gör det i tre steg:</p>
     <ol class="steps">
       <li><button class="btn primary sm" type="button" data-act="copy-ping-url" data-i18n="copyPingUrl">Kopiera Pings länk</button> <code id="pingUrl"></code></li>
-      <li><span data-i18n="st2a">Klistra in</span> <code id="settingsUrl">edge://settings/startHomeNTP</code> <span data-i18n="st2b">i adressfältet och tryck Enter.</span> <button class="btn sm" type="button" data-act="copy-settings-url" data-i18n="copy">Kopiera</button></li>
+      <li id="startupStep2"><span data-i18n="st2a">Klistra in</span> <code id="settingsUrl">edge://settings/startHomeNTP</code> <span data-i18n="st2b">i adressfältet och tryck Enter.</span> <button class="btn sm" type="button" data-act="copy-settings-url" data-i18n="copy">Kopiera</button></li>
       <li id="startupStep3"></li>
     </ol>
-    <p class="hint" id="startupBrave" hidden data-i18n="startupBrave">I Brave: klistra in <code>brave://settings/getStarted</code>, välj <strong>”Öppna en viss sida eller uppsättning sidor”</strong> och lägg till Pings länk.</p>
-    <p class="hint" data-i18n="startupApp">Har du installerat Ping som en app kan du i stället öppna <code>edge://apps</code>, klicka på ⋯ vid Ping och slå på <strong>”Starta automatiskt vid inloggning”</strong>.</p>
+    <p class="hint" id="startupApp" data-i18n="startupApp">Har du installerat Ping som en app kan du i stället öppna <code>edge://apps</code>, klicka på ⋯ vid Ping och slå på <strong>”Starta automatiskt vid inloggning”</strong>.</p>
     <div class="modal-foot"><span class="spacer"></span><button class="btn primary" type="button" data-act="close-startup" data-i18n="finished">Klar</button></div>
   </div>
 </div>
@@ -929,8 +963,12 @@ const T = {
     noteViewAria: 'Note view', edit: 'Edit', preview: 'Preview', copy: 'Copy', remindMe: 'Remind me…',
     notePh: '# Title\n\nWrite anything. Markdown works: **bold**, `code`, ```sql blocks```, - [ ] tasks, | tables |', noteAria: 'Note text',
     notifications: 'Notifications', testAlert: 'Send a test reminder', soundLabel: 'Play a sound when a reminder is due',
-    ticketsH: 'Ticket links', ticketsP: 'Ticket IDs like <code>DATA-123</code> in reminders and notes become links. Use <code>{key}</code> where the ID goes.',
-    ticketsAdo: 'Azure DevOps example: <code>https://dev.azure.com/org/project/_workitems/edit/{num}</code>. <code>{num}</code> is the number part only.',
+    ticketsH: 'Clickable ticket numbers',
+    ticketsP: 'Does your team use a ticket system, such as Jira, Azure DevOps or a support desk? Then Ping can turn ticket numbers like <code>DATA-123</code> in your reminders and notes into links that open the ticket directly. If you don’t need this, you can skip it.',
+    ticketsS1: 'Open any ticket in your browser.', ticketsS2: 'Click the address bar at the top and copy the address (Ctrl+C).', ticketsS3: 'Paste it here (Ctrl+V). Ping works out the rest.',
+    ticketPastePh: 'Paste the link to a ticket here', ticketPasteAria: 'Link to a ticket', ticketClear: 'Remove ticket links',
+    ticketsAdv: 'Advanced: write the template yourself', ticketTplAria: 'Link template',
+    ticketsAdvP: 'Write <code>{key}</code> where the whole ticket ID goes, or <code>{num}</code> for the number only. Azure DevOps example: <code>https://dev.azure.com/org/project/_workitems/edit/{num}</code>',
     lookH: 'Look and feel', themeAria: 'Theme', palLagoon: 'Calm teal, the default', palFjord: 'Cool blue and slate', palSolarized: 'The classic editor palette',
     mode: 'Mode', modeAria: 'Light or dark mode', light: 'Light', dark: 'Dark',
     monoLabel: 'Monospace font in the note editor', utcLabel: 'Show the UTC clock next to the name',
@@ -965,7 +1003,9 @@ const T = {
     setupLi4: 'The file is plain text you can open and read yourself, and you can stop using it whenever you like under Settings.',
     setupCreate: 'Choose a place and save', setupOpen: 'I already have a save file',
     setupHint: 'Used Ping on another computer or in another browser? Choose “I already have a save file” and open Ping-data.json, and everything comes back.',
-    setupSkip: 'Skip (not recommended)', step2: 'Step 2 of 2', setupT2: 'Get a notification when it’s time',
+    setupSkip: 'Skip (not recommended)', next: 'Next',
+    setupNoFileBrave: 'Brave turns this off by default. You can turn it on: paste <code>brave://flags/#file-system-access-api</code> into the address bar, choose <strong>Enabled</strong> and restart Brave. Then run the save setup again.',
+    setupNotifOn: '✓ Notifications are already on in this browser.',step2: 'Step 2 of 2', setupT2: 'Get a notification when it’s time',
     setupP3: 'Allow notifications so your reminders show up in the corner of the screen, even when Ping is behind other windows.',
     setupLi5: 'Ping uses notifications only for reminders you created yourself. No ads, no news.',
     setupLi6: 'The notifications are created here on your computer. Nothing is sent over the internet.',
@@ -975,12 +1015,16 @@ const T = {
     lockTake: 'Use this window instead',
     startupP2: 'A web page isn’t allowed to change the browser’s settings itself. That’s a security rule, so you do it in three steps:',
     copyPingUrl: 'Copy Ping’s link', st2a: 'Paste', st2b: 'into the address bar and press Enter.',
-    startupBrave: 'In Brave: paste <code>brave://settings/getStarted</code>, choose <strong>“Open a specific page or set of pages”</strong> and add Ping’s link.',
     startupApp: 'If you installed Ping as an app, you can instead open <code>edge://apps</code>, click ⋯ next to Ping and turn on <strong>“Auto-start on device login”</strong>.',
     finished: 'Done',
     // dynamic
-    startupStep3Edge: 'Under <strong>“When Microsoft Edge starts”</strong>: choose <strong>“Open these pages”</strong>, click <strong>“Add a new page”</strong> and paste Ping’s link.',
-    startupStep3Brave: 'Under <strong>“On startup”</strong>: choose <strong>“Open a specific page or set of pages”</strong>, click <strong>“Add a new page”</strong> and paste Ping’s link.',
+    startupStepEdge: 'Under <strong>“When Microsoft Edge starts”</strong>: choose <strong>“Open these pages”</strong>, click <strong>“Add a new page”</strong> and paste Ping’s link.',
+    startupStepChrome: 'Under <strong>“On startup”</strong>: choose <strong>“Open a specific page or set of pages”</strong>, click <strong>“Add a new page”</strong> and paste Ping’s link.',
+    startupStepFirefox: 'Under <strong>“Homepage and new windows”</strong>: choose <strong>“Custom URLs…”</strong> and paste Ping’s link.',
+    startupStepOther: b => `Open ${b}’s settings and find where you choose what opens when it starts (often called “On startup” or “Homepage”). Add Ping’s link there.`,
+    setupNoFile: b => `${b} can’t let Ping keep a save file on your computer; only Chrome and Edge can. Everything is still saved in ${b}, and Ping will remind you once a week to download a backup.`,
+    bannerBackup: '<strong>Time to save a backup.</strong> Your reminders and notes only exist in this browser. Download a copy and put it in Documents, and you can always get everything back with “Restore from backup” under Settings.',
+    backupNow: 'Download backup', later: 'Remind me tomorrow',
     saveFailed: e => 'Could not save: ' + e, chipNotSaved: 'Not saved!', chipNotSavedTitle: e => 'The browser refused to save: ' + e,
     chipSaved: 'Saved', chipSavedFileTitle: n => 'Saved in the browser and in your file ' + n,
     chipNeedsClick: 'Save file needs a click', chipNeedsClickTitle: 'Click to reconnect your save file', chipFileErr: 'Save file error',
@@ -1041,11 +1085,20 @@ const T = {
     dTitle: 'Daily log', dDone: 'Done', dToday: 'Today', dBlockers: 'Blockers', dNotes: 'Notes', logCreated: 'Daily log created from your reminders',
     noteDeleted: 'Note deleted', testTitle: 'This is a test reminder', testNotes: 'If you can see this, reminders work.',
     backupDone: 'Backup downloaded', restored: n => 'Restored ' + n + ' items', nothingNew: 'Nothing new in that backup', notBackup: 'That file is not a Ping backup',
-    ticketsUpdated: 'Ticket links updated', noLink: 'No link in this reminder'
+    ticketsUpdated: 'Ticket links updated', noLink: 'No link in this reminder',
+    ticketNone: 'Not set up. Ticket numbers show as plain text.',
+    ticketOk: (ex, link) => `✓ Done! When you write <code>${ex}</code> in a reminder or note, it becomes a link to that ticket. Try it: ${link}`,
+    ticketOkNum: (ex, link) => `✓ Done! Write the ticket number with a few letters and a dash in front, for example <code>${ex}</code>, and it becomes a link. Try it: ${link}`,
+    ticketNotUrl: 'That doesn’t look like a web address. Copy the whole address from the address bar; it starts with https://',
+    ticketNoId: 'Couldn’t find a ticket number in that link. Open a single ticket (not a list or board) and copy the address again.',
+    ticketsRemoved: 'Ticket numbers are plain text again'
   },
   sv: {
-    startupStep3Edge: 'Under <strong>”När Microsoft Edge startar”</strong>: välj <strong>”Öppna de här sidorna”</strong>, klicka <strong>”Lägg till en ny sida”</strong> och klistra in Pings länk.',
-    startupStep3Brave: 'Under <strong>”Vid start”</strong>: välj <strong>”Öppna en viss sida eller uppsättning sidor”</strong>, klicka <strong>”Lägg till en ny sida”</strong> och klistra in Pings länk.',
+    startupStepEdge: 'Under <strong>”När Microsoft Edge startar”</strong>: välj <strong>”Öppna de här sidorna”</strong>, klicka <strong>”Lägg till en ny sida”</strong> och klistra in Pings länk.',
+    startupStepChrome: 'Under <strong>”Vid start”</strong>: välj <strong>”Öppna en viss sida eller uppsättning sidor”</strong>, klicka <strong>”Lägg till en ny sida”</strong> och klistra in Pings länk.',
+    startupStepFirefox: 'Under <strong>”Startsida och nya fönster”</strong>: välj <strong>”Anpassade webbadresser…”</strong> och klistra in Pings länk.',
+    startupStepOther: b => `Öppna inställningarna i ${b} och leta upp var du väljer vad som öppnas vid start (heter ofta ”Vid start” eller ”Startsida”). Lägg till Pings länk där.`,
+    setupNoFile: b => `${b} kan inte låta Ping ha en sparfil på datorn; det kan bara Chrome och Edge. Allt sparas ändå i ${b}, och Ping påminner dig en gång i veckan om att ladda ner en säkerhetskopia.`,
     saveFailed: e => 'Kunde inte spara: ' + e, chipNotSaved: 'Inte sparat!', chipNotSavedTitle: e => 'Webbläsaren vägrade spara: ' + e,
     chipSaved: 'Sparat', chipSavedFileTitle: n => 'Sparat i webbläsaren och i din fil ' + n,
     chipNeedsClick: 'Sparfilen behöver ett klick', chipNeedsClickTitle: 'Klicka för att återansluta din sparfil', chipFileErr: 'Fel i sparfilen',
@@ -1104,9 +1157,16 @@ const T = {
     noteStart: 'Börja skriva för att skapa en anteckning. Markdown fungerar, och den sparas automatiskt.', saving: 'Sparar…', savedAt: x => 'Sparad ✓ ' + x,
     newNoteStatus: 'Ny anteckning. Börja skriva.', openedLog: 'Öppnade dagens logg',
     dTitle: 'Dagslogg', dDone: 'Klart', dToday: 'Idag', dBlockers: 'Hinder', dNotes: 'Anteckningar', logCreated: 'Dagsloggen skapades från dina påminnelser',
-    noteDeleted: 'Anteckningen togs bort', testTitle: 'Det här är en testpåminnelse', testNotes: 'Ser du det här fungerar påminnelserna.',
+    setupNotifOn: '✓ Aviseringar är redan på i den här webbläsaren.',
+    noteDeleted: 'Anteckningen togs bort',testTitle: 'Det här är en testpåminnelse', testNotes: 'Ser du det här fungerar påminnelserna.',
     backupDone: 'Säkerhetskopian har laddats ner', restored: n => 'Återställde ' + n + ' objekt', nothingNew: 'Inget nytt i den säkerhetskopian', notBackup: 'Den filen är inte en säkerhetskopia från Ping',
-    ticketsUpdated: 'Ärendelänkarna har uppdaterats', noLink: 'Ingen länk i den här påminnelsen'
+    ticketsUpdated: 'Ärendelänkarna har uppdaterats', noLink: 'Ingen länk i den här påminnelsen',
+    ticketNone: 'Inte inställt. Ärendenummer visas som vanlig text.',
+    ticketOk: (ex, link) => `✓ Klart! När du skriver <code>${ex}</code> i en påminnelse eller anteckning blir det en länk till ärendet. Testa: ${link}`,
+    ticketOkNum: (ex, link) => `✓ Klart! Skriv ärendenumret med några bokstäver och ett bindestreck framför, till exempel <code>${ex}</code>, så blir det en länk. Testa: ${link}`,
+    ticketNotUrl: 'Det där ser inte ut som en webbadress. Kopiera hela adressen från adressfältet; den börjar med https://',
+    ticketNoId: 'Hittade inget ärendenummer i länken. Öppna ett enskilt ärende (inte en lista eller tavla) och kopiera adressen igen.',
+    ticketsRemoved: 'Ärendenummer visas som vanlig text igen'
   }
 };
 const lang = () => { try { return S.settings.lang === 'en' ? 'en' : 'sv'; } catch (e) { return 'sv'; } };
@@ -1327,6 +1387,18 @@ function updateFileUi() {
   else if (fileState === 'needs-permission') st.textContent = t('fileNeeds', fileHandle.name);
   else st.textContent = t('fileErr', fileHandle.name, fileError);
   updateSaveChip();
+  updateBackupBanner();
+}
+// Without a working save file, the browser is the only copy: nudge for a downloaded backup once a week.
+const WEEK = 7 * 86400000;
+function updateBackupBanner() {
+  const b = $('backupBanner'); if (!b) return;
+  const st = S.settings, now = Date.now();
+  if (!st.backupBase) { st.backupBase = now; save(); }   // first time: start counting from today
+  const protectedByFile = fileHandle && fileState === 'ok';
+  const hasData = S.reminders.length + S.notes.length > 0;
+  const due = now - Math.max(st.lastBackup || 0, st.backupBase) > WEEK && now > (st.backupSnoozeUntil || 0);
+  b.hidden = !(isActiveWindow && !protectedByFile && hasData && due);
 }
 
 // ---------------------------------------------------------------- dates
@@ -1401,7 +1473,7 @@ const TICKET_RE = /\b([A-Z][A-Z0-9]{1,9})-(\d{1,7})\b/g;
 function ticketHref(key, n) {
   const t = (S.settings.ticketUrl || '').trim();
   if (!t) return null;
-  return t.replace('{key}', key).replace('{num}', n);
+  return t.replace('{key}', key + '-' + n).replace('{num}', n);   // {key} is the whole ID (DATA-123), {num} the number only
 }
 // Escapes text, then turns URLs and ticket IDs into links.
 function linkify(text) {
@@ -1869,7 +1941,18 @@ function updateNotifUi() {
   if (notifError) st.textContent = t('stFailed', notifError);
   st.textContent += t('stRunning', browserName(), isLocalFile);
 }
-const browserName = () => navigator.brave ? 'Brave' : /Edg\//.test(navigator.userAgent) ? 'Edge' : /Chrome\//.test(navigator.userAgent) ? 'Chrome' : /Firefox\//.test(navigator.userAgent) ? 'Firefox' : t('thisBrowser');
+function browserId() {
+  const ua = navigator.userAgent;
+  if (navigator.brave) return 'brave';
+  if (/Edg\//.test(ua)) return 'edge';
+  if (/OPR\//.test(ua)) return 'opera';
+  if (/Vivaldi/.test(ua)) return 'vivaldi';
+  if (/Firefox\//.test(ua)) return 'firefox';
+  if (/Chrome\//.test(ua)) return 'chrome';
+  if (/Safari\//.test(ua)) return 'safari';
+  return 'other';
+}
+const browserName = () => ({ brave: 'Brave', edge: 'Edge', opera: 'Opera', vivaldi: 'Vivaldi', firefox: 'Firefox', chrome: 'Chrome', safari: 'Safari' })[browserId()] || t('thisBrowser');
 const isLocalFile = location.protocol === 'file:';
 async function askNotif() {
   if (!canNotify()) { toast(t('notifUnavailable')); return; }
@@ -2172,7 +2255,10 @@ document.addEventListener('click', e => {
       break;
     case 'export':
       downloadFile('ping-backup-' + isoDate(new Date()) + '.json', JSON.stringify(S, null, 2), 'application/json');
+      S.settings.lastBackup = Date.now(); save(); updateBackupBanner();
       toast(t('backupDone')); break;
+    case 'ticket-clear': S.settings.ticketUrl = ''; S.settings.ticketExample = ''; $('setTicket').value = ''; save(); renderReminders(); updateTicketUi(); toast(t('ticketsRemoved')); break;
+    case 'backup-later': S.settings.backupSnoozeUntil = Date.now() + 86400000; save(); updateBackupBanner(); break;
     case 'export-csv': exportCsv(); break;
     case 'import': $('importFile').click(); break;
     case 'file-create': fileCreate(); break;
@@ -2195,26 +2281,52 @@ document.addEventListener('click', e => {
 });
 
 // ---------------------------------------------------------------- first-run setup (save file + notifications)
+// On first run, steps with nothing to do are skipped silently. When opened on purpose ("Run the save setup again"
+// or the save chip), every step is shown and explains what this browser can and can't do, so the click never looks dead.
+let setupForced = false;
 function openSetup(step, force) {
-  if (step === 1 && (!fileApi || (fileHandle && !force))) step = 2;
-  if (step === 2 && (!canNotify() || Notification.permission !== 'default')) { finishSetup(); return; }
+  if (force) setupForced = true;
+  const perm = canNotify() ? Notification.permission : 'unsupported';
+  if (!setupForced) {
+    if (step === 1 && fileHandle) step = 2;
+    if (step === 2 && perm !== 'default') { finishSetup(); return; }
+  }
+  $('setupFileOk').hidden = !fileApi;
+  $('setupFileNo').hidden = fileApi;
+  $('setupNoFileBrave').hidden = !navigator.brave;
+  $('setupNoFileText').textContent = t('setupNoFile', browserName());
+  const ask = perm === 'default';
+  $('setupNotifAsk').hidden = !ask;
+  $('setupNotifDone').hidden = ask;
+  $('setupNotifState').hidden = ask;
+  $('setupNotifState').textContent = perm === 'granted' ? t('setupNotifOn') : perm === 'denied' ? t('stDenied', browserName()) : ask ? '' : t('stUnsupported');
   $('setupStep1').hidden = step !== 1;
   $('setupStep2').hidden = step !== 2;
   $('setupDlg').hidden = false;
 }
 function finishSetup() {
+  setupForced = false;
   $('setupDlg').hidden = true;
   if (!S.settings.onboarded) { S.settings.onboarded = true; save(); }
 }
 
 // ---------------------------------------------------------------- open Ping when the browser starts
 const pingUrl = () => location.protocol.startsWith('http') ? location.origin + location.pathname.replace(/index\.html$/, '') : location.href;
+// Where each browser keeps its startup setting. Browsers not listed get general instructions.
+const STARTUP = {
+  edge: { url: 'edge://settings/startHomeNTP', step: 'startupStepEdge', app: true },
+  chrome: { url: 'chrome://settings/onStartup', step: 'startupStepChrome' },
+  brave: { url: 'brave://settings/getStarted', step: 'startupStepChrome' },
+  opera: { url: 'opera://settings/onStartup', step: 'startupStepChrome' },
+  firefox: { url: 'about:preferences#home', step: 'startupStepFirefox' }
+};
 function openStartupGuide() {
-  const brave = !!navigator.brave;
+  const c = STARTUP[browserId()];
   $('pingUrl').textContent = pingUrl();
-  $('settingsUrl').textContent = brave ? 'brave://settings/getStarted' : 'edge://settings/startHomeNTP';
-  $('startupBrave').hidden = !brave;
-  $('startupStep3').innerHTML = t(brave ? 'startupStep3Brave' : 'startupStep3Edge');
+  $('startupStep2').hidden = !c;
+  if (c) $('settingsUrl').textContent = c.url;
+  $('startupStep3').innerHTML = c ? t(c.step) : esc(t('startupStepOther', browserName()));
+  $('startupApp').hidden = !(c && c.app);
   $('startupDlg').hidden = false;
 }
 
@@ -2263,7 +2375,39 @@ $('setSound').addEventListener('change', e => { S.settings.sound = e.target.chec
 $('setIcs').addEventListener('change', e => { S.settings.icsOnSave = e.target.checked; save(); });
 $('setMono').addEventListener('change', e => { S.settings.mono = e.target.checked; save(); noteText.classList.toggle('mono', S.settings.mono); });
 $('setUtc').addEventListener('change', e => { S.settings.utcClock = e.target.checked; save(); });
-$('setTicket').addEventListener('change', e => { S.settings.ticketUrl = e.target.value.trim(); save(); renderReminders(); toast(t('ticketsUpdated')); });
+$('setTicket').addEventListener('change', e => { S.settings.ticketUrl = e.target.value.trim(); S.settings.ticketExample = ''; save(); renderReminders(); updateTicketUi(); toast(t('ticketsUpdated')); });
+// Non-technical setup: paste the address of any one ticket; Ping finds the ticket ID in it and builds the template.
+function ticketTemplateFrom(u) {
+  u = u.trim();
+  if (!/^https?:\/\/[^/\s]+/i.test(u) || /\s/.test(u)) return { error: 'ticketNotUrl' };
+  if (/\{key\}|\{num\}/.test(u)) return { tpl: u };
+  const keys = [...u.matchAll(/[A-Z][A-Z0-9]{1,9}-\d{1,7}/g)];
+  if (keys.length) { const m = keys[keys.length - 1]; return { tpl: u.slice(0, m.index) + '{key}' + u.slice(m.index + m[0].length), example: m[0] }; }
+  const host = u.match(/^https?:\/\/[^/?#]+/i)[0], rest = u.slice(host.length);
+  const nums = [...rest.matchAll(/\d{2,9}/g)];
+  if (nums.length) { const m = nums[nums.length - 1]; return { tpl: host + rest.slice(0, m.index) + '{num}' + rest.slice(m.index + m[0].length), example: 'AB-' + m[0] }; }
+  return { error: 'ticketNoId' };
+}
+function updateTicketUi(errKey) {
+  const out = $('ticketResult'), tpl = (S.settings.ticketUrl || '').trim();
+  $('ticketClear').hidden = !tpl;
+  out.className = errKey ? 'err' : tpl ? 'ok' : 'hint';
+  if (errKey) { out.textContent = t(errKey); return; }
+  if (!tpl) { out.textContent = t('ticketNone'); return; }
+  const isNum = !tpl.includes('{key}') && tpl.includes('{num}');
+  const ex = S.settings.ticketExample || (isNum ? 'AB-123' : 'DATA-123');
+  const m = ex.match(/^([A-Z][A-Z0-9]*)-(\d+)$/), href = m ? ticketHref(m[1], m[2]) : null;
+  const link = href ? `<a href="${esc(href)}" target="_blank" rel="noopener">${esc(ex)}</a>` : esc(ex);
+  out.innerHTML = t(isNum ? 'ticketOkNum' : 'ticketOk', esc(ex), link);
+}
+$('ticketPaste').addEventListener('input', e => {
+  const v = e.target.value.trim(); if (!v) { updateTicketUi(); return; }
+  const r = ticketTemplateFrom(v);
+  if (r.error) { updateTicketUi(r.error); return; }
+  S.settings.ticketUrl = r.tpl; S.settings.ticketExample = r.example || '';
+  save(); $('setTicket').value = r.tpl; e.target.value = '';
+  renderReminders(); updateTicketUi(); toast(t('ticketsUpdated'));
+});
 
 // ---------------------------------------------------------------- keyboard
 const typing = el => el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || el.isContentEditable);
@@ -2325,10 +2469,11 @@ function renderAll() {
   $('setMono').checked = S.settings.mono;
   $('setUtc').checked = S.settings.utcClock;
   $('setTicket').value = S.settings.ticketUrl || '';
+  updateTicketUi();
   noteText.classList.toggle('mono', S.settings.mono);
   applyLang();
   applyTheme();
-  renderReminders(); renderNotes(); updateTitle(); updateNotifUi();
+  renderReminders(); renderNotes(); updateTitle(); updateNotifUi(); updateBackupBanner();
 }
 
 // ---------------------------------------------------------------- service worker (offline + system notifications)
