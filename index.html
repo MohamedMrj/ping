@@ -242,6 +242,16 @@ label.check { display: flex; gap: 9px; align-items: flex-start; cursor: pointer;
 label.check input { margin-top: 3px; accent-color: var(--accent); }
 .input { padding: 7px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); min-width: 0; }
 .input.wide { flex: 1 1 340px; font-family: var(--mono); font-size: 13px; }
+.card h4 { margin: 8px 0 -2px; font: 600 14px var(--font-display); border-top: 1px solid var(--line); padding-top: 14px; }
+.icon-btn[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+/* the small always-on-top window (Document Picture-in-Picture) */
+body.pip { padding: 10px; display: grid; gap: 10px; align-content: start; height: auto; }
+body.pip #alerts { position: static; width: auto; transform: none; }
+.pip-head { display: flex; gap: 8px; align-items: center; }
+.pip-head b { font: 700 17px var(--font-display); margin-right: auto; }
+.pip-next h2 { font: 700 11.5px/1 var(--font); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 4px 0 8px 2px; }
+body.pip .rem { grid-template-columns: 62px minmax(0, 1fr); padding: 8px 10px; gap: 10px; }
+body.pip .when .t { font-size: 15px; }
 .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px 16px; }
 .form-grid .row { flex-wrap: nowrap; }
 .form-grid select { flex: 1; min-width: 0; }
@@ -336,6 +346,7 @@ details.adv[open] { display: grid; gap: 8px; }
       <button role="tab" data-tab="notes" aria-selected="false" type="button" data-i18n="tabNotes">Anteckningar</button>
       <button role="tab" data-tab="settings" aria-selected="false" type="button" data-i18n="tabSettings">Inställningar</button>
     </nav>
+    <button class="icon-btn" type="button" data-act="pip-toggle" id="pipBtn" hidden aria-pressed="false" title="Håll Ping ovanpå andra fönster" aria-label="Håll Ping ovanpå andra fönster" data-i18n-title="alSecPip" data-i18n-aria="alSecPip"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" style="vertical-align:-3px"><rect x="2.5" y="4.5" width="19" height="15" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><rect x="12" y="11" width="7" height="6" rx="1" fill="currentColor"/></svg></button>
     <button class="icon-btn" type="button" data-act="keys" title="Kortkommandon (?)" aria-label="Kortkommandon" data-i18n-title="keysBtnTitle" data-i18n-aria="keysH">?</button>
   </header>
 
@@ -433,6 +444,8 @@ details.adv[open] { display: grid; gap: 8px; }
       <div class="card" id="alertCard">
         <h3 data-i18n="alertH">Ljud och utseende</h3>
         <p data-i18n="alertP">Bestäm hur en påminnelse låter och ser ut när det är dags. Ska en viss påminnelse låta eller se annorlunda ut väljer du det när du redigerar den.</p>
+
+        <h4 data-i18n="alSecSound">Ljud</h4>
         <label class="check"><input type="checkbox" id="setSound"> <span data-i18n="soundLabel">Spela ett ljud när en påminnelse är dags</span></label>
         <div class="form-grid">
           <div class="field"><span data-i18n="alSound">Ljud</span><div class="row"><select id="alSound" class="input" data-al></select><button class="btn sm" type="button" data-act="al-preview" data-for="alSound" data-i18n="listen">▶ Lyssna</button></div></div>
@@ -441,14 +454,30 @@ details.adv[open] { display: grid; gap: 8px; }
           <label class="field"><span data-i18n="alLoop">Hur länge ljudet spelas</span><select id="alLoop" class="input" data-al></select></label>
           <label class="field" data-loop-only><span data-i18n="alLoopEvery">Spela igen var</span><select id="alLoopEvery" class="input" data-al></select></label>
           <label class="field" data-loop-only><span data-i18n="alLoopMax">Sluta efter högst</span><select id="alLoopMax" class="input" data-al></select></label>
+        </div>
+        <p class="hint" data-i18n="alSoundHint">Ljudet spelas även när Ping ligger i bakgrunden eller är minimerat, så länge Ping är öppet.</p>
+
+        <h4 data-i18n="alSecBox">Rutan i Ping-fönstret</h4>
+        <p data-i18n="alSecBoxP">Syns när Ping är framme, eller ovanpå alla andra fönster om du använder ”Håll Ping ovanpå” här nedanför.</p>
+        <div class="form-grid">
           <label class="field"><span data-i18n="alPosition">Var rutan visas</span><select id="alPosition" class="input" data-al></select></label>
           <label class="field"><span data-i18n="alSize">Storlek på rutan</span><select id="alSize" class="input" data-al></select></label>
           <label class="field"><span data-i18n="alAutoHide">Rutan försvinner</span><select id="alAutoHide" class="input" data-al></select></label>
         </div>
         <div class="field"><span data-i18n="alColor">Färg</span><div class="swatches" id="alColor" role="group" aria-label="Färg" data-i18n-aria="alColor"></div></div>
+
+        <h4 data-i18n="alSecWin">När Ping ligger bakom andra fönster</h4>
+        <p data-i18n="alSecWinP">Då visar Windows en avisering i skärmens hörn. Hur den ser ut bestämmer Windows, men ikonen får påminnelsens färg.</p>
         <label class="check"><input type="checkbox" id="alSticky" data-al> <span data-i18n="alSticky">Windows-aviseringen ligger kvar tills jag stänger den</span></label>
         <label class="check"><input type="checkbox" id="alFlash" data-al> <span data-i18n="alFlash">Blinka fliken när en påminnelse väntar och Ping ligger i bakgrunden</span></label>
-        <div class="row"><button class="btn primary" type="button" data-act="test-alert" data-i18n="testAlertShow">Visa en testpåminnelse</button></div>
+
+        <h4 data-i18n="alSecPip">Håll Ping ovanpå andra fönster</h4>
+        <p data-i18n="alSecPipP">Öppnar ett litet Ping-fönster som ligger ovanpå allt annat du arbetar med. Där visas påminnelserna precis som du har valt här, och vilka som kommer härnäst. Webbläsaren låter bara dig själv öppna det, så klicka på knappen när du har startat webbläsaren.</p>
+        <p class="hint" id="pipUnsupported" hidden></p>
+        <div class="row">
+          <button class="btn" type="button" data-act="pip-toggle" id="pipSettingsBtn">Håll Ping ovanpå</button>
+          <button class="btn primary" type="button" data-act="test-alert" data-i18n="testAlertShow">Visa en testpåminnelse</button>
+        </div>
       </div>
       <div class="card">
         <h3 data-i18n="lookH">Utseende</h3>
@@ -965,6 +994,7 @@ const QuickParser = (() => {
 const KEY = 'reminder-by-me.v1';
 const FIRED_KEY = 'reminder-by-me.fired';
 const $ = id => document.getElementById(id);
+const alertsEl = $('alerts'), popEl = $('pop');   // kept as references: they move into the always-on-top window while it is open
 
 // ---------------------------------------------------------------- language (Swedish by default, English optional)
 // Static text: the markup holds the Swedish; elements carry data-i18n (innerHTML), data-i18n-ph, -title, -aria keys,
@@ -1039,6 +1069,11 @@ const T = {
     alAutoHide: 'The box disappears', alColor: 'Colour', alSticky: 'The Windows notification stays until I close it',
     alFlash: 'Flash the tab while a reminder is waiting and Ping is in the background', testAlertShow: 'Show a test reminder',
     listen: '▶ Listen', listenTitle: 'Listen',
+    alSecSound: 'Sound', alSoundHint: 'The sound also plays when Ping is in the background or minimised, as long as Ping is open.',
+    alSecBox: 'The box in the Ping window', alSecBoxP: 'Shows when Ping is in front, or on top of every other window if you use “Keep Ping on top” below.',
+    alSecWin: 'When Ping is behind other windows', alSecWinP: 'Then Windows shows a notification in the corner of the screen. Windows decides how it looks, but the icon gets the reminder’s colour.',
+    alSecPip: 'Keep Ping on top of other windows',
+    alSecPipP: 'Opens a small Ping window that floats on top of everything else you work in. Reminders appear there exactly as you chose here, along with what’s coming up next. The browser only lets you open it yourself, so click the button after starting the browser.',
     // dynamic
     startupStepEdge: 'Under <strong>“When Microsoft Edge starts”</strong>: choose <strong>“Open these pages”</strong>, click <strong>“Add a new page”</strong> and paste Ping’s link.',
     startupStepChrome: 'Under <strong>“On startup”</strong>: choose <strong>“Open a specific page or set of pages”</strong>, click <strong>“Add a new page”</strong> and paste Ping’s link.',
@@ -1114,6 +1149,8 @@ const T = {
     hideNever: 'Never, it stays until I respond', hideAfter: n => 'After ' + (n < 60 ? n + ' seconds' : (n / 60 === 1 ? '1 minute' : n / 60 + ' minutes')),
     color_red: 'Red', color_orange: 'Orange', color_yellow: 'Yellow', color_green: 'Green', color_blue: 'Blue', color_purple: 'Purple', color_pink: 'Pink',
     colorTheme: 'Theme colour', colorDefault: 'Default', mute: 'Silence',
+    pipOpen: 'Keep Ping on top', pipClose: 'Close the small window', pipOpenMain: 'Open Ping', pipNext: 'Coming up', pipNothing: 'No upcoming reminders',
+    pipUnsupported: b => `${b} can’t keep Ping on top of other windows. It works in Chrome and Edge.`, pipFailed: e => 'Couldn’t open the small window: ' + e,
     noteDeleted: 'Note deleted', testTitle: 'This is a test reminder', testNotes: 'If you can see this, reminders work.',
     backupDone: 'Backup downloaded', restored: n => 'Restored ' + n + ' items', nothingNew: 'Nothing new in that backup', notBackup: 'That file is not a Ping backup',
     noLink: 'No link in this reminder'
@@ -1192,6 +1229,8 @@ const T = {
     hideNever: 'Aldrig, den ligger kvar tills jag svarar', hideAfter: n => 'Efter ' + (n < 60 ? n + ' sekunder' : (n / 60 === 1 ? '1 minut' : n / 60 + ' minuter')),
     color_red: 'Röd', color_orange: 'Orange', color_yellow: 'Gul', color_green: 'Grön', color_blue: 'Blå', color_purple: 'Lila', color_pink: 'Rosa',
     colorTheme: 'Temafärg', colorDefault: 'Standard', mute: 'Tysta',
+    pipOpen: 'Håll Ping ovanpå', pipClose: 'Stäng det lilla fönstret', pipOpenMain: 'Öppna Ping', pipNext: 'Härnäst', pipNothing: 'Inga kommande påminnelser',
+    pipUnsupported: b => `${b} kan inte hålla Ping ovanpå andra fönster. Det fungerar i Chrome och Edge.`, pipFailed: e => 'Kunde inte öppna det lilla fönstret: ' + e,
     noteDeleted: 'Anteckningen togs bort',testTitle: 'Det här är en testpåminnelse', testNotes: 'Ser du det här fungerar påminnelserna.',
     backupDone: 'Säkerhetskopian har laddats ner', restored: n => 'Återställde ' + n + ' objekt', nothingNew: 'Inget nytt i den säkerhetskopian', notBackup: 'Den filen är inte en säkerhetskopia från Ping',
     noLink: 'Ingen länk i den här påminnelsen'
@@ -1684,17 +1723,19 @@ function snoozeOptions() {
   return o;
 }
 function openPop(anchor, items) {
-  const pop = $('pop');
+  const pop = popEl;
+  if (pop.ownerDocument !== anchor.ownerDocument) anchor.ownerDocument.body.appendChild(pop);   // open the menu in the window that was clicked
+  const view = pop.ownerDocument.defaultView;
   pop.innerHTML = '';
   items.forEach(([label, fn]) => { const b = document.createElement('button'); b.type = 'button'; b.textContent = label; b.onclick = () => { closePop(); fn(); }; pop.appendChild(b); });
   pop.hidden = false;
   const r = anchor.getBoundingClientRect(), pw = pop.offsetWidth, ph = pop.offsetHeight;
-  pop.style.left = Math.max(8, Math.min(r.left, innerWidth - pw - 8)) + 'px';
-  pop.style.top = (r.bottom + ph + 8 > innerHeight ? Math.max(8, r.top - ph - 4) : r.bottom + 4) + 'px';
+  pop.style.left = Math.max(8, Math.min(r.left, view.innerWidth - pw - 8)) + 'px';
+  pop.style.top = (r.bottom + ph + 8 > view.innerHeight ? Math.max(8, r.top - ph - 4) : r.bottom + 4) + 'px';
   pop.querySelector('button').focus();
 }
-const closePop = () => { $('pop').hidden = true; };
-document.addEventListener('mousedown', e => { if (!$('pop').hidden && !$('pop').contains(e.target)) closePop(); });
+const closePop = () => { popEl.hidden = true; };
+document.addEventListener('mousedown', e => { if (!popEl.hidden && !popEl.contains(e.target)) closePop(); });
 
 // ---------------------------------------------------------------- actions
 const find = id => S.reminders.find(r => r.id === id);
@@ -1810,6 +1851,7 @@ function renderTagbar() {
   $('tagbar').hidden = !tags.length;
 }
 function renderReminders() {
+  renderPip();
   renderTagbar();
   const items = visibleReminders();
   const open = items.filter(r => !r.done).sort((a, b) => (nextAlert(a) - nextAlert(b)) || (b.priority - a.priority));
@@ -2147,10 +2189,10 @@ function showAlert(r, occurrence) {
     if (b.dataset.a === 'x') closeAlert(r.id);
     else if (b.dataset.a === 'done') cur.repeat === 'none' ? complete(cur) : closeAlert(r.id);
     else if (b.dataset.a === 'snooze') openPop(b, snoozeOptions().map(([l, t]) => [l, () => snooze(cur, t)]));
-    else if (b.dataset.a === 'edit') openEditor(cur, false);
+    else if (b.dataset.a === 'edit') { openEditor(cur, false); if (el.ownerDocument !== document) window.focus(); }
     else if (b.dataset.a === 'mute') { const a = openAlerts.get(r.id); if (a && a.stopSound) a.stopSound(); b.hidden = true; }
   });
-  $('alerts').prepend(el);
+  alertsEl.prepend(el);
   const entry = { el, notif: null, stopSound: null, hideTimer: null };
   if (+cfg.autoHide > 0) entry.hideTimer = setTimeout(() => { if (openAlerts.get(r.id) === entry) closeAlert(r.id); }, +cfg.autoHide * 1000);
   openAlerts.set(r.id, entry);
@@ -2173,10 +2215,28 @@ function fire(r, occurrence) {
   if (times > 1 && SOUNDS[sound]) a.el.querySelector('[data-a=mute]').hidden = false;
   if (canNotify() && Notification.permission === 'granted') {
     const body = fmtWhen(new Date(occurrence)) + (r.tags.length ? '  ' + r.tags.map(t => '#' + t).join(' ') : '') + (r.notes ? '\n' + r.notes.slice(0, 140) : '');
-    systemNotify((r.priority === 3 ? '‼ ' : '') + r.title, { body, tag: r.id, requireInteraction: !!cfg.sticky })
+    const icon = coloredIcon(COLORS[r.color || cfg.color] || (r.priority === 3 ? '#c2352b' : null));
+    systemNotify((r.priority === 3 ? '‼ ' : '') + r.title, Object.assign({ body, tag: r.id, requireInteraction: !!cfg.sticky }, icon ? { icon } : {}))
       .then(n => { if (openAlerts.get(r.id) === a) a.notif = n; else if (n) n.close(); })
       .catch(e => { notifError = e.message || String(e); updateNotifUi(); });
   }
+}
+// Windows draws its notifications itself; the one thing a page can colour is the icon, so draw Ping's bell in the reminder's colour.
+const iconCache = {};
+function coloredIcon(color) {
+  if (!color) return null;
+  if (iconCache[color]) return iconCache[color];
+  try {
+    const c = document.createElement('canvas'); c.width = c.height = 192;
+    const x = c.getContext('2d'); if (!x) return null;
+    x.scale(3, 3);
+    x.fillStyle = color;
+    if (x.roundRect) { x.beginPath(); x.roundRect(2, 2, 60, 60, 15); x.fill(); } else x.fillRect(2, 2, 60, 60);
+    x.fillStyle = '#ffffff';
+    x.fill(new Path2D('M32 13a3 3 0 0 1 3 3v1.5c6 1.4 9.5 6.4 9.5 12.5v8l4 5.5H15.5l4-5.5v-8c0-6.1 3.5-11.1 9.5-12.5V16a3 3 0 0 1 3-3z'));
+    x.beginPath(); x.ellipse(32, 49, 5, 3.6, 0, 0, Math.PI * 2); x.fill();
+    return iconCache[color] = c.toDataURL('image/png');
+  } catch (e) { return null; }
 }
 // Prefer the service worker route (what installed apps use); fall back to the page Notification API.
 let notifError = '';
@@ -2366,6 +2426,7 @@ function applyTheme() {
   if (p === 'lagoon') delete document.documentElement.dataset.palette; else document.documentElement.dataset.palette = p;
   document.querySelectorAll('[data-theme-set]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.themeSet === t)));
   document.querySelectorAll('[data-palette-set]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.paletteSet === p)));
+  syncPipTheme();
 }
 $('themeSeg').addEventListener('click', e => { const b = e.target.closest('[data-theme-set]'); if (!b) return; S.settings.theme = b.dataset.themeSet; save(); applyTheme(); });
 // ---------------------------------------------------------------- Settings → Sound and look
@@ -2406,7 +2467,7 @@ function renderAlertSettings() {
   setSwatch($('alColor'), a.color);
   $('alVolumeVal').textContent = a.volume + ' %';
   document.querySelectorAll('[data-loop-only]').forEach(x => x.hidden = a.loop !== 'until');
-  $('alerts').className = `alerts pos-${a.position} size-${a.size}`;
+  alertsEl.className = `alerts pos-${a.position} size-${a.size}`;
 }
 function readAlertSettings() {
   S.settings.alert = Object.assign(alertCfg(), {
@@ -2442,6 +2503,7 @@ document.addEventListener('click', e => {
     case 'ask-notif': askNotif(); break;
     case 'hide-banner': S.settings.bannerHidden = true; save(); updateNotifUi(); break;
     case 'al-preview': previewSound(b.dataset.for); break;
+    case 'pip-toggle': togglePip(); break;
     case 'test-alert': fire(newReminder({ id: 'test-' + uid(), title: t('testTitle'), notes: t('testNotes'), tags: ['test'] }), Date.now()); break;
     case 'close-editor': closeEditor(); break;
     case 'keys': $('keysDlg').hidden = false; break;
@@ -2536,6 +2598,59 @@ function openStartupGuide() {
   $('startupDlg').hidden = false;
 }
 
+// ---------------------------------------------------------------- keep Ping on top (Document Picture-in-Picture: Chrome and Edge)
+// A small window that floats above every other window. While it is open, the alert boxes and the snooze menu
+// move into it (styled exactly as chosen in Settings), with the next few reminders underneath.
+// Browsers only open it from a click, so it can't appear by itself when a reminder fires.
+const pipApi = 'documentPictureInPicture' in window;
+let pipWin = null;
+async function togglePip() {
+  if (pipWin) { pipWin.close(); return; }
+  if (!pipApi) { toast(t('pipUnsupported', browserName())); return; }
+  try {
+    const w = await documentPictureInPicture.requestWindow({ width: 380, height: 480 });
+    pipWin = w;
+    const d = w.document;
+    document.querySelectorAll('style').forEach(st => d.head.appendChild(st.cloneNode(true)));
+    d.title = 'Ping';
+    d.body.className = 'pip';
+    d.body.innerHTML = '<div class="pip-head"><b>Ping</b><button class="btn sm" type="button" id="pipOpenMain"></button></div><section class="pip-next"><h2 id="pipNextH"></h2><ul class="list" id="pipNext"></ul></section>';
+    d.body.prepend(alertsEl); d.body.appendChild(popEl);
+    d.getElementById('pipOpenMain').addEventListener('click', () => window.focus());
+    d.addEventListener('mousedown', e => { if (!popEl.hidden && !popEl.contains(e.target)) closePop(); });
+    d.addEventListener('keydown', e => { if (e.key === 'Escape') closePop(); });
+    ['pointerdown', 'keydown'].forEach(ev => d.addEventListener(ev, unlockAudio, { capture: true }));
+    w.addEventListener('pagehide', () => { document.body.append(alertsEl, popEl); pipWin = null; updatePipUi(); });
+    renderPip(); updatePipUi();
+  } catch (e) { toast(t('pipFailed', e.message)); }
+}
+function syncPipTheme() {
+  if (!pipWin) return;
+  const r = pipWin.document.documentElement, m = document.documentElement;
+  for (const k of ['theme', 'palette']) { if (m.dataset[k]) r.dataset[k] = m.dataset[k]; else delete r.dataset[k]; }
+  r.lang = m.lang;
+}
+function renderPip() {
+  if (!pipWin) return;
+  const d = pipWin.document;
+  d.getElementById('pipOpenMain').textContent = t('pipOpenMain');
+  d.getElementById('pipNextH').textContent = t('pipNext');
+  const next = S.reminders.filter(r => !r.done).sort((a, b) => nextAlert(a) - nextAlert(b)).slice(0, 5);
+  d.getElementById('pipNext').innerHTML = next.length ? next.map(r => {
+    const n = new Date(nextAlert(r)), rc = COLORS[r.color];
+    return `<li class="rem${isOverdue(r) ? ' overdue' : ''}${rc ? ' colored' : ''}"${rc ? ` style="--rc:${rc}"` : ''}><div class="when"><span class="t">${fmtTime(n)}</span><span class="d">${esc(fmtDay(n))}</span></div><div class="title"><span>${linkify(r.title)}</span></div></li>`;
+  }).join('') : `<li class="rem"><span class="count">${esc(t('pipNothing'))}</span></li>`;
+  syncPipTheme();
+}
+function updatePipUi() {
+  $('pipBtn').hidden = !pipApi;
+  $('pipBtn').setAttribute('aria-pressed', String(!!pipWin));
+  $('pipSettingsBtn').textContent = t(pipWin ? 'pipClose' : 'pipOpen');
+  $('pipSettingsBtn').disabled = !pipApi;
+  $('pipUnsupported').hidden = pipApi;
+  $('pipUnsupported').textContent = t('pipUnsupported', browserName());
+}
+
 // ---------------------------------------------------------------- one editing window at a time
 // The window holding the "ping-editor" lock saves and fires reminders; any other window shows a notice.
 function claimWindow(steal) {
@@ -2586,7 +2701,7 @@ $('setUtc').addEventListener('change', e => { S.settings.utcClock = e.target.che
 const typing = el => el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || el.isContentEditable);
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
-    if (!$('pop').hidden) closePop();
+    if (!popEl.hidden) closePop();
     else if (!$('keysDlg').hidden) $('keysDlg').hidden = true;
     else if (!$('editor').hidden) closeEditor();
     return;
@@ -2649,6 +2764,7 @@ function renderAll() {
   applyLang();
   applyTheme();
   renderAlertSettings();
+  updatePipUi();
   renderReminders(); renderNotes(); updateTitle(); updateNotifUi(); updateBackupBanner();
 }
 
