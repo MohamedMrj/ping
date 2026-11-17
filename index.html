@@ -275,7 +275,21 @@ label.check input { margin-top: 3px; accent-color: var(--accent); }
 @keyframes rise { from { transform: translateY(12px); opacity: .3; } to { transform: none; opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .alert { animation: none; } }
 
-.toast { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 9px 16px; border-radius: 9px; font-weight: 600; z-index: 80; box-shadow: var(--shadow); max-width: calc(100vw - 32px); }
+.toast { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 9px 16px; border-radius: 9px; font-weight: 600; z-index: 80; box-shadow: var(--shadow); max-width: calc(100vw - 32px); display: flex; gap: 14px; align-items: center; }
+.toast button { border: 0; background: transparent; color: var(--bg); font-weight: 700; text-decoration: underline; cursor: pointer; padding: 0; }
+.chip.bad { color: var(--danger); border-color: var(--danger); }
+.chip.bad .dot { background: var(--danger); }
+.setup { width: min(620px, 100%); }
+.setup-step { display: grid; gap: 12px; }
+.setup p, .setup li { line-height: 1.55; }
+.setup ul, .steps { margin: 0; padding-left: 1.3em; display: grid; gap: 6px; }
+.setup details { background: var(--surface-2); border-radius: 8px; padding: 10px 14px; }
+.setup summary { cursor: pointer; font-weight: 600; }
+.setup details ul { margin-top: 8px; }
+.step { margin: 0; font: 700 11.5px/1 var(--font); text-transform: uppercase; letter-spacing: .08em; color: var(--accent); }
+.hint { margin: 0; font-size: 13px; color: var(--muted); }
+.steps li { line-height: 1.6; }
+#lockDlg, #setupDlg { z-index: 90; }
 
 @media (max-width: 720px) {
   .notes { grid-template-columns: minmax(0, 1fr); }
@@ -294,6 +308,7 @@ label.check input { margin-top: 3px; accent-color: var(--accent); }
       <svg viewBox="0 0 64 64" aria-hidden="true"><rect x="2" y="2" width="60" height="60" rx="15" fill="var(--accent)"/><path d="M32 13a3 3 0 0 1 3 3v1.5c6 1.4 9.5 6.4 9.5 12.5v8l4 5.5H15.5l4-5.5v-8c0-6.1 3.5-11.1 9.5-12.5V16a3 3 0 0 1 3-3z" fill="var(--accent-ink)"/><ellipse cx="32" cy="49" rx="5" ry="3.6" fill="var(--accent-ink)"/></svg>
       <b>Ping</b><small id="clock"></small>
     </div>
+    <button class="chip" id="saveChip" type="button"><span class="dot"></span><span id="saveChipText">Saved</span></button>
     <button class="chip" id="notifChip" type="button"><span class="dot"></span><span id="notifChipText">Notifications</span></button>
     <nav class="tabs" role="tablist">
       <button role="tab" data-tab="reminders" aria-selected="true" type="button">Reminders</button>
@@ -304,13 +319,13 @@ label.check input { margin-top: 3px; accent-color: var(--accent); }
   </header>
 
   <div class="banner" id="notifBanner" hidden>
-    <p><strong>Turn on notifications</strong> so reminders show up in the corner of Windows even when this window is behind others. Without them you still get an alert in this window and a sound.</p>
-    <button class="btn primary sm" type="button" data-act="ask-notif">Allow notifications</button>
-    <button class="btn ghost sm" type="button" data-act="hide-banner">Not now</button>
+    <p lang="sv"><strong>Slå på aviseringar</strong> så att dina påminnelser syns i hörnet av skärmen, även när Ping ligger bakom andra fönster. Ping använder dem bara för påminnelser som du själv skapat, och inget skickas via internet.</p>
+    <button class="btn primary sm" type="button" data-act="ask-notif">Tillåt aviseringar</button>
+    <button class="btn ghost sm" type="button" data-act="hide-banner">Inte nu</button>
   </div>
   <div class="banner" id="fileBanner" hidden>
-    <p><strong>Your save file needs one click to reconnect.</strong> Edge asks for permission again after a restart. Your data is safe in the meantime.</p>
-    <button class="btn primary sm" type="button" data-act="file-reconnect">Reconnect</button>
+    <p lang="sv"><strong>Ping behöver ett klick för att fortsätta spara i din fil.</strong> Webbläsaren frågar om lov igen efter en omstart. Det är en säkerhetsfunktion, inte ett fel. Välj gärna ”Tillåt vid varje besök” så slipper du frågan. Inget har försvunnit, allt finns kvar i webbläsaren under tiden.</p>
+    <button class="btn primary sm" type="button" data-act="file-reconnect">Återanslut</button>
   </div>
 
   <!-- REMINDERS -->
@@ -429,6 +444,18 @@ label.check input { margin-top: 3px; accent-color: var(--accent); }
           <input type="file" id="importFile" accept=".json,application/json" hidden>
           <span class="count" id="dataCount"></span>
         </div>
+        <div class="row">
+          <span class="count">Automatic daily copies (last 14 days)</span>
+          <select class="input" id="snapSelect" aria-label="Automatic copies"></select>
+          <button class="btn" type="button" data-act="snap-restore">Restore this copy</button>
+        </div>
+        <p id="persistStatus"></p>
+        <div class="row"><button class="btn ghost" type="button" data-act="setup-open-wizard">Run the save setup again</button></div>
+      </div>
+      <div class="card">
+        <h3>Open Ping when the browser starts</h3>
+        <p>Then Ping is always running, so you never miss a reminder. A web page isn’t allowed to change the browser’s startup settings itself, so this takes three quick steps; the button shows you how.</p>
+        <div class="row"><button class="btn primary" type="button" data-act="startup-guide">Show me how</button></div>
       </div>
     </div>
   </section>
@@ -529,7 +556,74 @@ label.check input { margin-top: 3px; accent-color: var(--accent); }
 
 <div class="alerts" id="alerts" aria-live="assertive"></div>
 <div class="pop" id="pop" hidden></div>
-<div class="toast" id="toast" hidden></div>
+<div class="toast" id="toast" hidden><span id="toastMsg"></span><button type="button" id="toastAct" hidden></button></div>
+
+<!-- first-run setup (Swedish: colleagues need to know why the browser asks for permission) -->
+<div class="scrim" id="setupDlg" hidden>
+  <div class="modal setup" role="dialog" aria-labelledby="setupTitle1" lang="sv">
+    <div id="setupStep1" class="setup-step">
+      <p class="step">Steg 1 av 2</p>
+      <h2 id="setupTitle1">Spara dina påminnelser säkert</h2>
+      <p>Ping har ingen server och inget konto. Allt du skriver sparas bara här på din dator, i webbläsaren. Det betyder att det kan försvinna om webbläsarens data rensas eller om du byter dator.</p>
+      <p>Därför sparar Ping också en kopia i en fil som du själv väljer. Välj mappen <strong>Dokument</strong>. Den ligger på kommunens server, säkerhetskopieras och finns kvar även om du byter dator.</p>
+      <details>
+        <summary>Varför frågar webbläsaren om lov?</summary>
+        <ul>
+          <li>En webbsida får aldrig röra filer på din dator utan att du själv godkänner det. Därför visar webbläsaren en ruta där du väljer plats och godkänner.</li>
+          <li>Ping får bara läsa och skriva <strong>den enda fil du väljer</strong> (Ping-data.json). Inga andra filer eller mappar.</li>
+          <li>Ingenting skickas till internet. Inte till GitHub, inte till kommunen och inte till den som byggt appen. Filen stannar i din egen mapp.</li>
+          <li>Filen är vanlig text som du kan öppna och läsa själv, och du kan sluta använda den när du vill under Inställningar.</li>
+        </ul>
+      </details>
+      <div class="row">
+        <button class="btn primary" type="button" data-act="setup-create">Välj plats och spara</button>
+        <button class="btn" type="button" data-act="setup-open">Jag har redan en sparfil</button>
+      </div>
+      <p class="hint">Har du använt Ping på en annan dator eller i en annan webbläsare? Välj ”Jag har redan en sparfil” och öppna Ping-data.json, så kommer allt tillbaka.</p>
+      <div><button class="btn ghost sm" type="button" data-act="setup-skip">Hoppa över (rekommenderas inte)</button></div>
+    </div>
+    <div id="setupStep2" class="setup-step" hidden>
+      <p class="step">Steg 2 av 2</p>
+      <h2>Få en avisering när det är dags</h2>
+      <p>Tillåt aviseringar så att dina påminnelser syns i hörnet av skärmen, även när Ping ligger bakom andra fönster.</p>
+      <ul>
+        <li>Ping använder aviseringar bara för påminnelser som du själv har skapat. Ingen reklam, inga nyheter.</li>
+        <li>Aviseringarna skapas här på din dator. Inget skickas via internet.</li>
+        <li>Du kan stänga av dem när du vill i webbläsarens inställningar.</li>
+      </ul>
+      <div class="row">
+        <button class="btn primary" type="button" data-act="setup-notif">Tillåt aviseringar</button>
+        <button class="btn" type="button" data-act="setup-done">Inte nu</button>
+      </div>
+      <p class="hint">Tips: minimera Ping i stället för att stänga det. Påminnelser kommer bara när Ping är igång. Under Inställningar finns en guide för att öppna Ping automatiskt när webbläsaren startar.</p>
+    </div>
+  </div>
+</div>
+
+<!-- only one window may edit at a time -->
+<div class="scrim" id="lockDlg" hidden>
+  <div class="modal" role="dialog" aria-labelledby="lockTitle" lang="sv">
+    <h2 id="lockTitle">Ping är redan öppet i ett annat fönster</h2>
+    <p>För att inget du skriver ska skrivas över kan Ping bara användas i ett fönster åt gången. Påminnelserna visas i det andra fönstret.</p>
+    <div class="modal-foot"><span class="spacer"></span><button class="btn primary" type="button" data-act="lock-take">Använd det här fönstret i stället</button></div>
+  </div>
+</div>
+
+<!-- open Ping when the browser starts -->
+<div class="scrim" id="startupDlg" hidden>
+  <div class="modal" role="dialog" aria-labelledby="startupTitle" lang="sv">
+    <h2 id="startupTitle">Öppna Ping när webbläsaren startar</h2>
+    <p>En webbsida får inte ändra webbläsarens inställningar själv. Det är en säkerhetsregel, så du gör det i tre steg:</p>
+    <ol class="steps">
+      <li><button class="btn primary sm" type="button" data-act="copy-ping-url">Kopiera Pings länk</button> <code id="pingUrl"></code></li>
+      <li>Klistra in <code id="settingsUrl">edge://settings/startHomeNTP</code> i adressfältet och tryck Enter. <button class="btn sm" type="button" data-act="copy-settings-url">Kopiera</button></li>
+      <li>Under <strong>”När Microsoft Edge startar”</strong>: välj <strong>”Öppna de här sidorna”</strong>, klicka <strong>”Lägg till en ny sida”</strong> och klistra in Pings länk.</li>
+    </ol>
+    <p class="hint" id="startupBrave" hidden>I Brave: klistra in <code>brave://settings/getStarted</code>, välj <strong>”Öppna en viss sida eller uppsättning sidor”</strong> och lägg till Pings länk.</p>
+    <p class="hint">Har du installerat Ping som en app kan du i stället öppna <code>edge://apps</code>, klicka på ⋯ vid Ping och slå på <strong>”Starta automatiskt vid inloggning”</strong>.</p>
+    <div class="modal-foot"><span class="spacer"></span><button class="btn primary" type="button" data-act="close-startup">Klar</button></div>
+  </div>
+</div>
 
 <script>
 /*PARSER-START*/
@@ -800,11 +894,78 @@ function normalize(j) {
 }
 function load() { try { return normalize(JSON.parse(localStorage.getItem(KEY))); } catch (e) { return normalize(null); } }
 let S = load();
+let isActiveWindow = !navigator.locks;   // only the window holding the editor lock may write (see claimWindow)
+let lastSavedAt = null, lastSaveError = '';
 function save() {
+  if (!isActiveWindow) return;
   S.savedAt = Date.now();
-  try { localStorage.setItem(KEY, JSON.stringify(S)); }
-  catch (e) { toast('Could not save: ' + e.message); }
+  try { localStorage.setItem(KEY, JSON.stringify(S)); lastSavedAt = S.savedAt; lastSaveError = ''; }
+  catch (e) { lastSaveError = e.message; toast('Could not save: ' + e.message); }
   scheduleFileSave();
+  updateSaveChip();
+  snapshotDaily();
+}
+// Header indicator: tells people their change was kept, and where.
+function updateSaveChip() {
+  const chip = $('saveChip'), txt = $('saveChipText');
+  if (!chip) return;
+  const t = lastSavedAt ? ' ' + new Date(lastSavedAt).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : '';
+  chip.classList.remove('on', 'off', 'bad');
+  if (lastSaveError) { chip.classList.add('bad'); txt.textContent = 'Not saved!'; chip.title = 'The browser refused to save: ' + lastSaveError; }
+  else if (fileHandle && fileState === 'ok') { chip.classList.add('on'); txt.textContent = 'Saved' + t; chip.title = 'Saved in the browser and in your file ' + fileHandle.name; }
+  else if (fileHandle && fileState === 'needs-permission') { chip.classList.add('off'); txt.textContent = 'Save file needs a click'; chip.title = 'Click to reconnect your save file'; }
+  else if (fileHandle && fileState === 'error') { chip.classList.add('bad'); txt.textContent = 'Save file error'; chip.title = fileError; }
+  else { chip.classList.add('off'); txt.textContent = 'Saved in browser only' + t; chip.title = fileApi ? 'Click to also keep a save file in your Documents folder' : 'Download a backup now and then under Settings'; }
+}
+
+// One automatic copy per day in the browser's own database, the last 14 days kept.
+let snapDay = null;
+async function snapshotDaily() {
+  const day = new Date().toISOString().slice(0, 10);
+  if (snapDay === day || (!S.reminders.length && !S.notes.length)) return;
+  snapDay = day;
+  try {
+    if (!(await kv.get('snap-' + day))) await kv.set('snap-' + day, JSON.stringify(S));
+    const snaps = (await kv.keys()).map(String).filter(k => k.startsWith('snap-')).sort();
+    for (const k of snaps.slice(0, Math.max(0, snaps.length - 14))) await kv.del(k);
+  } catch (e) { snapDay = null; }
+}
+async function renderSnapshots() {
+  const sel = $('snapSelect');
+  let keys = [];
+  try { keys = (await kv.keys()).map(String).filter(k => k.startsWith('snap-')).sort().reverse(); } catch (e) { }
+  if (!keys.length) { sel.innerHTML = '<option value="">No copies yet (one is made each day you use Ping)</option>'; sel.disabled = true; return; }
+  const opts = [];
+  for (const k of keys) {
+    let label = k.slice(5);
+    try { const d = JSON.parse(await kv.get(k)); label += ` · ${d.reminders.length} reminders, ${d.notes.length} notes`; } catch (e) { }
+    opts.push(`<option value="${esc(k)}">${esc(label)}</option>`);
+  }
+  sel.innerHTML = opts.join(''); sel.disabled = false;
+  if (navigator.storage && navigator.storage.persisted) {
+    navigator.storage.persisted().then(p => {
+      $('persistStatus').textContent = p ? '✓ The browser has promised not to clear Ping’s data on its own.'
+        : 'The browser may clear Ping’s data if the disk gets very full. A save file protects you against that.';
+    }).catch(() => { });
+  }
+}
+async function restoreSnapshot() {
+  const k = $('snapSelect').value; if (!k) return;
+  const txt = await kv.get(k); if (!txt) return;
+  if (!confirm('Replace everything in Ping with the copy from ' + k.slice(5) + '? You can undo this right after.')) return;
+  undoable('Restored the copy from ' + k.slice(5), () => { S = normalize(JSON.parse(txt)); curNote = null; save(); renderAll(); });
+}
+
+// Undo for destructive actions: remember the whole state, offer "Undo" for a few seconds.
+function undoable(message, fn) {
+  const before = JSON.stringify(S);
+  fn();
+  toast(message, 'Undo', () => {
+    S = normalize(JSON.parse(before)); curNote = null;
+    save(); renderAll();
+    if (currentTab() === 'notes') loadNote(sortedNotes()[0] || null);
+    toast('Undone');
+  });
 }
 try { navigator.storage && navigator.storage.persist && navigator.storage.persist(); } catch (e) { }
 const uid = () => (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2));
@@ -824,7 +985,7 @@ const kv = (() => {
     const t = db.transaction('kv', mode), req = fn(t.objectStore('kv'));
     t.oncomplete = () => res(req && req.result); t.onerror = () => rej(t.error);
   }));
-  return { get: k => run('readonly', s => s.get(k)), set: (k, v) => run('readwrite', s => s.put(v, k)), del: k => run('readwrite', s => s.delete(k)) };
+  return { get: k => run('readonly', s => s.get(k)), set: (k, v) => run('readwrite', s => s.put(v, k)), del: k => run('readwrite', s => s.delete(k)), keys: () => run('readonly', s => s.getAllKeys()) };
 })();
 function scheduleFileSave() {
   if (!fileHandle || fileState === 'needs-permission') return;
@@ -832,7 +993,7 @@ function scheduleFileSave() {
 }
 async function writeFile() {
   fileTimer = null;
-  if (!fileHandle) return;
+  if (!fileHandle || !isActiveWindow) return;
   try {
     if (await fileHandle.queryPermission({ mode: 'readwrite' }) !== 'granted') { fileState = 'needs-permission'; updateFileUi(); return; }
     const w = await fileHandle.createWritable();
@@ -860,11 +1021,11 @@ async function useFile(h, readFirst) {
   if (fileState === 'ok') toast('Saving to ' + h.name);
 }
 async function fileCreate() {
-  try { await useFile(await showSaveFilePicker({ suggestedName: 'Ping-data.json', types: FILE_TYPES }), false); }
+  try { await useFile(await showSaveFilePicker({ suggestedName: 'Ping-data.json', types: FILE_TYPES, startIn: 'documents', id: 'ping-data' }), false); }
   catch (e) { if (e.name !== 'AbortError') toast('Could not create the file: ' + e.message); }
 }
 async function fileOpen() {
-  try { const [h] = await showOpenFilePicker({ types: FILE_TYPES }); await useFile(h, true); }
+  try { const [h] = await showOpenFilePicker({ types: FILE_TYPES, startIn: 'documents', id: 'ping-data' }); await useFile(h, true); }
   catch (e) { if (e.name !== 'AbortError') toast('Could not open the file: ' + e.message); }
 }
 async function fileReconnect() {
@@ -890,12 +1051,17 @@ async function initFile() {
     try {
       if (await fileHandle.queryPermission({ mode: 'readwrite' }) === 'granted') {
         fileState = 'ok';
-        try { await loadFromFileIfNewer(); } catch (e) { }
-        await writeFile();
+        await syncWithFile();
       } else fileState = 'needs-permission';
     } catch (e) { fileState = 'error'; fileError = e.message; }
   }
   updateFileUi();
+}
+// Take the file's data if it is newer, then write ours. Only the editing window does this.
+async function syncWithFile() {
+  if (!isActiveWindow || !fileHandle || fileState !== 'ok') return;
+  try { await loadFromFileIfNewer(); } catch (e) { }
+  await writeFile();
 }
 function updateFileUi() {
   $('fileCard').hidden = !fileApi;
@@ -908,6 +1074,7 @@ function updateFileUi() {
   else if (fileState === 'ok') st.textContent = '✓ Also saving to “' + fileHandle.name + '”' + (fileSavedAt ? ', last saved ' + fmtTime(new Date(fileSavedAt)) : '') + '.';
   else if (fileState === 'needs-permission') st.textContent = 'Save file “' + fileHandle.name + '” needs one click to reconnect (Edge asks again after a restart).';
   else st.textContent = 'Couldn’t write to “' + fileHandle.name + '”: ' + fileError;
+  updateSaveChip();
 }
 
 // ---------------------------------------------------------------- dates
@@ -1068,7 +1235,16 @@ async function copyText(text) {
 
 // ---------------------------------------------------------------- toast & popover
 let toastTimer;
-function toast(msg) { const t = $('toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => t.hidden = true, 2600); }
+let toastAction = null;
+function toast(msg, actionLabel, actionFn) {
+  const t = $('toast'), b = $('toastAct');
+  $('toastMsg').textContent = msg;
+  b.hidden = !actionLabel; b.textContent = actionLabel || '';
+  toastAction = actionFn || null;
+  t.hidden = false; clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.hidden = true; toastAction = null; }, actionLabel ? 8000 : 2600);
+}
+$('toastAct').addEventListener('click', () => { const f = toastAction; toastAction = null; $('toast').hidden = true; if (f) f(); });
 
 function snoozeOptions() {
   const now = new Date(), o = [];
@@ -1101,7 +1277,7 @@ function complete(r) { if (r.repeat === 'none') { r.done = true; r.completedAt =
 function stopRepeating(r) { r.done = true; r.completedAt = Date.now(); r.snoozeUntil = null; closeAlert(r.id); changed(); }
 function reopen(r) { r.done = false; r.completedAt = null; r.fired = r.due <= Date.now(); changed(); }
 function snooze(r, until) { r.snoozeUntil = until; r.done = false; closeAlert(r.id); changed(); toast('Snoozed until ' + fmtWhen(new Date(until))); }
-function remove(r) { S.reminders = S.reminders.filter(x => x !== r); closeAlert(r.id); changed(); toast('Reminder deleted'); }
+function remove(r) { undoable('Reminder deleted', () => { S.reminders = S.reminders.filter(x => x !== r); closeAlert(r.id); changed(); }); }
 function newReminder(fields) {
   return Object.assign({ id: uid(), title: '', notes: '', due: defaultDue(), repeat: 'none', every: null, cron: null, tags: [], priority: 0,
     done: false, fired: false, snoozeUntil: null, created: Date.now(), completedAt: null }, fields);
@@ -1270,7 +1446,7 @@ $('groups').addEventListener('click', e => {
     case 'snooze': openPop(b, snoozeOptions().map(([l, t]) => [l, () => snooze(r, t)])); break;
     case 'ics': downloadIcs(r); break;
     case 'edit': openEditor(r, false); break;
-    case 'delete': if (confirm('Delete “' + r.title + '”?')) remove(r); break;
+    case 'delete': remove(r); break;
   }
 });
 $('groups').addEventListener('dblclick', e => {
@@ -1386,7 +1562,7 @@ $('editForm').addEventListener('submit', e => {
   maybeAskNotif();
 });
 $('edDelete').addEventListener('click', () => {
-  if (edCtx && confirm('Delete “' + edCtx.r.title + '”?')) { const r = edCtx.r; closeEditor(); remove(r); }
+  if (edCtx) { const r = edCtx.r; closeEditor(); remove(r); }
 });
 $('editor').addEventListener('mousedown', e => { if (e.target === $('editor')) closeEditor(); });
 
@@ -1559,6 +1735,7 @@ function claim(key) {
   return true;
 }
 function check() {
+  if (!isActiveWindow) return;   // reminders fire only in the window that holds the editor lock
   const now = Date.now(); let dirty = false;
   for (const r of S.reminders) {
     if (r.done) continue;
@@ -1697,6 +1874,7 @@ function showTab(name) {
   if (name !== 'notes') flushNote();
   if (name === 'notes') { renderNotes(); if (!curNote && S.notes.length) loadNote(sortedNotes()[0]); }
   if (name === 'reminders') quickInput.focus();
+  if (name === 'settings') renderSnapshots();
 }
 const currentTab = () => document.querySelector('.tabs [aria-selected="true"]').dataset.tab;
 document.querySelector('.tabs').addEventListener('click', e => { const b = e.target.closest('button[data-tab]'); if (b) showTab(b.dataset.tab); });
@@ -1727,8 +1905,10 @@ document.addEventListener('click', e => {
     case 'new-note': newNote(); break;
     case 'daily-log': dailyLog(); break;
     case 'del-note':
-      if (curNote && (!curNote.text.trim() || confirm('Delete the note “' + noteTitle(curNote) + '”?'))) {
-        S.notes = S.notes.filter(n => n !== curNote); curNote = null; clearTimeout(noteTimer); noteTimer = null; save(); loadNote(null); toast('Note deleted');
+      if (curNote) {
+        const gone = curNote;
+        clearTimeout(noteTimer); noteTimer = null;
+        undoable('Note deleted', () => { S.notes = S.notes.filter(n => n !== gone); curNote = null; save(); loadNote(null); });
       }
       break;
     case 'note-pin': if (curNote) { curNote.pinned = !curNote.pinned; save(); renderNotes(); } break;
@@ -1745,8 +1925,75 @@ document.addEventListener('click', e => {
     case 'file-open': fileOpen(); break;
     case 'file-reconnect': fileReconnect(); break;
     case 'file-stop': fileStop(); break;
+    case 'snap-restore': restoreSnapshot(); break;
+    case 'setup-open-wizard': openSetup(1, true); break;
+    case 'setup-create': fileCreate().then(() => { if (fileHandle) openSetup(2); }); break;
+    case 'setup-open': fileOpen().then(() => { if (fileHandle) openSetup(2); }); break;
+    case 'setup-skip': openSetup(2); break;
+    case 'setup-notif': askNotif().then(finishSetup); break;
+    case 'setup-done': finishSetup(); break;
+    case 'lock-take': claimWindow(true); break;
+    case 'startup-guide': openStartupGuide(); break;
+    case 'close-startup': $('startupDlg').hidden = true; break;
+    case 'copy-ping-url': copyText(pingUrl()); break;
+    case 'copy-settings-url': copyText($('settingsUrl').textContent); break;
   }
 });
+
+// ---------------------------------------------------------------- first-run setup (save file + notifications)
+function openSetup(step, force) {
+  if (step === 1 && (!fileApi || (fileHandle && !force))) step = 2;
+  if (step === 2 && (!canNotify() || Notification.permission !== 'default')) { finishSetup(); return; }
+  $('setupStep1').hidden = step !== 1;
+  $('setupStep2').hidden = step !== 2;
+  $('setupDlg').hidden = false;
+}
+function finishSetup() {
+  $('setupDlg').hidden = true;
+  if (!S.settings.onboarded) { S.settings.onboarded = true; save(); }
+}
+
+// ---------------------------------------------------------------- open Ping when the browser starts
+const pingUrl = () => location.protocol.startsWith('http') ? location.origin + location.pathname.replace(/index\.html$/, '') : location.href;
+function openStartupGuide() {
+  const brave = !!navigator.brave;
+  $('pingUrl').textContent = pingUrl();
+  $('settingsUrl').textContent = brave ? 'brave://settings/getStarted' : 'edge://settings/startHomeNTP';
+  $('startupBrave').hidden = !brave;
+  $('startupDlg').querySelector('ol li:nth-child(3)').innerHTML = brave
+    ? 'Under <strong>”Vid start”</strong>: välj <strong>”Öppna en viss sida eller uppsättning sidor”</strong>, klicka <strong>”Lägg till en ny sida”</strong> och klistra in Pings länk.'
+    : 'Under <strong>”När Microsoft Edge startar”</strong>: välj <strong>”Öppna de här sidorna”</strong>, klicka <strong>”Lägg till en ny sida”</strong> och klistra in Pings länk.';
+  $('startupDlg').hidden = false;
+}
+
+// ---------------------------------------------------------------- one editing window at a time
+// The window holding the "ping-editor" lock saves and fires reminders; any other window shows a notice.
+function claimWindow(steal) {
+  if (!navigator.locks) return;
+  let answered = false;
+  setTimeout(() => { if (!answered && !isActiveWindow) setActiveWindow(true); }, 2000);   // never get stuck read-only
+  navigator.locks.request('ping-editor', steal ? { steal: true } : { ifAvailable: true }, lock => {
+    answered = true;
+    if (!lock) { setActiveWindow(false); return; }
+    setActiveWindow(true);
+    return new Promise(() => { });   // hold the lock for as long as this window is open
+  }).catch(() => {                  // another window took over
+    if (noteTimer) saveNow();
+    setActiveWindow(false);
+  });
+}
+function setActiveWindow(on) {
+  const was = isActiveWindow;
+  if (!on && was && noteTimer) saveNow();
+  isActiveWindow = on;
+  $('lockDlg').hidden = on;
+  if (on && !was) { S = load(); curNote = null; renderAll(); check(); syncWithFile().then(maybeOnboard); }
+  if (!on) [...openAlerts.keys()].forEach(closeAlert);
+}
+let fileInitDone = false;
+function maybeOnboard() {
+  if (isActiveWindow && fileInitDone && !S.settings.onboarded && $('setupDlg').hidden) openSetup(1);
+}
 $('keysDlg').addEventListener('mousedown', e => { if (e.target === $('keysDlg')) $('keysDlg').hidden = true; });
 $('importFile').addEventListener('change', async e => {
   const f = e.target.files[0]; e.target.value = '';
@@ -1777,7 +2024,8 @@ document.addEventListener('keydown', e => {
   }
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); closeEditor(); showTab('reminders'); quickInput.focus(); quickInput.select(); return; }
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'e' && currentTab() === 'notes') { e.preventDefault(); setNoteView(noteView === 'edit' ? 'preview' : 'edit'); return; }
-  if (e.ctrlKey || e.metaKey || e.altKey || typing(document.activeElement) || !$('editor').hidden || !$('keysDlg').hidden) return;
+  if (e.ctrlKey || e.metaKey || e.altKey || typing(document.activeElement) || !$('editor').hidden || !$('keysDlg').hidden
+      || !$('setupDlg').hidden || !$('lockDlg').hidden || !$('startupDlg').hidden || !isActiveWindow) return;
   if (e.key === '?') { $('keysDlg').hidden = false; return; }
   if (e.key === '1') return showTab('reminders');
   if (e.key === '2') return showTab('notes');
@@ -1793,7 +2041,7 @@ document.addEventListener('keydown', e => {
     case 'e': case 'Enter': if (r) openEditor(r, false); break;
     case 's': if (r && !r.done) { const li = document.querySelector(`.rem[data-id="${r.id}"] [data-act="snooze"]`) || document.querySelector(`.rem[data-id="${r.id}"]`); if (li) openPop(li, snoozeOptions().map(([l, t]) => [l, () => snooze(r, t)])); } break;
     case 'o': if (r) { const u = firstLink(r.title + ' ' + r.notes); if (u) window.open(u, '_blank', 'noopener'); else toast('No link in this reminder'); } break;
-    case 'Delete': if (r && confirm('Delete “' + r.title + '”?')) remove(r); break;
+    case 'Delete': if (r) remove(r); break;
   }
 });
 
@@ -1806,6 +2054,7 @@ addEventListener('storage', e => {
   renderReminders(); renderNotes(); updateTitle();
 });
 function saveNow() {
+  if (!isActiveWindow) return;   // a window that isn't editing must never overwrite newer data
   if (noteTimer) { clearTimeout(noteTimer); noteTimer = null; }
   if (curNote && !curNote.text.trim()) { S.notes = S.notes.filter(n => n !== curNote); curNote = null; }
   S.savedAt = Date.now();
@@ -1835,9 +2084,20 @@ if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
 }
 
 // ---------------------------------------------------------------- start
+$('saveChip').addEventListener('click', () => {
+  if (fileHandle && fileState === 'needs-permission') fileReconnect();
+  else if (!fileHandle && fileApi) openSetup(1, true);
+  else showTab('settings');
+});
 renderAll();
 updateQuickPreview();
-initFile();
+updateSaveChip();
+claimWindow(false);                     // become the editing window (or show the "already open" notice)
+initFile().then(() => {
+  fileInitDone = true;
+  maybeOnboard();
+  snapshotDaily();
+});
 check();                                // catch up on anything missed while closed
 setInterval(check, 5000);
 setInterval(() => { if (!document.hidden && $('editor').hidden) renderReminders(); if (!quickInput.value.trim() || document.activeElement !== quickInput) updateQuickPreview(); }, 30000);
