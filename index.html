@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="en">
+<html lang="sv">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Ping</title>
-<meta name="description" content="Reminders and notes for engineers: natural-language quick add, cron schedules, tags, Markdown notes.">
+<meta name="description" content="Påminnelser och anteckningar för utvecklare: snabbinmatning med vanligt språk, cron-scheman, taggar och Markdown-anteckningar.">
 <meta name="theme-color" content="#0d7c72">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -308,48 +308,48 @@ label.check input { margin-top: 3px; accent-color: var(--accent); }
       <svg viewBox="0 0 64 64" aria-hidden="true"><rect x="2" y="2" width="60" height="60" rx="15" fill="var(--accent)"/><path d="M32 13a3 3 0 0 1 3 3v1.5c6 1.4 9.5 6.4 9.5 12.5v8l4 5.5H15.5l4-5.5v-8c0-6.1 3.5-11.1 9.5-12.5V16a3 3 0 0 1 3-3z" fill="var(--accent-ink)"/><ellipse cx="32" cy="49" rx="5" ry="3.6" fill="var(--accent-ink)"/></svg>
       <b>Ping</b><small id="clock"></small>
     </div>
-    <button class="chip" id="saveChip" type="button"><span class="dot"></span><span id="saveChipText">Saved</span></button>
-    <button class="chip" id="notifChip" type="button"><span class="dot"></span><span id="notifChipText">Notifications</span></button>
+    <button class="chip" id="saveChip" type="button"><span class="dot"></span><span id="saveChipText">Sparat</span></button>
+    <button class="chip" id="notifChip" type="button"><span class="dot"></span><span id="notifChipText">Aviseringar</span></button>
     <nav class="tabs" role="tablist">
-      <button role="tab" data-tab="reminders" aria-selected="true" type="button">Reminders</button>
-      <button role="tab" data-tab="notes" aria-selected="false" type="button">Notes</button>
-      <button role="tab" data-tab="settings" aria-selected="false" type="button">Settings</button>
+      <button role="tab" data-tab="reminders" aria-selected="true" type="button" data-i18n="tabReminders">Påminnelser</button>
+      <button role="tab" data-tab="notes" aria-selected="false" type="button" data-i18n="tabNotes">Anteckningar</button>
+      <button role="tab" data-tab="settings" aria-selected="false" type="button" data-i18n="tabSettings">Inställningar</button>
     </nav>
-    <button class="icon-btn" type="button" data-act="keys" title="Keyboard shortcuts (?)" aria-label="Keyboard shortcuts">?</button>
+    <button class="icon-btn" type="button" data-act="keys" title="Kortkommandon (?)" aria-label="Kortkommandon" data-i18n-title="keysBtnTitle" data-i18n-aria="keysH">?</button>
   </header>
 
   <div class="banner" id="notifBanner" hidden>
-    <p lang="sv"><strong>Slå på aviseringar</strong> så att dina påminnelser syns i hörnet av skärmen, även när Ping ligger bakom andra fönster. Ping använder dem bara för påminnelser som du själv skapat, och inget skickas via internet.</p>
-    <button class="btn primary sm" type="button" data-act="ask-notif">Tillåt aviseringar</button>
-    <button class="btn ghost sm" type="button" data-act="hide-banner">Inte nu</button>
+    <p data-i18n="bannerNotif"><strong>Slå på aviseringar</strong> så att dina påminnelser syns i hörnet av skärmen, även när Ping ligger bakom andra fönster. Ping använder dem bara för påminnelser som du själv skapat, och inget skickas via internet.</p>
+    <button class="btn primary sm" type="button" data-act="ask-notif" data-i18n="allowNotif">Tillåt aviseringar</button>
+    <button class="btn ghost sm" type="button" data-act="hide-banner" data-i18n="notNow">Inte nu</button>
   </div>
   <div class="banner" id="fileBanner" hidden>
-    <p lang="sv"><strong>Ping behöver ett klick för att fortsätta spara i din fil.</strong> Webbläsaren frågar om lov igen efter en omstart. Det är en säkerhetsfunktion, inte ett fel. Välj gärna ”Tillåt vid varje besök” så slipper du frågan. Inget har försvunnit, allt finns kvar i webbläsaren under tiden.</p>
-    <button class="btn primary sm" type="button" data-act="file-reconnect">Återanslut</button>
+    <p data-i18n="bannerFile"><strong>Ping behöver ett klick för att fortsätta spara i din fil.</strong> Webbläsaren frågar om lov igen efter en omstart. Det är en säkerhetsfunktion, inte ett fel. Välj gärna ”Tillåt vid varje besök” så slipper du frågan. Inget har försvunnit, allt finns kvar i webbläsaren under tiden.</p>
+    <button class="btn primary sm" type="button" data-act="file-reconnect" data-i18n="reconnect">Återanslut</button>
   </div>
 
   <!-- REMINDERS -->
   <section id="view-reminders">
     <div class="quick">
       <div class="quick-row">
-        <input id="quickInput" type="text" autocomplete="off" spellcheck="false" placeholder="Check DAG failures every 30 min #airflow !!" aria-label="New reminder">
-        <button class="btn primary" type="button" data-act="quick-add">Add</button>
-        <button class="btn" type="button" data-act="quick-more">More…</button>
+        <input id="quickInput" type="text" autocomplete="off" spellcheck="false" placeholder="Kolla DAG-fel var 30 min #airflow !!" aria-label="Ny påminnelse" data-i18n-ph="quickPh" data-i18n-aria="edNew">
+        <button class="btn primary" type="button" data-act="quick-add" data-i18n="add">Lägg till</button>
+        <button class="btn" type="button" data-act="quick-more" data-i18n="more">Mer…</button>
       </div>
       <div class="preview" id="quickPreview"></div>
     </div>
 
     <div class="toolbar" style="margin-top:14px">
       <div class="filters" id="filters">
-        <button type="button" data-f="upcoming" aria-pressed="true">Upcoming</button>
-        <button type="button" data-f="today" aria-pressed="false">Today</button>
-        <button type="button" data-f="overdue" aria-pressed="false">Overdue</button>
-        <button type="button" data-f="repeat" aria-pressed="false">Recurring</button>
-        <button type="button" data-f="done" aria-pressed="false">Done</button>
-        <button type="button" data-f="all" aria-pressed="false">All</button>
+        <button type="button" data-f="upcoming" aria-pressed="true" data-i18n="fUpcoming">Kommande</button>
+        <button type="button" data-f="today" aria-pressed="false" data-i18n="fToday">Idag</button>
+        <button type="button" data-f="overdue" aria-pressed="false" data-i18n="fOverdue">Försenade</button>
+        <button type="button" data-f="repeat" aria-pressed="false" data-i18n="fRepeat">Återkommande</button>
+        <button type="button" data-f="done" aria-pressed="false" data-i18n="fDone">Klara</button>
+        <button type="button" data-f="all" aria-pressed="false" data-i18n="fAll">Alla</button>
       </div>
       <span class="count" id="count"></span>
-      <input class="search" id="search" type="search" placeholder="Search  /" aria-label="Search reminders">
+      <input class="search" id="search" type="search" placeholder="Sök  /" aria-label="Sök påminnelser" data-i18n-ph="searchPh" data-i18n-aria="searchAria">
     </div>
     <div class="tagbar" id="tagbar" style="margin-top:8px"></div>
     <div class="groups" id="groups" style="margin-top:12px"></div>
@@ -359,26 +359,26 @@ label.check input { margin-top: 3px; accent-color: var(--accent); }
   <section id="view-notes" hidden>
     <div class="notes">
       <div class="note-side">
-        <input class="search" id="noteSearch" type="search" placeholder="Search notes" aria-label="Search notes">
-        <ul class="note-list" id="noteList" role="listbox" aria-label="Notes"></ul>
+        <input class="search" id="noteSearch" type="search" placeholder="Sök anteckningar" aria-label="Sök anteckningar" data-i18n-ph="noteSearchPh" data-i18n-aria="noteSearchPh">
+        <ul class="note-list" id="noteList" role="listbox" aria-label="Anteckningar" data-i18n-aria="tabNotes"></ul>
         <div class="row">
-          <button class="btn primary" type="button" data-act="new-note">New note</button>
-          <button class="btn" type="button" data-act="daily-log" title="Today's standup note, filled from your reminders">Daily log</button>
-          <button class="btn danger ghost" type="button" data-act="del-note" id="delNoteBtn">Delete</button>
+          <button class="btn primary" type="button" data-act="new-note" data-i18n="newNote">Ny anteckning</button>
+          <button class="btn" type="button" data-act="daily-log" title="Dagens standup-anteckning, ifylld från dina påminnelser" data-i18n="dailyLog" data-i18n-title="dailyLogTitle">Dagslogg</button>
+          <button class="btn danger ghost" type="button" data-act="del-note" id="delNoteBtn" data-i18n="delete">Ta bort</button>
         </div>
       </div>
       <div class="note-main">
         <div class="note-bar">
-          <span class="status" id="noteStatus">Start typing to create a note. Markdown works, and it saves automatically.</span>
-          <div class="seg" role="group" aria-label="Note view">
-            <button type="button" data-view="edit" aria-pressed="true">Edit</button>
-            <button type="button" data-view="preview" aria-pressed="false">Preview</button>
+          <span class="status" id="noteStatus"></span>
+          <div class="seg" role="group" aria-label="Anteckningsvy" data-i18n-aria="noteViewAria">
+            <button type="button" data-view="edit" aria-pressed="true" data-i18n="edit">Redigera</button>
+            <button type="button" data-view="preview" aria-pressed="false" data-i18n="preview">Förhandsvisa</button>
           </div>
-          <button class="btn sm" type="button" data-act="note-pin" id="notePinBtn">Pin</button>
-          <button class="btn sm" type="button" data-act="note-copy" id="noteCopyBtn">Copy</button>
-          <button class="btn sm" type="button" data-act="note-remind" id="noteRemindBtn">Remind me…</button>
+          <button class="btn sm" type="button" data-act="note-pin" id="notePinBtn">Fäst</button>
+          <button class="btn sm" type="button" data-act="note-copy" id="noteCopyBtn" data-i18n="copy">Kopiera</button>
+          <button class="btn sm" type="button" data-act="note-remind" id="noteRemindBtn" data-i18n="remindMe">Påminn mig…</button>
         </div>
-        <textarea id="noteText" spellcheck="false" placeholder="# Title&#10;&#10;Write anything. Markdown works: **bold**, `code`, ```sql blocks```, - [ ] tasks, | tables |" aria-label="Note text"></textarea>
+        <textarea id="noteText" spellcheck="false" placeholder="# Rubrik&#10;&#10;Skriv vad som helst. Markdown fungerar: **fetstil**, `kod`, ```sql-block```, - [ ] uppgifter, | tabeller |" aria-label="Anteckningstext" data-i18n-ph="notePh" data-i18n-aria="noteAria"></textarea>
         <div class="md" id="notePreview" hidden></div>
       </div>
     </div>
@@ -388,74 +388,83 @@ label.check input { margin-top: 3px; accent-color: var(--accent); }
   <section id="view-settings" hidden>
     <div class="settings">
       <div class="card">
-        <h3>Notifications</h3>
-        <p id="notifStatus"></p>
+        <h3>Språk · Language</h3>
         <div class="row">
-          <button class="btn primary" type="button" data-act="ask-notif">Allow notifications</button>
-          <button class="btn" type="button" data-act="test-alert">Send a test reminder</button>
+          <div class="seg" id="langSeg" role="group" aria-label="Språk / Language">
+            <button type="button" data-lang-set="sv" aria-pressed="true" lang="sv">Svenska</button>
+            <button type="button" data-lang-set="en" aria-pressed="false" lang="en">English</button>
+          </div>
         </div>
-        <label class="check"><input type="checkbox" id="setSound"> <span>Play a sound when a reminder is due</span></label>
       </div>
       <div class="card">
-        <h3>Ticket links</h3>
-        <p>Ticket IDs like <code>DATA-123</code> in reminders and notes become links. Use <code>{key}</code> where the ID goes.</p>
+        <h3 data-i18n="notifications">Aviseringar</h3>
+        <p id="notifStatus"></p>
+        <div class="row">
+          <button class="btn primary" type="button" data-act="ask-notif" data-i18n="allowNotif">Tillåt aviseringar</button>
+          <button class="btn" type="button" data-act="test-alert" data-i18n="testAlert">Skicka en testpåminnelse</button>
+        </div>
+        <label class="check"><input type="checkbox" id="setSound"> <span data-i18n="soundLabel">Spela ett ljud när en påminnelse är dags</span></label>
+      </div>
+      <div class="card">
+        <h3 data-i18n="ticketsH">Ärendelänkar</h3>
+        <p data-i18n="ticketsP">Ärende-ID:n som <code>DATA-123</code> i påminnelser och anteckningar blir länkar. Skriv <code>{key}</code> där ID:t ska stå.</p>
         <div class="row">
           <input class="input wide" id="setTicket" type="text" spellcheck="false" placeholder="https://yourcompany.atlassian.net/browse/{key}">
         </div>
-        <p>Azure DevOps example: <code>https://dev.azure.com/org/project/_workitems/edit/{num}</code>. <code>{num}</code> is the number part only.</p>
+        <p data-i18n="ticketsAdo">Exempel för Azure DevOps: <code>https://dev.azure.com/org/project/_workitems/edit/{num}</code>. <code>{num}</code> är bara siffrorna.</p>
       </div>
       <div class="card">
-        <h3>Look and feel</h3>
-        <div class="palettes" id="paletteSet" role="group" aria-label="Theme">
-          <button type="button" data-palette-set="lagoon" aria-pressed="true"><span class="sw"><i style="background:#0d7c72"></i><i style="background:#f4f7f6"></i><i style="background:#141f1d"></i></span>Lagoon<small>Calm teal, the default</small></button>
-          <button type="button" data-palette-set="fjord" aria-pressed="false"><span class="sw"><i style="background:#2457c5"></i><i style="background:#f3f5f9"></i><i style="background:#131a27"></i></span>Fjord<small>Cool blue and slate</small></button>
-          <button type="button" data-palette-set="solarized" aria-pressed="false"><span class="sw"><i style="background:#268bd2"></i><i style="background:#fdf6e3"></i><i style="background:#002b36"></i></span>Solarized<small>The classic editor palette</small></button>
+        <h3 data-i18n="lookH">Utseende</h3>
+        <div class="palettes" id="paletteSet" role="group" aria-label="Tema" data-i18n-aria="themeAria">
+          <button type="button" data-palette-set="lagoon" aria-pressed="true"><span class="sw"><i style="background:#0d7c72"></i><i style="background:#f4f7f6"></i><i style="background:#141f1d"></i></span>Lagoon<small data-i18n="palLagoon">Lugn turkos, standard</small></button>
+          <button type="button" data-palette-set="fjord" aria-pressed="false"><span class="sw"><i style="background:#2457c5"></i><i style="background:#f3f5f9"></i><i style="background:#131a27"></i></span>Fjord<small data-i18n="palFjord">Sval blå och skiffergrå</small></button>
+          <button type="button" data-palette-set="solarized" aria-pressed="false"><span class="sw"><i style="background:#268bd2"></i><i style="background:#fdf6e3"></i><i style="background:#002b36"></i></span>Solarized<small data-i18n="palSolarized">Den klassiska editorpaletten</small></button>
         </div>
         <div class="row">
-          <span class="count">Mode</span>
-          <div class="seg" id="themeSeg" role="group" aria-label="Light or dark mode">
+          <span class="count" data-i18n="mode">Läge</span>
+          <div class="seg" id="themeSeg" role="group" aria-label="Ljust eller mörkt läge" data-i18n-aria="modeAria">
             <button type="button" data-theme-set="system" aria-pressed="true">System</button>
-            <button type="button" data-theme-set="light" aria-pressed="false">Light</button>
-            <button type="button" data-theme-set="dark" aria-pressed="false">Dark</button>
+            <button type="button" data-theme-set="light" aria-pressed="false" data-i18n="light">Ljust</button>
+            <button type="button" data-theme-set="dark" aria-pressed="false" data-i18n="dark">Mörkt</button>
           </div>
         </div>
-        <label class="check"><input type="checkbox" id="setMono"> <span>Monospace font in the note editor</span></label>
-        <label class="check"><input type="checkbox" id="setUtc"> <span>Show the UTC clock next to the name</span></label>
+        <label class="check"><input type="checkbox" id="setMono"> <span data-i18n="monoLabel">Monospace-typsnitt i anteckningseditorn</span></label>
+        <label class="check"><input type="checkbox" id="setUtc"> <span data-i18n="utcLabel">Visa UTC-klockan bredvid namnet</span></label>
       </div>
       <div class="card">
         <h3>Outlook</h3>
-        <p>Every reminder has an “Outlook” action. It downloads a calendar file; open it and click <em>Save &amp; Close</em> in Outlook. Outlook then reminds you on this PC and your phone, even when Ping is closed. Interval repeats are included; for cron schedules Outlook gets the next run only.</p>
-        <label class="check"><input type="checkbox" id="setIcs"> <span>Download an Outlook calendar entry automatically each time I save a reminder</span></label>
+        <p data-i18n="outlookP">Varje påminnelse har en ”Outlook”-knapp. Den laddar ner en kalenderfil; öppna den och klicka på <em>Spara och stäng</em> i Outlook. Då påminner Outlook dig på den här datorn och i mobilen, även när Ping är stängt. Intervallupprepningar följer med; för cron-scheman får Outlook bara nästa körning.</p>
+        <label class="check"><input type="checkbox" id="setIcs"> <span data-i18n="icsLabel">Ladda ner en Outlook-kalenderpost automatiskt varje gång jag sparar en påminnelse</span></label>
       </div>
       <div class="card">
-        <h3>Your data</h3>
-        <p>Everything saves automatically the moment you change it, and stays saved when you close the window. It is kept on this PC only. Reminders pop up only while Ping is open, so minimise it rather than closing it. Anything missed while it was closed appears when you open it again.</p>
+        <h3 data-i18n="dataH">Dina data</h3>
+        <p data-i18n="dataP">Allt sparas automatiskt så fort du ändrar något och finns kvar när du stänger fönstret. Det lagras bara på den här datorn. Påminnelser dyker bara upp medan Ping är öppet, så minimera det i stället för att stänga det. Det du missat medan det var stängt visas när du öppnar det igen.</p>
         <div id="fileCard" class="row" hidden>
           <p style="flex:1 1 100%" id="fileStatus"></p>
-          <button class="btn primary" type="button" data-act="file-create">Create a save file…</button>
-          <button class="btn" type="button" data-act="file-open">Use an existing save file…</button>
-          <button class="btn ghost" type="button" data-act="file-reconnect" id="fileReconnectBtn" hidden>Reconnect</button>
-          <button class="btn ghost danger" type="button" data-act="file-stop" id="fileStopBtn" hidden>Stop using the file</button>
+          <button class="btn primary" type="button" data-act="file-create" data-i18n="fileCreate">Skapa en sparfil…</button>
+          <button class="btn" type="button" data-act="file-open" data-i18n="fileOpen">Använd en befintlig sparfil…</button>
+          <button class="btn ghost" type="button" data-act="file-reconnect" id="fileReconnectBtn" hidden data-i18n="reconnect">Återanslut</button>
+          <button class="btn ghost danger" type="button" data-act="file-stop" id="fileStopBtn" hidden data-i18n="fileStop">Sluta använda filen</button>
         </div>
         <div class="row">
-          <button class="btn" type="button" data-act="export">Download backup (JSON)</button>
-          <button class="btn" type="button" data-act="export-csv">Export reminders (CSV)</button>
-          <button class="btn" type="button" data-act="import">Restore from backup…</button>
+          <button class="btn" type="button" data-act="export" data-i18n="export">Ladda ner säkerhetskopia (JSON)</button>
+          <button class="btn" type="button" data-act="export-csv" data-i18n="exportCsv">Exportera påminnelser (CSV)</button>
+          <button class="btn" type="button" data-act="import" data-i18n="import">Återställ från säkerhetskopia…</button>
           <input type="file" id="importFile" accept=".json,application/json" hidden>
           <span class="count" id="dataCount"></span>
         </div>
         <div class="row">
-          <span class="count">Automatic daily copies (last 14 days)</span>
-          <select class="input" id="snapSelect" aria-label="Automatic copies"></select>
-          <button class="btn" type="button" data-act="snap-restore">Restore this copy</button>
+          <span class="count" data-i18n="snapsLabel">Automatiska dagliga kopior (senaste 14 dagarna)</span>
+          <select class="input" id="snapSelect" aria-label="Automatiska kopior" data-i18n-aria="snapsAria"></select>
+          <button class="btn" type="button" data-act="snap-restore" data-i18n="snapRestore">Återställ den här kopian</button>
         </div>
         <p id="persistStatus"></p>
-        <div class="row"><button class="btn ghost" type="button" data-act="setup-open-wizard">Run the save setup again</button></div>
+        <div class="row"><button class="btn ghost" type="button" data-act="setup-open-wizard" data-i18n="rerunSetup">Kör sparguiden igen</button></div>
       </div>
       <div class="card">
-        <h3>Open Ping when the browser starts</h3>
-        <p>Then Ping is always running, so you never miss a reminder. A web page isn’t allowed to change the browser’s startup settings itself, so this takes three quick steps; the button shows you how.</p>
-        <div class="row"><button class="btn primary" type="button" data-act="startup-guide">Show me how</button></div>
+        <h3 data-i18n="startupH">Öppna Ping när webbläsaren startar</h3>
+        <p data-i18n="startupP">Då är Ping alltid igång och du missar aldrig en påminnelse. En webbsida får inte ändra webbläsarens startinställningar själv, så det tar tre snabba steg; knappen visar hur.</p>
+        <div class="row"><button class="btn primary" type="button" data-act="startup-guide" data-i18n="showMe">Visa hur</button></div>
       </div>
     </div>
   </section>
@@ -464,93 +473,93 @@ label.check input { margin-top: 3px; accent-color: var(--accent); }
 <!-- editor -->
 <div class="scrim" id="editor" hidden>
   <form class="modal" id="editForm" autocomplete="off">
-    <h2 id="edHeading">New reminder</h2>
-    <label class="field"><span>What</span><input type="text" id="edTitle" required placeholder="What do you want to be reminded about?"></label>
+    <h2 id="edHeading">Ny påminnelse</h2>
+    <label class="field"><span data-i18n="what">Vad</span><input type="text" id="edTitle" required placeholder="Vad vill du bli påmind om?" data-i18n-ph="whatPh"></label>
     <div class="field">
-      <span>When</span>
+      <span data-i18n="when">När</span>
       <div class="row"><input type="datetime-local" id="edWhen" required style="max-width:240px"> <span class="rel" id="edRel"></span></div>
       <div class="quickchips" id="edChips">
         <button class="btn sm" type="button" data-q="15m">+15 min</button>
-        <button class="btn sm" type="button" data-q="1h">+1 hour</button>
-        <button class="btn sm" type="button" data-q="3h">+3 hours</button>
-        <button class="btn sm" type="button" data-q="tonight">Tonight 19:00</button>
-        <button class="btn sm" type="button" data-q="tomorrow">Tomorrow 09:00</button>
-        <button class="btn sm" type="button" data-q="monday">Monday 09:00</button>
+        <button class="btn sm" type="button" data-q="1h" data-i18n="plus1h">+1 timme</button>
+        <button class="btn sm" type="button" data-q="3h" data-i18n="plus3h">+3 timmar</button>
+        <button class="btn sm" type="button" data-q="tonight" data-i18n="tonight19">Ikväll 19:00</button>
+        <button class="btn sm" type="button" data-q="tomorrow" data-i18n="tomorrow9">Imorgon 09:00</button>
+        <button class="btn sm" type="button" data-q="monday" data-i18n="monday9">Måndag 09:00</button>
       </div>
     </div>
     <div class="two">
-      <label class="field"><span>Repeat</span>
+      <label class="field"><span data-i18n="repeat">Upprepa</span>
         <select id="edRepeat">
-          <option value="none">Does not repeat</option>
-          <option value="interval">Every N minutes / hours</option>
-          <option value="daily">Every day</option>
-          <option value="weekdays">Every weekday (Mon–Fri)</option>
-          <option value="weekly">Every week</option>
-          <option value="monthly">Every month</option>
-          <option value="yearly">Every year</option>
-          <option value="cron">Cron schedule</option>
+          <option value="none" data-i18n="rNone">Upprepas inte</option>
+          <option value="interval" data-i18n="rInterval">Var N:e minut / timme</option>
+          <option value="daily" data-i18n="repDaily">Varje dag</option>
+          <option value="weekdays" data-i18n="rWeekdays">Varje vardag (mån–fre)</option>
+          <option value="weekly" data-i18n="repWeekly">Varje vecka</option>
+          <option value="monthly" data-i18n="repMonthly">Varje månad</option>
+          <option value="yearly" data-i18n="repYearly">Varje år</option>
+          <option value="cron" data-i18n="rCron">Cron-schema</option>
         </select>
       </label>
-      <label class="field"><span>Priority</span>
+      <label class="field"><span data-i18n="prio">Prioritet</span>
         <select id="edPrio">
-          <option value="0">None</option>
-          <option value="1">Low</option>
-          <option value="2">Medium</option>
-          <option value="3">High</option>
+          <option value="0" data-i18n="pNone">Ingen</option>
+          <option value="1" data-i18n="pLow">Låg</option>
+          <option value="2" data-i18n="pMed">Medel</option>
+          <option value="3" data-i18n="pHigh">Hög</option>
         </select>
       </label>
     </div>
     <div class="field" id="edIntervalRow" hidden>
-      <span>Repeat every</span>
-      <div class="row"><input type="number" id="edEvery" min="1" value="30" style="width:110px"><select id="edEveryUnit" class="input"><option value="1">minutes</option><option value="60">hours</option></select></div>
+      <span data-i18n="repeatEvery">Upprepa var</span>
+      <div class="row"><input type="number" id="edEvery" min="1" value="30" style="width:110px"><select id="edEveryUnit" class="input"><option value="1" data-i18n="minutes">minuter</option><option value="60" data-i18n="hours">timmar</option></select></div>
     </div>
     <div class="field" id="edCronRow" hidden>
-      <span>Cron expression (minute hour day month weekday)</span>
+      <span data-i18n="cronLabel">Cron-uttryck (minut timme dag månad veckodag)</span>
       <input type="text" id="edCron" spellcheck="false" placeholder="0 9 * * 1-5">
       <div class="runs" id="edRuns"></div>
     </div>
-    <label class="field"><span>Tags</span><input type="text" id="edTags" spellcheck="false" placeholder="#etl #prod"></label>
-    <label class="field"><span>Notes</span><textarea id="edNotes" placeholder="Details, links, ticket IDs…"></textarea></label>
-    <label class="check"><input type="checkbox" id="edIcs"> <span>Also download an Outlook calendar entry</span></label>
+    <label class="field"><span data-i18n="tags">Taggar</span><input type="text" id="edTags" spellcheck="false" placeholder="#etl #prod"></label>
+    <label class="field"><span data-i18n="tabNotes">Anteckningar</span><textarea id="edNotes" placeholder="Detaljer, länkar, ärende-ID:n…" data-i18n-ph="notesPh"></textarea></label>
+    <label class="check"><input type="checkbox" id="edIcs"> <span data-i18n="edIcsLabel">Ladda också ner en Outlook-kalenderpost</span></label>
     <div class="modal-foot">
-      <button class="btn danger ghost" type="button" id="edDelete">Delete</button>
+      <button class="btn danger ghost" type="button" id="edDelete" data-i18n="delete">Ta bort</button>
       <span class="spacer"></span>
-      <button class="btn" type="button" data-act="close-editor">Cancel</button>
-      <button class="btn primary" type="submit">Save</button>
+      <button class="btn" type="button" data-act="close-editor" data-i18n="cancel">Avbryt</button>
+      <button class="btn primary" type="submit" data-i18n="save">Spara</button>
     </div>
   </form>
 </div>
 
 <!-- keyboard help -->
 <div class="scrim" id="keysDlg" hidden>
-  <div class="modal" role="dialog" aria-label="Keyboard shortcuts">
-    <h2>Keyboard shortcuts</h2>
+  <div class="modal" role="dialog" aria-label="Kortkommandon" data-i18n-aria="keysH">
+    <h2 data-i18n="keysH">Kortkommandon</h2>
     <div class="keys">
-      <kbd>Ctrl K</kbd><span>New reminder (from anywhere)</span>
-      <kbd>Enter</kbd><span>Add the reminder · <kbd>Ctrl Enter</kbd> save as a note</span>
-      <kbd>j / k</kbd><span>Move down / up the list</span>
-      <kbd>x</kbd><span>Mark selected done</span>
-      <kbd>s</kbd><span>Snooze selected</span>
-      <kbd>e</kbd><span>Edit selected</span>
-      <kbd>o</kbd><span>Open the first link in the selected reminder</span>
-      <kbd>Del</kbd><span>Delete selected</span>
-      <kbd>/</kbd><span>Search</span>
-      <kbd>1 2 3</kbd><span>Reminders · Notes · Settings</span>
-      <kbd>Ctrl E</kbd><span>Notes: switch between edit and preview</span>
-      <kbd>Esc</kbd><span>Close dialogs</span>
+      <kbd>Ctrl K</kbd><span data-i18n="k1">Ny påminnelse (var du än är)</span>
+      <kbd>Enter</kbd><span data-i18n="k2">Lägg till påminnelsen · <kbd>Ctrl Enter</kbd> spara som anteckning</span>
+      <kbd>j / k</kbd><span data-i18n="k3">Flytta ner / upp i listan</span>
+      <kbd>x</kbd><span data-i18n="k4">Markera vald som klar</span>
+      <kbd>s</kbd><span data-i18n="k5">Skjut upp vald</span>
+      <kbd>e</kbd><span data-i18n="k6">Redigera vald</span>
+      <kbd>o</kbd><span data-i18n="k7">Öppna första länken i vald påminnelse</span>
+      <kbd>Del</kbd><span data-i18n="k8">Ta bort vald</span>
+      <kbd>/</kbd><span data-i18n="k9">Sök</span>
+      <kbd>1 2 3</kbd><span data-i18n="k10">Påminnelser · Anteckningar · Inställningar</span>
+      <kbd>Ctrl E</kbd><span data-i18n="k11">Anteckningar: växla mellan redigering och förhandsvisning</span>
+      <kbd>Esc</kbd><span data-i18n="k12">Stäng dialoger</span>
     </div>
-    <h2 style="margin-top:6px">Quick add syntax</h2>
+    <h2 style="margin-top:6px" data-i18n="syntaxH">Snabbsyntax</h2>
     <div class="keys">
-      <code>tomorrow 10:00</code><span>Dates: today, tomorrow, friday, 25/11, 2026-12-01, dec 24, imorgon, på torsdag</span>
-      <code>in 45 min</code><span>Relative: in 2h, in 3 days, om 20 min</span>
-      <code>14:00 UTC</code><span>Times in UTC are converted to your local time</span>
-      <code>every 30 min</code><span>Intervals: every 2h, every hour</span>
-      <code>every weekday kl 9</code><span>Repeats: every day, every monday, every month, varje vecka</span>
-      <code>cron `0 9 * * 1-5`</code><span>Cron schedule (minute hour day month weekday)</span>
-      <code>#etl #prod</code><span>Tags</span>
-      <code>!!! or p1</code><span>Priority: ! low, !! medium, !!! high</span>
+      <code data-i18n="sx1c">imorgon 10:00</code><span data-i18n="sx1">Datum: idag, imorgon, på fredag, 25/11, 2026-12-01, 24 dec, övermorgon. Engelska fungerar också: tomorrow, friday</span>
+      <code data-i18n="sx2c">om 45 min</code><span data-i18n="sx2">Relativt: om 2 h, om 3 dagar, om en halvtimme</span>
+      <code>14:00 UTC</code><span data-i18n="sx3">Tider i UTC räknas om till din lokala tid</span>
+      <code data-i18n="sx4c">var 30 min</code><span data-i18n="sx4">Intervall: var 2 h, varje timme</span>
+      <code data-i18n="sx5c">varje vardag kl 9</code><span data-i18n="sx5">Upprepning: varje dag, varje måndag, varje vecka, varje månad</span>
+      <code>cron `0 9 * * 1-5`</code><span data-i18n="sx6">Cron-schema (minut timme dag månad veckodag)</span>
+      <code>#etl #prod</code><span data-i18n="tags">Taggar</span>
+      <code data-i18n="sx8c">!!! eller p1</code><span data-i18n="sx8">Prioritet: ! låg, !! medel, !!! hög</span>
     </div>
-    <div class="modal-foot"><span class="spacer"></span><button class="btn primary" type="button" data-act="close-keys">Close</button></div>
+    <div class="modal-foot"><span class="spacer"></span><button class="btn primary" type="button" data-act="close-keys" data-i18n="close">Stäng</button></div>
   </div>
 </div>
 
@@ -558,101 +567,120 @@ label.check input { margin-top: 3px; accent-color: var(--accent); }
 <div class="pop" id="pop" hidden></div>
 <div class="toast" id="toast" hidden><span id="toastMsg"></span><button type="button" id="toastAct" hidden></button></div>
 
-<!-- first-run setup (Swedish: colleagues need to know why the browser asks for permission) -->
+<!-- first-run setup: explains why the browser asks for permission -->
 <div class="scrim" id="setupDlg" hidden>
-  <div class="modal setup" role="dialog" aria-labelledby="setupTitle1" lang="sv">
+  <div class="modal setup" role="dialog" aria-labelledby="setupTitle1">
     <div id="setupStep1" class="setup-step">
-      <p class="step">Steg 1 av 2</p>
-      <h2 id="setupTitle1">Spara dina påminnelser säkert</h2>
-      <p>Ping har ingen server och inget konto. Allt du skriver sparas bara här på din dator, i webbläsaren. Det betyder att det kan försvinna om webbläsarens data rensas eller om du byter dator.</p>
-      <p>Därför sparar Ping också en kopia i en fil som du själv väljer. Välj mappen <strong>Dokument</strong>. Den ligger på kommunens server, säkerhetskopieras och finns kvar även om du byter dator.</p>
+      <p class="step" data-i18n="step1">Steg 1 av 2</p>
+      <h2 id="setupTitle1" data-i18n="setupT1">Spara dina påminnelser säkert</h2>
+      <p data-i18n="setupP1">Ping har ingen server och inget konto. Allt du skriver sparas bara här på din dator, i webbläsaren. Det betyder att det kan försvinna om webbläsarens data rensas eller om du byter dator.</p>
+      <p data-i18n="setupP2">Därför sparar Ping också en kopia i en fil som du själv väljer. Välj mappen <strong>Dokument</strong>. Den ligger på kommunens server, säkerhetskopieras och finns kvar även om du byter dator.</p>
       <details>
-        <summary>Varför frågar webbläsaren om lov?</summary>
+        <summary data-i18n="setupWhy">Varför frågar webbläsaren om lov?</summary>
         <ul>
-          <li>En webbsida får aldrig röra filer på din dator utan att du själv godkänner det. Därför visar webbläsaren en ruta där du väljer plats och godkänner.</li>
-          <li>Ping får bara läsa och skriva <strong>den enda fil du väljer</strong> (Ping-data.json). Inga andra filer eller mappar.</li>
-          <li>Ingenting skickas till internet. Inte till GitHub, inte till kommunen och inte till den som byggt appen. Filen stannar i din egen mapp.</li>
-          <li>Filen är vanlig text som du kan öppna och läsa själv, och du kan sluta använda den när du vill under Inställningar.</li>
+          <li data-i18n="setupLi1">En webbsida får aldrig röra filer på din dator utan att du själv godkänner det. Därför visar webbläsaren en ruta där du väljer plats och godkänner.</li>
+          <li data-i18n="setupLi2">Ping får bara läsa och skriva <strong>den enda fil du väljer</strong> (Ping-data.json). Inga andra filer eller mappar.</li>
+          <li data-i18n="setupLi3">Ingenting skickas till internet. Inte till GitHub, inte till kommunen och inte till den som byggt appen. Filen stannar i din egen mapp.</li>
+          <li data-i18n="setupLi4">Filen är vanlig text som du kan öppna och läsa själv, och du kan sluta använda den när du vill under Inställningar.</li>
         </ul>
       </details>
       <div class="row">
-        <button class="btn primary" type="button" data-act="setup-create">Välj plats och spara</button>
-        <button class="btn" type="button" data-act="setup-open">Jag har redan en sparfil</button>
+        <button class="btn primary" type="button" data-act="setup-create" data-i18n="setupCreate">Välj plats och spara</button>
+        <button class="btn" type="button" data-act="setup-open" data-i18n="setupOpen">Jag har redan en sparfil</button>
       </div>
-      <p class="hint">Har du använt Ping på en annan dator eller i en annan webbläsare? Välj ”Jag har redan en sparfil” och öppna Ping-data.json, så kommer allt tillbaka.</p>
-      <div><button class="btn ghost sm" type="button" data-act="setup-skip">Hoppa över (rekommenderas inte)</button></div>
+      <p class="hint" data-i18n="setupHint">Har du använt Ping på en annan dator eller i en annan webbläsare? Välj ”Jag har redan en sparfil” och öppna Ping-data.json, så kommer allt tillbaka.</p>
+      <div><button class="btn ghost sm" type="button" data-act="setup-skip" data-i18n="setupSkip">Hoppa över (rekommenderas inte)</button></div>
     </div>
     <div id="setupStep2" class="setup-step" hidden>
-      <p class="step">Steg 2 av 2</p>
-      <h2>Få en avisering när det är dags</h2>
-      <p>Tillåt aviseringar så att dina påminnelser syns i hörnet av skärmen, även när Ping ligger bakom andra fönster.</p>
+      <p class="step" data-i18n="step2">Steg 2 av 2</p>
+      <h2 data-i18n="setupT2">Få en avisering när det är dags</h2>
+      <p data-i18n="setupP3">Tillåt aviseringar så att dina påminnelser syns i hörnet av skärmen, även när Ping ligger bakom andra fönster.</p>
       <ul>
-        <li>Ping använder aviseringar bara för påminnelser som du själv har skapat. Ingen reklam, inga nyheter.</li>
-        <li>Aviseringarna skapas här på din dator. Inget skickas via internet.</li>
-        <li>Du kan stänga av dem när du vill i webbläsarens inställningar.</li>
+        <li data-i18n="setupLi5">Ping använder aviseringar bara för påminnelser som du själv har skapat. Ingen reklam, inga nyheter.</li>
+        <li data-i18n="setupLi6">Aviseringarna skapas här på din dator. Inget skickas via internet.</li>
+        <li data-i18n="setupLi7">Du kan stänga av dem när du vill i webbläsarens inställningar.</li>
       </ul>
       <div class="row">
-        <button class="btn primary" type="button" data-act="setup-notif">Tillåt aviseringar</button>
-        <button class="btn" type="button" data-act="setup-done">Inte nu</button>
+        <button class="btn primary" type="button" data-act="setup-notif" data-i18n="allowNotif">Tillåt aviseringar</button>
+        <button class="btn" type="button" data-act="setup-done" data-i18n="notNow">Inte nu</button>
       </div>
-      <p class="hint">Tips: minimera Ping i stället för att stänga det. Påminnelser kommer bara när Ping är igång. Under Inställningar finns en guide för att öppna Ping automatiskt när webbläsaren startar.</p>
+      <p class="hint" data-i18n="setupHint2">Tips: minimera Ping i stället för att stänga det. Påminnelser kommer bara när Ping är igång. Under Inställningar finns en guide för att öppna Ping automatiskt när webbläsaren startar.</p>
     </div>
   </div>
 </div>
 
 <!-- only one window may edit at a time -->
 <div class="scrim" id="lockDlg" hidden>
-  <div class="modal" role="dialog" aria-labelledby="lockTitle" lang="sv">
-    <h2 id="lockTitle">Ping är redan öppet i ett annat fönster</h2>
-    <p>För att inget du skriver ska skrivas över kan Ping bara användas i ett fönster åt gången. Påminnelserna visas i det andra fönstret.</p>
-    <div class="modal-foot"><span class="spacer"></span><button class="btn primary" type="button" data-act="lock-take">Använd det här fönstret i stället</button></div>
+  <div class="modal" role="dialog" aria-labelledby="lockTitle">
+    <h2 id="lockTitle" data-i18n="lockT">Ping är redan öppet i ett annat fönster</h2>
+    <p data-i18n="lockP">För att inget du skriver ska skrivas över kan Ping bara användas i ett fönster åt gången. Påminnelserna visas i det andra fönstret.</p>
+    <div class="modal-foot"><span class="spacer"></span><button class="btn primary" type="button" data-act="lock-take" data-i18n="lockTake">Använd det här fönstret i stället</button></div>
   </div>
 </div>
 
 <!-- open Ping when the browser starts -->
 <div class="scrim" id="startupDlg" hidden>
-  <div class="modal" role="dialog" aria-labelledby="startupTitle" lang="sv">
-    <h2 id="startupTitle">Öppna Ping när webbläsaren startar</h2>
-    <p>En webbsida får inte ändra webbläsarens inställningar själv. Det är en säkerhetsregel, så du gör det i tre steg:</p>
+  <div class="modal" role="dialog" aria-labelledby="startupTitle">
+    <h2 id="startupTitle" data-i18n="startupH">Öppna Ping när webbläsaren startar</h2>
+    <p data-i18n="startupP2">En webbsida får inte ändra webbläsarens inställningar själv. Det är en säkerhetsregel, så du gör det i tre steg:</p>
     <ol class="steps">
-      <li><button class="btn primary sm" type="button" data-act="copy-ping-url">Kopiera Pings länk</button> <code id="pingUrl"></code></li>
-      <li>Klistra in <code id="settingsUrl">edge://settings/startHomeNTP</code> i adressfältet och tryck Enter. <button class="btn sm" type="button" data-act="copy-settings-url">Kopiera</button></li>
-      <li>Under <strong>”När Microsoft Edge startar”</strong>: välj <strong>”Öppna de här sidorna”</strong>, klicka <strong>”Lägg till en ny sida”</strong> och klistra in Pings länk.</li>
+      <li><button class="btn primary sm" type="button" data-act="copy-ping-url" data-i18n="copyPingUrl">Kopiera Pings länk</button> <code id="pingUrl"></code></li>
+      <li><span data-i18n="st2a">Klistra in</span> <code id="settingsUrl">edge://settings/startHomeNTP</code> <span data-i18n="st2b">i adressfältet och tryck Enter.</span> <button class="btn sm" type="button" data-act="copy-settings-url" data-i18n="copy">Kopiera</button></li>
+      <li id="startupStep3"></li>
     </ol>
-    <p class="hint" id="startupBrave" hidden>I Brave: klistra in <code>brave://settings/getStarted</code>, välj <strong>”Öppna en viss sida eller uppsättning sidor”</strong> och lägg till Pings länk.</p>
-    <p class="hint">Har du installerat Ping som en app kan du i stället öppna <code>edge://apps</code>, klicka på ⋯ vid Ping och slå på <strong>”Starta automatiskt vid inloggning”</strong>.</p>
-    <div class="modal-foot"><span class="spacer"></span><button class="btn primary" type="button" data-act="close-startup">Klar</button></div>
+    <p class="hint" id="startupBrave" hidden data-i18n="startupBrave">I Brave: klistra in <code>brave://settings/getStarted</code>, välj <strong>”Öppna en viss sida eller uppsättning sidor”</strong> och lägg till Pings länk.</p>
+    <p class="hint" data-i18n="startupApp">Har du installerat Ping som en app kan du i stället öppna <code>edge://apps</code>, klicka på ⋯ vid Ping och slå på <strong>”Starta automatiskt vid inloggning”</strong>.</p>
+    <div class="modal-foot"><span class="spacer"></span><button class="btn primary" type="button" data-act="close-startup" data-i18n="finished">Klar</button></div>
   </div>
 </div>
 
 <script>
 /*PARSER-START*/
+// Parser error messages in both UI languages; the app sets ParserText.lang.
+const ParserText = {
+  lang: 'en',
+  en: {
+    fields: ['minute', 'hour', 'day of month', 'month', 'weekday'],
+    notValid: (v, f) => `“${v}” is not valid in the ${f} field`,
+    badStep: (s, f) => `Bad step “${s}” in the ${f} field`,
+    range: (r, f, lo, hi) => `${r} is out of range for the ${f} field (${lo}–${hi})`,
+    fiveFields: 'A cron expression has 5 fields: minute hour day month weekday',
+    neverRuns: 'That cron schedule never runs' },
+  sv: {
+    fields: ['minut', 'timme', 'dag i månaden', 'månad', 'veckodag'],
+    notValid: (v, f) => `”${v}” är inte giltigt i fältet ${f}`,
+    badStep: (s, f) => `Ogiltigt steg ”${s}” i fältet ${f}`,
+    range: (r, f, lo, hi) => `${r} ligger utanför tillåtna värden för fältet ${f} (${lo}–${hi})`,
+    fiveFields: 'Ett cron-uttryck har 5 fält: minut timme dag månad veckodag',
+    neverRuns: 'Det cron-schemat körs aldrig' },
+  get t() { return this[this.lang] || this.en; }
+};
+
 // ---------------------------------------------------------------- cron
 const Cron = (() => {
   const NAMES = [null, null, null,
     { jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, oct: 10, nov: 11, dec: 12 },
     { sun: 0, mon: 1, tue: 2, wed: 3, thu: 4, fri: 5, sat: 6 }];
   const RANGES = [[0, 59], [0, 23], [1, 31], [1, 12], [0, 7]];
-  const LABEL = ['minute', 'hour', 'day of month', 'month', 'weekday'];
   function field(txt, i) {
-    const [lo, hi] = RANGES[i], set = new Set(), names = NAMES[i];
-    const val = v => { v = v.toLowerCase(); if (names && v in names) return names[v]; if (!/^\d+$/.test(v)) throw new Error(`“${v}” is not valid in the ${LABEL[i]} field`); return +v; };
+    const [lo, hi] = RANGES[i], set = new Set(), names = NAMES[i], T = ParserText.t, F = T.fields[i];
+    const val = v => { v = v.toLowerCase(); if (names && v in names) return names[v]; if (!/^\d+$/.test(v)) throw new Error(T.notValid(v, F)); return +v; };
     for (const part of txt.split(',')) {
       const [range, stepTxt] = part.split('/');
       const step = stepTxt === undefined ? 1 : +stepTxt;
-      if (!(step >= 1)) throw new Error(`Bad step “${stepTxt}” in the ${LABEL[i]} field`);
+      if (!(step >= 1)) throw new Error(T.badStep(stepTxt, F));
       let a, b;
       if (range === '*') { a = lo; b = hi; }
       else if (range.includes('-')) { [a, b] = range.split('-').map(val); }
       else { a = val(range); b = stepTxt === undefined ? a : hi; }
-      if (a < lo || b > hi || a > b) throw new Error(`${range} is out of range for the ${LABEL[i]} field (${lo}–${hi})`);
+      if (a < lo || b > hi || a > b) throw new Error(T.range(range, F, lo, hi));
       for (let v = a; v <= b; v += step) set.add(i === 4 && v === 7 ? 0 : v);
     }
     return set;
   }
   function parse(expr) {
     const f = String(expr || '').trim().split(/\s+/);
-    if (f.length !== 5) throw new Error('A cron expression has 5 fields: minute hour day month weekday');
+    if (f.length !== 5) throw new Error(ParserText.t.fiveFields);
     const [min, hour, dom, mon, dow] = f.map(field);
     return { min, hour, dom, mon, dow, domAny: f[2] === '*', dowAny: f[4] === '*' };
   }
@@ -741,9 +769,9 @@ const QuickParser = (() => {
     m = s.match(R(String.raw`\b(?:utc|gmt)\b`));
     if (m) { utc = true; s = cut(s, m); }
 
-    // intervals: "every 30 min", "every 2h", "every hour", "varje timme"
+    // intervals: "every 30 min", "every 2h", "every hour", "varje timme", "var 30 min"
     if (res.repeat === 'none') {
-      m = s.match(R(String.raw`\b(?:every|each|varje)\s+(?:(\d+(?:[.,]\d+)?)\s*)?(minutes?|mins?|m|hours?|hrs?|hr|h|minuter|minut|timmar|timme|tim|t)\b`));
+      m = s.match(R(String.raw`\b(?:every|each|varje|var(?=\s+\d))\s+(?:(\d+(?:[.,]\d+)?)\s*)?(minutes?|mins?|m|hours?|hrs?|hr|h|minuter|minut|timmar|timme|tim|t)\b`));
       if (m) {
         const n = num(m[1]), u = m[2].toLowerCase();
         const minutes = Math.round((u[0] === 'm' ? n : n * 60));
@@ -843,7 +871,7 @@ const QuickParser = (() => {
     if (res.repeat === 'cron') {
       const n = Cron.next(res.cron, now.getTime());
       res.when = n ? new Date(n) : null;
-      if (!n) res.error = 'That cron schedule never runs';
+      if (!n) res.error = ParserText.t.neverRuns;
     }
     else if (absolute) { absolute.setSeconds(absolute.getSeconds(), 0); res.when = absolute; }
     else if (res.repeat === 'interval' && !date && time === null && weekday < 0 && !evening) {
@@ -883,13 +911,238 @@ const KEY = 'reminder-by-me.v1';
 const FIRED_KEY = 'reminder-by-me.fired';
 const $ = id => document.getElementById(id);
 
+// ---------------------------------------------------------------- language (Swedish by default, English optional)
+// Static text: the markup holds the Swedish; elements carry data-i18n (innerHTML), data-i18n-ph, -title, -aria keys,
+// and the English for those keys lives in T.en. Dynamic text: both languages below, read through t().
+const sweOrd = n => n + ((n % 10 === 1 || n % 10 === 2) && n % 100 !== 11 && n % 100 !== 12 ? ':a' : ':e');
+const T = {
+  en: {
+    // static markup
+    tabReminders: 'Reminders', tabNotes: 'Notes', tabSettings: 'Settings', keysBtnTitle: 'Keyboard shortcuts (?)', keysH: 'Keyboard shortcuts',
+    bannerNotif: '<strong>Turn on notifications</strong> so your reminders show up in the corner of the screen, even when Ping is behind other windows. Ping only uses them for reminders you created yourself, and nothing is sent over the internet.',
+    allowNotif: 'Allow notifications', notNow: 'Not now',
+    bannerFile: '<strong>Ping needs a click to keep saving to your file.</strong> The browser asks for permission again after a restart. That’s a security feature, not an error. Choose “Allow on every visit” to skip the question. Nothing is lost; everything stays in the browser meanwhile.',
+    reconnect: 'Reconnect', quickPh: 'Check DAG failures every 30 min #airflow !!', add: 'Add', more: 'More…',
+    fUpcoming: 'Upcoming', fToday: 'Today', fOverdue: 'Overdue', fRepeat: 'Recurring', fDone: 'Done', fAll: 'All',
+    searchPh: 'Search  /', searchAria: 'Search reminders', noteSearchPh: 'Search notes',
+    newNote: 'New note', dailyLog: 'Daily log', dailyLogTitle: 'Today’s standup note, filled from your reminders', delete: 'Delete',
+    noteViewAria: 'Note view', edit: 'Edit', preview: 'Preview', copy: 'Copy', remindMe: 'Remind me…',
+    notePh: '# Title\n\nWrite anything. Markdown works: **bold**, `code`, ```sql blocks```, - [ ] tasks, | tables |', noteAria: 'Note text',
+    notifications: 'Notifications', testAlert: 'Send a test reminder', soundLabel: 'Play a sound when a reminder is due',
+    ticketsH: 'Ticket links', ticketsP: 'Ticket IDs like <code>DATA-123</code> in reminders and notes become links. Use <code>{key}</code> where the ID goes.',
+    ticketsAdo: 'Azure DevOps example: <code>https://dev.azure.com/org/project/_workitems/edit/{num}</code>. <code>{num}</code> is the number part only.',
+    lookH: 'Look and feel', themeAria: 'Theme', palLagoon: 'Calm teal, the default', palFjord: 'Cool blue and slate', palSolarized: 'The classic editor palette',
+    mode: 'Mode', modeAria: 'Light or dark mode', light: 'Light', dark: 'Dark',
+    monoLabel: 'Monospace font in the note editor', utcLabel: 'Show the UTC clock next to the name',
+    outlookP: 'Every reminder has an “Outlook” action. It downloads a calendar file; open it and click <em>Save &amp; Close</em> in Outlook. Outlook then reminds you on this PC and your phone, even when Ping is closed. Interval repeats are included; for cron schedules Outlook gets the next run only.',
+    icsLabel: 'Download an Outlook calendar entry automatically each time I save a reminder',
+    dataH: 'Your data', dataP: 'Everything saves automatically the moment you change it, and stays saved when you close the window. It is kept on this PC only. Reminders pop up only while Ping is open, so minimise it rather than closing it. Anything missed while it was closed appears when you open it again.',
+    fileCreate: 'Create a save file…', fileOpen: 'Use an existing save file…', fileStop: 'Stop using the file',
+    export: 'Download backup (JSON)', exportCsv: 'Export reminders (CSV)', import: 'Restore from backup…',
+    snapsLabel: 'Automatic daily copies (last 14 days)', snapsAria: 'Automatic copies', snapRestore: 'Restore this copy', rerunSetup: 'Run the save setup again',
+    startupH: 'Open Ping when the browser starts', startupP: 'Then Ping is always running, so you never miss a reminder. A web page isn’t allowed to change the browser’s startup settings itself, so this takes three quick steps; the button shows you how.',
+    showMe: 'Show me how', what: 'What', whatPh: 'What do you want to be reminded about?', when: 'When',
+    plus1h: '+1 hour', plus3h: '+3 hours', tonight19: 'Tonight 19:00', tomorrow9: 'Tomorrow 09:00', monday9: 'Monday 09:00',
+    repeat: 'Repeat', rNone: 'Does not repeat', rInterval: 'Every N minutes / hours', rWeekdays: 'Every weekday (Mon–Fri)', rCron: 'Cron schedule',
+    prio: 'Priority', pNone: 'None', pLow: 'Low', pMed: 'Medium', pHigh: 'High', repeatEvery: 'Repeat every', minutes: 'minutes', hours: 'hours',
+    cronLabel: 'Cron expression (minute hour day month weekday)', tags: 'Tags', notesPh: 'Details, links, ticket IDs…',
+    edIcsLabel: 'Also download an Outlook calendar entry', cancel: 'Cancel', save: 'Save',
+    k1: 'New reminder (from anywhere)', k2: 'Add the reminder · <kbd>Ctrl Enter</kbd> save as a note', k3: 'Move down / up the list',
+    k4: 'Mark selected done', k5: 'Snooze selected', k6: 'Edit selected', k7: 'Open the first link in the selected reminder', k8: 'Delete selected',
+    k9: 'Search', k10: 'Reminders · Notes · Settings', k11: 'Notes: switch between edit and preview', k12: 'Close dialogs',
+    syntaxH: 'Quick add syntax',
+    sx1c: 'tomorrow 10:00', sx1: 'Dates: today, tomorrow, friday, 25/11, 2026-12-01, dec 24. Swedish works too: imorgon, på torsdag',
+    sx2c: 'in 45 min', sx2: 'Relative: in 2h, in 3 days, in half an hour', sx3: 'Times in UTC are converted to your local time',
+    sx4c: 'every 30 min', sx4: 'Intervals: every 2h, every hour', sx5c: 'every weekday at 9', sx5: 'Repeats: every day, every monday, every week, every month',
+    sx6: 'Cron schedule (minute hour day month weekday)', sx8c: '!!! or p1', sx8: 'Priority: ! low, !! medium, !!! high', close: 'Close',
+    step1: 'Step 1 of 2', setupT1: 'Keep your reminders safe',
+    setupP1: 'Ping has no server and no account. Everything you write is saved only here on your computer, in the browser. That means it can disappear if the browser’s data is cleared or you switch computers.',
+    setupP2: 'That’s why Ping also keeps a copy in a file you choose. Choose the <strong>Documents</strong> folder. It lives on the municipality’s server, is backed up, and stays with you even if you switch computers.',
+    setupWhy: 'Why does the browser ask for permission?',
+    setupLi1: 'A web page may never touch files on your computer unless you approve it. That’s why the browser shows a box where you choose a place and approve.',
+    setupLi2: 'Ping may only read and write <strong>the one file you choose</strong> (Ping-data.json). No other files or folders.',
+    setupLi3: 'Nothing is sent to the internet. Not to GitHub, not to the municipality and not to whoever built the app. The file stays in your own folder.',
+    setupLi4: 'The file is plain text you can open and read yourself, and you can stop using it whenever you like under Settings.',
+    setupCreate: 'Choose a place and save', setupOpen: 'I already have a save file',
+    setupHint: 'Used Ping on another computer or in another browser? Choose “I already have a save file” and open Ping-data.json, and everything comes back.',
+    setupSkip: 'Skip (not recommended)', step2: 'Step 2 of 2', setupT2: 'Get a notification when it’s time',
+    setupP3: 'Allow notifications so your reminders show up in the corner of the screen, even when Ping is behind other windows.',
+    setupLi5: 'Ping uses notifications only for reminders you created yourself. No ads, no news.',
+    setupLi6: 'The notifications are created here on your computer. Nothing is sent over the internet.',
+    setupLi7: 'You can turn them off whenever you like in the browser’s settings.',
+    setupHint2: 'Tip: minimise Ping instead of closing it. Reminders only come while Ping is running. Under Settings there’s a guide to open Ping automatically when the browser starts.',
+    lockT: 'Ping is already open in another window', lockP: 'So that nothing you write gets overwritten, Ping can only be used in one window at a time. Your reminders appear in the other window.',
+    lockTake: 'Use this window instead',
+    startupP2: 'A web page isn’t allowed to change the browser’s settings itself. That’s a security rule, so you do it in three steps:',
+    copyPingUrl: 'Copy Ping’s link', st2a: 'Paste', st2b: 'into the address bar and press Enter.',
+    startupBrave: 'In Brave: paste <code>brave://settings/getStarted</code>, choose <strong>“Open a specific page or set of pages”</strong> and add Ping’s link.',
+    startupApp: 'If you installed Ping as an app, you can instead open <code>edge://apps</code>, click ⋯ next to Ping and turn on <strong>“Auto-start on device login”</strong>.',
+    finished: 'Done',
+    // dynamic
+    startupStep3Edge: 'Under <strong>“When Microsoft Edge starts”</strong>: choose <strong>“Open these pages”</strong>, click <strong>“Add a new page”</strong> and paste Ping’s link.',
+    startupStep3Brave: 'Under <strong>“On startup”</strong>: choose <strong>“Open a specific page or set of pages”</strong>, click <strong>“Add a new page”</strong> and paste Ping’s link.',
+    saveFailed: e => 'Could not save: ' + e, chipNotSaved: 'Not saved!', chipNotSavedTitle: e => 'The browser refused to save: ' + e,
+    chipSaved: 'Saved', chipSavedFileTitle: n => 'Saved in the browser and in your file ' + n,
+    chipNeedsClick: 'Save file needs a click', chipNeedsClickTitle: 'Click to reconnect your save file', chipFileErr: 'Save file error',
+    chipBrowserOnly: 'Saved in browser only', chipBrowserOnlyFile: 'Click to also keep a save file in your Documents folder', chipBrowserOnlyBackup: 'Download a backup now and then under Settings',
+    noSnaps: 'No copies yet (one is made each day you use Ping)', snapLabel: (r, n) => ` · ${r} reminders, ${n} notes`,
+    persisted: '✓ The browser has promised not to clear Ping’s data on its own.',
+    notPersisted: 'The browser may clear Ping’s data if the disk gets very full. A save file protects you against that.',
+    confirmSnap: d => `Replace everything in Ping with the copy from ${d}? You can undo this right after.`, restoredSnap: d => 'Restored the copy from ' + d,
+    undo: 'Undo', undone: 'Undone', loadedFromFile: 'Loaded your latest data from the save file', notPingFile: 'That file is not a Ping save file',
+    savingTo: n => 'Saving to ' + n, couldNotCreate: e => 'Could not create the file: ' + e, couldNotOpen: e => 'Could not open the file: ' + e,
+    fileStopped: 'Stopped saving to the file. The file itself is kept',
+    fileNone: 'Extra safety: also keep a save file on your PC, for example in Documents or a synced folder. It updates with every change and survives even if the browser’s data is cleared.',
+    fileOk: (n, w) => `✓ Also saving to “${n}”${w ? ', last saved ' + w : ''}.`,
+    fileNeeds: n => `Save file “${n}” needs one click to reconnect (the browser asks again after a restart).`,
+    fileErr: (n, e) => `Couldn’t write to “${n}”: ${e}`,
+    today: 'Today', tomorrow: 'Tomorrow', yesterday: 'Yesterday', justNow: 'just now', underMin: 'in under a minute',
+    days: d => d + (d === 1 ? ' day' : ' days'), weeks: w => w + ' weeks', months: m => m + ' months', ago: x => x + ' ago', inT: x => 'in ' + x,
+    every: m => m % 60 === 0 ? (m === 60 ? 'Every hour' : `Every ${m / 60} h`) : `Every ${m} min`,
+    repDaily: 'Every day', repWeekdays: 'Weekdays', repWeekly: 'Every week', repMonthly: 'Every month', repYearly: 'Every year',
+    prioNames: ['', 'Low', 'Med', 'High'], priority: p => p + ' priority',
+    nothingToPreview: 'Nothing to preview yet.', copied: 'Copied', copyFailed: 'Copy failed. Select the text and press Ctrl+C',
+    snMin: n => n + ' minutes', snHour: n => n === 1 ? '1 hour' : n + ' hours', snEvening: 'This evening (19:00)', snTomorrow: 'Tomorrow 09:00', snMonday: 'Next Monday 09:00',
+    snoozedUntil: w => 'Snoozed until ' + w, reminderDeleted: 'Reminder deleted', confirmStop: x => `Stop repeating “${x}”?`,
+    quickHint: 'Write it like you would say it. <kbd>Enter</kbd> adds it, <kbd>Ctrl Enter</kbd> saves it as a note, <kbd>?</kbd> shows the syntax: <code>every 30 min</code>, <code>cron `0 9 * * 1-5`</code>, <code>#tag</code>, <code>!!!</code>',
+    noTime: 'No time found yet. Enter lets you pick one, or add “tomorrow 9:00”, “in 20 min” or “every 2h”.',
+    savedAsNote: '✓ Saved as a note', setFor: w => 'Set for ' + w,
+    count: (u, o) => u + ' upcoming' + (o ? ' · ' + o + ' overdue' : ''),
+    gOverdue: 'Overdue', gToday: 'Today', gTomorrow: 'Tomorrow', gWeek: 'Next 7 days', gLater: 'Later', gDone: 'Done',
+    examples: ['Review PR DATA-142 tomorrow 10:00 #review', 'Check pipeline runs every 30 min #etl !!', 'Standup cron `45 8 * * 1-5`', 'Deploy window friday 14:00 UTC #prod !!!', 'Call mum tomorrow 18:00'],
+    emptyFresh: 'No reminders yet', emptyNone: 'Nothing matches', emptyFreshP: 'Type one in the box above and press Enter. Click an example to try it:', emptyNoneP: 'Try another filter, tag or search.',
+    tagOverdue: 'Overdue', tagSnoozed: 'Snoozed', doneAt: w => 'Done ' + w,
+    reopen: 'Reopen', markDoneTitle: 'Mark as done (x)', stopRepeating: 'Stop repeating', doneBtn: '✓ Done', snooze: 'Snooze', snoozeTitle: 'Snooze (s)',
+    outlookTitle: 'Download as an Outlook calendar entry', editTitle: 'Edit (e)', deleteTitle: 'Delete (Del)',
+    edNew: 'New reminder', edEdit: 'Edit reminder', neverRuns: 'That schedule never runs', nextRuns: 'Next runs: ',
+    writeWhat: 'Write what the reminder is about', fixCron: 'Fix the cron expression first', enterEvery: 'Enter how often it repeats', pickDate: 'Pick a date and time',
+    confirmPast: 'That time has already passed, so the reminder will pop up right away. Save anyway?', saved: 'Saved',
+    icsCron: 'Downloaded the next run only (Outlook can’t read cron). Open it and click Save & Close',
+    icsDone: 'Calendar file downloaded. Open it and click Save & Close in Outlook', csvDone: 'CSV downloaded',
+    notifOn: 'Notifications on', notifBlocked: 'Notifications blocked', notifInWindow: 'In-window alerts only', notifTurnOn: 'Turn on notifications',
+    stGranted: 'Windows notifications are on. Reminders also appear as an alert in this window.',
+    stDenied: b => `${b} is blocking notifications for this page. Click the icon left of the address, set Notifications to Allow, then reload. Until then you get in-window alerts and a sound.`,
+    stUnsupported: 'This browser can’t show notifications for this page, so reminders appear as an alert inside this window, with a sound.',
+    stDefault: 'Allow notifications so reminders reach you even when this window is behind others.',
+    stFailed: e => `The last notification failed: ${e}. Check Windows Settings → System → Notifications, and that “Do not disturb” is off.`,
+    stRunning: (b, local) => ` (Running in ${b}${local ? ' from a local file' : ''}. Each browser keeps its own copy of your reminders, so always open Ping the same way.)`,
+    thisBrowser: 'this browser', notifUnavailable: 'Notifications are not available here; in-window alerts will be used',
+    notifTesting: 'Notifications are on. Sending a test…', testNotifTitle: 'Ping notifications work', testNotifBody: 'Reminders will appear like this.',
+    testNotifFailed: e => 'The test notification failed: ' + e,
+    notKeptLocal: (b, a) => `${b} answered “${a}”, so it didn’t keep your choice. Browsers often refuse to save notification permission for pages opened as a local file. Until that’s solved you still get the alert in this window and a sound.`,
+    notKept: (b, a) => `${b} answered “${a}”. Check that notifications are allowed for this site and that Windows notifications are on for ${b}.`,
+    notifNotOn: 'Notifications were not turned on. See Settings for details',
+    highPrio: 'High priority · ', dismissTitle: 'Dismiss (keeps it in the list)', dismiss: 'Dismiss',
+    titleCount: n => n + ' reminder' + (n === 1 ? '' : 's'),
+    noteEmpty: '(empty note)', noNotesMatch: 'No notes match.', noNotes: 'No notes yet.', pin: 'Pin', unpin: 'Unpin',
+    dataCount: (r, n) => `${r} reminders · ${n} notes`, noteEdited: w => 'Edited ' + w + ' · saves automatically',
+    noteStart: 'Start typing to create a note. Markdown works, and it saves automatically.', saving: 'Saving…', savedAt: x => 'Saved ✓ ' + x,
+    newNoteStatus: 'New note. Start typing.', openedLog: 'Opened today’s log',
+    dTitle: 'Daily log', dDone: 'Done', dToday: 'Today', dBlockers: 'Blockers', dNotes: 'Notes', logCreated: 'Daily log created from your reminders',
+    noteDeleted: 'Note deleted', testTitle: 'This is a test reminder', testNotes: 'If you can see this, reminders work.',
+    backupDone: 'Backup downloaded', restored: n => 'Restored ' + n + ' items', nothingNew: 'Nothing new in that backup', notBackup: 'That file is not a Ping backup',
+    ticketsUpdated: 'Ticket links updated', noLink: 'No link in this reminder'
+  },
+  sv: {
+    startupStep3Edge: 'Under <strong>”När Microsoft Edge startar”</strong>: välj <strong>”Öppna de här sidorna”</strong>, klicka <strong>”Lägg till en ny sida”</strong> och klistra in Pings länk.',
+    startupStep3Brave: 'Under <strong>”Vid start”</strong>: välj <strong>”Öppna en viss sida eller uppsättning sidor”</strong>, klicka <strong>”Lägg till en ny sida”</strong> och klistra in Pings länk.',
+    saveFailed: e => 'Kunde inte spara: ' + e, chipNotSaved: 'Inte sparat!', chipNotSavedTitle: e => 'Webbläsaren vägrade spara: ' + e,
+    chipSaved: 'Sparat', chipSavedFileTitle: n => 'Sparat i webbläsaren och i din fil ' + n,
+    chipNeedsClick: 'Sparfilen behöver ett klick', chipNeedsClickTitle: 'Klicka för att återansluta din sparfil', chipFileErr: 'Fel i sparfilen',
+    chipBrowserOnly: 'Sparat bara i webbläsaren', chipBrowserOnlyFile: 'Klicka för att även ha en sparfil i mappen Dokument', chipBrowserOnlyBackup: 'Ladda ner en säkerhetskopia då och då under Inställningar',
+    noSnaps: 'Inga kopior än (en skapas varje dag du använder Ping)', snapLabel: (r, n) => ` · ${r} påminnelser, ${n} anteckningar`,
+    persisted: '✓ Webbläsaren har lovat att inte rensa Pings data på egen hand.',
+    notPersisted: 'Webbläsaren kan rensa Pings data om disken blir väldigt full. En sparfil skyddar dig mot det.',
+    confirmSnap: d => `Ersätta allt i Ping med kopian från ${d}? Du kan ångra direkt efteråt.`, restoredSnap: d => 'Återställde kopian från ' + d,
+    undo: 'Ångra', undone: 'Ångrat', loadedFromFile: 'Läste in dina senaste data från sparfilen', notPingFile: 'Den filen är inte en sparfil från Ping',
+    savingTo: n => 'Sparar till ' + n, couldNotCreate: e => 'Kunde inte skapa filen: ' + e, couldNotOpen: e => 'Kunde inte öppna filen: ' + e,
+    fileStopped: 'Slutade spara till filen. Själva filen finns kvar',
+    fileNone: 'Extra säkerhet: ha också en sparfil på datorn, till exempel i Dokument eller en synkad mapp. Den uppdateras vid varje ändring och finns kvar även om webbläsarens data rensas.',
+    fileOk: (n, w) => `✓ Sparar också till ”${n}”${w ? ', senast sparad ' + w : ''}.`,
+    fileNeeds: n => `Sparfilen ”${n}” behöver ett klick för att återanslutas (webbläsaren frågar igen efter en omstart).`,
+    fileErr: (n, e) => `Kunde inte skriva till ”${n}”: ${e}`,
+    today: 'Idag', tomorrow: 'Imorgon', yesterday: 'Igår', justNow: 'nyss', underMin: 'om under en minut',
+    days: d => d + (d === 1 ? ' dag' : ' dagar'), weeks: w => w + ' veckor', months: m => m + ' månader', ago: x => 'för ' + x + ' sedan', inT: x => 'om ' + x,
+    every: m => m % 60 === 0 ? (m === 60 ? 'Varje timme' : `Var ${sweOrd(m / 60)} timme`) : (m === 1 ? 'Varje minut' : `Var ${sweOrd(m)} minut`),
+    repDaily: 'Varje dag', repWeekdays: 'Vardagar', repWeekly: 'Varje vecka', repMonthly: 'Varje månad', repYearly: 'Varje år',
+    prioNames: ['', 'Låg', 'Medel', 'Hög'], priority: p => p + ' prioritet',
+    nothingToPreview: 'Inget att förhandsvisa än.', copy: 'Kopiera', copied: 'Kopierat', copyFailed: 'Kopieringen misslyckades. Markera texten och tryck Ctrl+C',
+    snMin: n => n + ' minuter', snHour: n => n === 1 ? '1 timme' : n + ' timmar', snEvening: 'I kväll (19:00)', snTomorrow: 'Imorgon 09:00', snMonday: 'Nästa måndag 09:00',
+    snoozedUntil: w => 'Uppskjuten till ' + w, reminderDeleted: 'Påminnelsen togs bort', confirmStop: x => `Sluta upprepa ”${x}”?`,
+    quickHint: 'Skriv som du skulle säga det. <kbd>Enter</kbd> lägger till, <kbd>Ctrl Enter</kbd> sparar som anteckning, <kbd>?</kbd> visar syntaxen: <code>var 30 min</code>, <code>cron `0 9 * * 1-5`</code>, <code>#tagg</code>, <code>!!!</code>',
+    noTime: 'Ingen tid hittad än. Enter låter dig välja en, eller lägg till ”imorgon 9:00”, ”om 20 min” eller ”var 2 h”.',
+    savedAsNote: '✓ Sparad som anteckning', setFor: w => 'Inställd på ' + w,
+    count: (u, o) => u + ' kommande' + (o ? ' · ' + o + ' försenade' : ''),
+    gOverdue: 'Försenade', gToday: 'Idag', gTomorrow: 'Imorgon', gWeek: 'Närmaste 7 dagarna', gLater: 'Senare', gDone: 'Klara',
+    examples: ['Granska PR DATA-142 imorgon 10:00 #review', 'Kolla pipelinekörningar var 30 min #etl !!', 'Standup cron `45 8 * * 1-5`', 'Deployfönster på fredag 14:00 UTC #prod !!!', 'Ring mamma imorgon 18'],
+    emptyFresh: 'Inga påminnelser än', emptyNone: 'Inget matchar', emptyFreshP: 'Skriv en i rutan ovan och tryck Enter. Klicka på ett exempel för att testa:', emptyNoneP: 'Prova ett annat filter, en annan tagg eller sökning.',
+    tagOverdue: 'Försenad', tagSnoozed: 'Uppskjuten', doneAt: w => 'Klar ' + w,
+    reopen: 'Öppna igen', markDoneTitle: 'Markera som klar (x)', stopRepeating: 'Sluta upprepa', doneBtn: '✓ Klar', snooze: 'Skjut upp', snoozeTitle: 'Skjut upp (s)',
+    outlookTitle: 'Ladda ner som en Outlook-kalenderpost', edit: 'Redigera', editTitle: 'Redigera (e)', delete: 'Ta bort', deleteTitle: 'Ta bort (Del)',
+    edNew: 'Ny påminnelse', edEdit: 'Redigera påminnelse', neverRuns: 'Det schemat körs aldrig', nextRuns: 'Nästa körningar: ',
+    writeWhat: 'Skriv vad påminnelsen gäller', fixCron: 'Rätta cron-uttrycket först', enterEvery: 'Ange hur ofta den upprepas', pickDate: 'Välj datum och tid',
+    confirmPast: 'Den tiden har redan passerat, så påminnelsen dyker upp direkt. Spara ändå?', saved: 'Sparat',
+    icsCron: 'Laddade bara ner nästa körning (Outlook kan inte läsa cron). Öppna filen och klicka på Spara och stäng',
+    icsDone: 'Kalenderfilen har laddats ner. Öppna den och klicka på Spara och stäng i Outlook', csvDone: 'CSV-filen har laddats ner',
+    notifOn: 'Aviseringar på', notifBlocked: 'Aviseringar blockerade', notifInWindow: 'Bara aviseringar i fönstret', notifTurnOn: 'Slå på aviseringar',
+    stGranted: 'Windows-aviseringar är på. Påminnelser visas också som en ruta i det här fönstret.',
+    stDenied: b => `${b} blockerar aviseringar för den här sidan. Klicka på ikonen till vänster om adressen, ställ in Aviseringar på Tillåt och ladda om sidan. Tills dess får du en ruta i fönstret och ett ljud.`,
+    stUnsupported: 'Den här webbläsaren kan inte visa aviseringar för den här sidan, så påminnelser visas som en ruta i fönstret, med ett ljud.',
+    stDefault: 'Tillåt aviseringar så att påminnelser når dig även när fönstret ligger bakom andra.',
+    stFailed: e => `Den senaste aviseringen misslyckades: ${e}. Kontrollera Inställningar i Windows → System → Meddelanden och att ”Stör ej” är avstängt.`,
+    stRunning: (b, local) => ` (Körs i ${b}${local ? ' från en lokal fil' : ''}. Varje webbläsare har sin egen kopia av dina påminnelser, så öppna alltid Ping på samma sätt.)`,
+    thisBrowser: 'den här webbläsaren', notifUnavailable: 'Aviseringar finns inte här; rutor i fönstret används i stället',
+    notifTesting: 'Aviseringar är på. Skickar ett test…', testNotifTitle: 'Pings aviseringar fungerar', testNotifBody: 'Påminnelser kommer att se ut så här.',
+    testNotifFailed: e => 'Testaviseringen misslyckades: ' + e,
+    notKeptLocal: (b, a) => `${b} svarade ”${a}”, så valet sparades inte. Webbläsare vägrar ofta spara aviseringstillstånd för sidor som öppnats som en lokal fil. Tills det är löst får du ändå en ruta i fönstret och ett ljud.`,
+    notKept: (b, a) => `${b} svarade ”${a}”. Kontrollera att aviseringar är tillåtna för den här webbplatsen och att Windows-aviseringar är på för ${b}.`,
+    notifNotOn: 'Aviseringar slogs inte på. Se Inställningar för detaljer',
+    highPrio: 'Hög prioritet · ', dismissTitle: 'Stäng (finns kvar i listan)', dismiss: 'Stäng',
+    titleCount: n => n + (n === 1 ? ' påminnelse' : ' påminnelser'),
+    noteEmpty: '(tom anteckning)', noNotesMatch: 'Inga anteckningar matchar.', noNotes: 'Inga anteckningar än.', pin: 'Fäst', unpin: 'Lossa',
+    dataCount: (r, n) => `${r} påminnelser · ${n} anteckningar`, noteEdited: w => 'Ändrad ' + w + ' · sparas automatiskt',
+    noteStart: 'Börja skriva för att skapa en anteckning. Markdown fungerar, och den sparas automatiskt.', saving: 'Sparar…', savedAt: x => 'Sparad ✓ ' + x,
+    newNoteStatus: 'Ny anteckning. Börja skriva.', openedLog: 'Öppnade dagens logg',
+    dTitle: 'Dagslogg', dDone: 'Klart', dToday: 'Idag', dBlockers: 'Hinder', dNotes: 'Anteckningar', logCreated: 'Dagsloggen skapades från dina påminnelser',
+    noteDeleted: 'Anteckningen togs bort', testTitle: 'Det här är en testpåminnelse', testNotes: 'Ser du det här fungerar påminnelserna.',
+    backupDone: 'Säkerhetskopian har laddats ner', restored: n => 'Återställde ' + n + ' objekt', nothingNew: 'Inget nytt i den säkerhetskopian', notBackup: 'Den filen är inte en säkerhetskopia från Ping',
+    ticketsUpdated: 'Ärendelänkarna har uppdaterats', noLink: 'Ingen länk i den här påminnelsen'
+  }
+};
+const lang = () => { try { return S.settings.lang === 'en' ? 'en' : 'sv'; } catch (e) { return 'sv'; } };
+const LOCALE = () => lang() === 'en' ? 'en-GB' : 'sv-SE';
+function t(k, ...a) {
+  const L = T[lang()], v = (L && k in L) ? L[k] : T.en[k];
+  if (v === undefined) return k;
+  return typeof v === 'function' ? v(...a) : v;
+}
+// Swap static markup between the Swedish written in the HTML and the English in T.en.
+const i18nOrig = new Map();
+function applyLang() {
+  const en = lang() === 'en';
+  document.documentElement.lang = lang();
+  ParserText.lang = lang();
+  const swap = (sel, attr, prop) => document.querySelectorAll(`[${sel}]`).forEach(el => {
+    const key = el.getAttribute(sel), get = () => prop ? el[prop] : el.getAttribute(attr);
+    let o = i18nOrig.get(el); if (!o) i18nOrig.set(el, o = {});
+    if (!(sel in o)) o[sel] = get();
+    const v = en ? (T.en[key] ?? o[sel]) : o[sel];
+    if (prop) el[prop] = v; else el.setAttribute(attr, v);
+  });
+  swap('data-i18n', null, 'innerHTML');
+  swap('data-i18n-ph', 'placeholder');
+  swap('data-i18n-title', 'title');
+  swap('data-i18n-aria', 'aria-label');
+  document.querySelectorAll('[data-lang-set]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.langSet === lang())));
+}
+
 function normalize(j) {
   j = j && typeof j === 'object' ? j : {};
   if (!Array.isArray(j.reminders)) j.reminders = [];
   if (!Array.isArray(j.notes)) j.notes = [];
   j.reminders.forEach(r => { if (!Array.isArray(r.tags)) r.tags = []; r.priority = r.priority || 0; });
   j.notes.forEach(n => { n.pinned = !!n.pinned; });
-  j.settings = Object.assign({ sound: true, icsOnSave: false, bannerHidden: false, ticketUrl: '', theme: 'system', palette: 'lagoon', mono: true, utcClock: true }, j.settings || {});
+  j.settings = Object.assign({ sound: true, icsOnSave: false, bannerHidden: false, ticketUrl: '', theme: 'system', palette: 'lagoon', mono: true, utcClock: true, lang: 'sv' }, j.settings || {});
   return j;
 }
 function load() { try { return normalize(JSON.parse(localStorage.getItem(KEY))); } catch (e) { return normalize(null); } }
@@ -900,7 +1153,7 @@ function save() {
   if (!isActiveWindow) return;
   S.savedAt = Date.now();
   try { localStorage.setItem(KEY, JSON.stringify(S)); lastSavedAt = S.savedAt; lastSaveError = ''; }
-  catch (e) { lastSaveError = e.message; toast('Could not save: ' + e.message); }
+  catch (e) { lastSaveError = e.message; toast(t('saveFailed', e.message)); }
   scheduleFileSave();
   updateSaveChip();
   snapshotDaily();
@@ -909,13 +1162,13 @@ function save() {
 function updateSaveChip() {
   const chip = $('saveChip'), txt = $('saveChipText');
   if (!chip) return;
-  const t = lastSavedAt ? ' ' + new Date(lastSavedAt).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : '';
+  const tm = lastSavedAt ? ' ' + new Date(lastSavedAt).toLocaleTimeString(LOCALE(), { hour: '2-digit', minute: '2-digit' }) : '';
   chip.classList.remove('on', 'off', 'bad');
-  if (lastSaveError) { chip.classList.add('bad'); txt.textContent = 'Not saved!'; chip.title = 'The browser refused to save: ' + lastSaveError; }
-  else if (fileHandle && fileState === 'ok') { chip.classList.add('on'); txt.textContent = 'Saved' + t; chip.title = 'Saved in the browser and in your file ' + fileHandle.name; }
-  else if (fileHandle && fileState === 'needs-permission') { chip.classList.add('off'); txt.textContent = 'Save file needs a click'; chip.title = 'Click to reconnect your save file'; }
-  else if (fileHandle && fileState === 'error') { chip.classList.add('bad'); txt.textContent = 'Save file error'; chip.title = fileError; }
-  else { chip.classList.add('off'); txt.textContent = 'Saved in browser only' + t; chip.title = fileApi ? 'Click to also keep a save file in your Documents folder' : 'Download a backup now and then under Settings'; }
+  if (lastSaveError) { chip.classList.add('bad'); txt.textContent = t('chipNotSaved'); chip.title = t('chipNotSavedTitle', lastSaveError); }
+  else if (fileHandle && fileState === 'ok') { chip.classList.add('on'); txt.textContent = t('chipSaved') + tm; chip.title = t('chipSavedFileTitle', fileHandle.name); }
+  else if (fileHandle && fileState === 'needs-permission') { chip.classList.add('off'); txt.textContent = t('chipNeedsClick'); chip.title = t('chipNeedsClickTitle'); }
+  else if (fileHandle && fileState === 'error') { chip.classList.add('bad'); txt.textContent = t('chipFileErr'); chip.title = fileError; }
+  else { chip.classList.add('off'); txt.textContent = t('chipBrowserOnly') + tm; chip.title = fileApi ? t('chipBrowserOnlyFile') : t('chipBrowserOnlyBackup'); }
 }
 
 // One automatic copy per day in the browser's own database, the last 14 days kept.
@@ -934,37 +1187,36 @@ async function renderSnapshots() {
   const sel = $('snapSelect');
   let keys = [];
   try { keys = (await kv.keys()).map(String).filter(k => k.startsWith('snap-')).sort().reverse(); } catch (e) { }
-  if (!keys.length) { sel.innerHTML = '<option value="">No copies yet (one is made each day you use Ping)</option>'; sel.disabled = true; return; }
+  if (!keys.length) { sel.innerHTML = `<option value="">${esc(t('noSnaps'))}</option>`; sel.disabled = true; return; }
   const opts = [];
   for (const k of keys) {
     let label = k.slice(5);
-    try { const d = JSON.parse(await kv.get(k)); label += ` · ${d.reminders.length} reminders, ${d.notes.length} notes`; } catch (e) { }
+    try { const d = JSON.parse(await kv.get(k)); label += t('snapLabel', d.reminders.length, d.notes.length); } catch (e) { }
     opts.push(`<option value="${esc(k)}">${esc(label)}</option>`);
   }
   sel.innerHTML = opts.join(''); sel.disabled = false;
   if (navigator.storage && navigator.storage.persisted) {
     navigator.storage.persisted().then(p => {
-      $('persistStatus').textContent = p ? '✓ The browser has promised not to clear Ping’s data on its own.'
-        : 'The browser may clear Ping’s data if the disk gets very full. A save file protects you against that.';
+      $('persistStatus').textContent = p ? t('persisted') : t('notPersisted');
     }).catch(() => { });
   }
 }
 async function restoreSnapshot() {
   const k = $('snapSelect').value; if (!k) return;
   const txt = await kv.get(k); if (!txt) return;
-  if (!confirm('Replace everything in Ping with the copy from ' + k.slice(5) + '? You can undo this right after.')) return;
-  undoable('Restored the copy from ' + k.slice(5), () => { S = normalize(JSON.parse(txt)); curNote = null; save(); renderAll(); });
+  if (!confirm(t('confirmSnap', k.slice(5)))) return;
+  undoable(t('restoredSnap', k.slice(5)), () => { S = normalize(JSON.parse(txt)); curNote = null; save(); renderAll(); });
 }
 
 // Undo for destructive actions: remember the whole state, offer "Undo" for a few seconds.
 function undoable(message, fn) {
   const before = JSON.stringify(S);
   fn();
-  toast(message, 'Undo', () => {
+  toast(message, t('undo'), () => {
     S = normalize(JSON.parse(before)); curNote = null;
     save(); renderAll();
     if (currentTab() === 'notes') loadNote(sortedNotes()[0] || null);
-    toast('Undone');
+    toast(t('undone'));
   });
 }
 try { navigator.storage && navigator.storage.persist && navigator.storage.persist(); } catch (e) { }
@@ -1010,23 +1262,23 @@ async function loadFromFileIfNewer() {
   S = d; curNote = null;
   try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { }
   renderAll();
-  toast('Loaded your latest data from the save file');
+  toast(t('loadedFromFile'));
   return true;
 }
 async function useFile(h, readFirst) {
   fileHandle = h;
   try { await kv.set('file', h); } catch (e) { }
-  if (readFirst) { try { await loadFromFileIfNewer(); } catch (e) { toast('That file is not a Ping save file'); fileHandle = null; await kv.del('file').catch(() => { }); updateFileUi(); return; } }
+  if (readFirst) { try { await loadFromFileIfNewer(); } catch (e) { toast(t('notPingFile')); fileHandle = null; await kv.del('file').catch(() => { }); updateFileUi(); return; } }
   await writeFile();
-  if (fileState === 'ok') toast('Saving to ' + h.name);
+  if (fileState === 'ok') toast(t('savingTo', h.name));
 }
 async function fileCreate() {
   try { await useFile(await showSaveFilePicker({ suggestedName: 'Ping-data.json', types: FILE_TYPES, startIn: 'documents', id: 'ping-data' }), false); }
-  catch (e) { if (e.name !== 'AbortError') toast('Could not create the file: ' + e.message); }
+  catch (e) { if (e.name !== 'AbortError') toast(t('couldNotCreate', e.message)); }
 }
 async function fileOpen() {
   try { const [h] = await showOpenFilePicker({ types: FILE_TYPES, startIn: 'documents', id: 'ping-data' }); await useFile(h, true); }
-  catch (e) { if (e.name !== 'AbortError') toast('Could not open the file: ' + e.message); }
+  catch (e) { if (e.name !== 'AbortError') toast(t('couldNotOpen', e.message)); }
 }
 async function fileReconnect() {
   if (!fileHandle) return;
@@ -1042,7 +1294,7 @@ async function fileReconnect() {
 async function fileStop() {
   fileHandle = null; fileState = 'none';
   try { await kv.del('file'); } catch (e) { }
-  updateFileUi(); toast('Stopped saving to the file. The file itself is kept');
+  updateFileUi(); toast(t('fileStopped'));
 }
 async function initFile() {
   if (!fileApi) { updateFileUi(); return; }
@@ -1070,25 +1322,25 @@ function updateFileUi() {
   $('fileReconnectBtn').hidden = !(has && fileState === 'needs-permission');
   $('fileBanner').hidden = !(has && fileState === 'needs-permission');
   const st = $('fileStatus');
-  if (!has) st.textContent = 'Extra safety: also keep a save file on your PC, for example in Documents or a synced folder. It updates with every change and survives even if Edge’s data is cleared.';
-  else if (fileState === 'ok') st.textContent = '✓ Also saving to “' + fileHandle.name + '”' + (fileSavedAt ? ', last saved ' + fmtTime(new Date(fileSavedAt)) : '') + '.';
-  else if (fileState === 'needs-permission') st.textContent = 'Save file “' + fileHandle.name + '” needs one click to reconnect (Edge asks again after a restart).';
-  else st.textContent = 'Couldn’t write to “' + fileHandle.name + '”: ' + fileError;
+  if (!has) st.textContent = t('fileNone');
+  else if (fileState === 'ok') st.textContent = t('fileOk', fileHandle.name, fileSavedAt ? fmtTime(new Date(fileSavedAt)) : '');
+  else if (fileState === 'needs-permission') st.textContent = t('fileNeeds', fileHandle.name);
+  else st.textContent = t('fileErr', fileHandle.name, fileError);
   updateSaveChip();
 }
 
 // ---------------------------------------------------------------- dates
-const fmtTime = d => d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+const fmtTime = d => d.toLocaleTimeString(LOCALE(), { hour: '2-digit', minute: '2-digit' });
 const sod = d => new Date(d.getFullYear(), d.getMonth(), d.getDate());
 const dayDiff = d => Math.round((sod(d) - sod(new Date())) / 86400000);
 function fmtDay(d) {
   const n = dayDiff(d);
-  if (n === 0) return 'Today';
-  if (n === 1) return 'Tomorrow';
-  if (n === -1) return 'Yesterday';
+  if (n === 0) return t('today');
+  if (n === 1) return t('tomorrow');
+  if (n === -1) return t('yesterday');
   const o = { weekday: 'short', day: 'numeric', month: 'short' };
   if (d.getFullYear() !== new Date().getFullYear()) o.year = 'numeric';
-  return d.toLocaleDateString('en-GB', o);
+  return d.toLocaleDateString(LOCALE(), o);
 }
 const fmtWhen = d => fmtDay(d) + ' ' + fmtTime(d);
 const fmtUtc = d => d.toISOString().slice(11, 16) + ' UTC';
@@ -1096,25 +1348,25 @@ const isoDate = d => { const p = n => String(n).padStart(2, '0'); return `${d.ge
 function relative(d) {
   let ms = d - Date.now(); const past = ms < 0; ms = Math.abs(ms);
   const min = ms / 60000;
-  if (min < 1) return past ? 'just now' : 'in under a minute';
-  let t;
-  if (min < 60) t = Math.floor(min) + ' min';
-  else if (min < 1440) { const h = Math.floor(min / 60), m = Math.floor(min % 60); t = (m && h < 10) ? `${h} h ${m} min` : h + ' h'; }
-  else if (min < 1440 * 14) { const dd = Math.round(min / 1440); t = dd + (dd === 1 ? ' day' : ' days'); }
-  else if (min < 1440 * 60) t = Math.round(min / 10080) + ' weeks';
-  else t = Math.round(min / 43800) + ' months';
-  return past ? t + ' ago' : 'in ' + t;
+  if (min < 1) return past ? t('justNow') : t('underMin');
+  let x;
+  if (min < 60) x = Math.floor(min) + ' min';
+  else if (min < 1440) { const h = Math.floor(min / 60), m = Math.floor(min % 60); x = (m && h < 10) ? `${h} h ${m} min` : h + ' h'; }
+  else if (min < 1440 * 14) x = t('days', Math.round(min / 1440));
+  else if (min < 1440 * 60) x = t('weeks', Math.round(min / 10080));
+  else x = t('months', Math.round(min / 43800));
+  return past ? t('ago', x) : t('inT', x);
 }
-const fmtEvery = m => m % 60 === 0 ? (m === 60 ? 'Every hour' : `Every ${m / 60} h`) : `Every ${m} min`;
+const fmtEvery = m => t('every', m);
 function repeatLabel(r) {
   switch (r.repeat) {
     case 'interval': return fmtEvery(r.every || 60);
     case 'cron': return 'cron ' + r.cron;
-    case 'daily': return 'Every day';
-    case 'weekdays': return 'Weekdays';
-    case 'weekly': return 'Every week';
-    case 'monthly': return 'Every month';
-    case 'yearly': return 'Every year';
+    case 'daily': return t('repDaily');
+    case 'weekdays': return t('repWeekdays');
+    case 'weekly': return t('repWeekly');
+    case 'monthly': return t('repMonthly');
+    case 'yearly': return t('repYearly');
     default: return '';
   }
 }
@@ -1141,7 +1393,7 @@ const isSnoozed = r => !r.done && r.snoozeUntil != null;
 const toLocalInput = ms => { const d = new Date(ms); const p = n => String(n).padStart(2, '0'); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`; };
 function defaultDue() { const d = new Date(Date.now() + 3600000); d.setSeconds(0, 0); d.setMinutes(Math.ceil(d.getMinutes() / 5) * 5); return d.getTime(); }
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
-const PRIO = ['', 'Low', 'Med', 'High'];
+const prioName = p => t('prioNames')[p] || '';
 
 // ---------------------------------------------------------------- links, ticket IDs, markdown
 const URL_RE = /\bhttps?:\/\/[^\s<>"'`)\]]+[^\s<>"'`)\].,;:!?]/g;
@@ -1196,7 +1448,7 @@ function renderMarkdown(src) {
       const lang = m[1], code = []; i++;
       while (i < lines.length && !/^\s*```\s*$/.test(lines[i])) code.push(lines[i++]);
       i++;
-      out.push(`<div class="code">${lang ? `<span class="lang">${esc(lang)}</span>` : ''}<button class="btn sm copy" type="button" data-copy>Copy</button><pre><code>${esc(code.join('\n'))}</code></pre></div>`);
+      out.push(`<div class="code">${lang ? `<span class="lang">${esc(lang)}</span>` : ''}<button class="btn sm copy" type="button" data-copy>${esc(t('copy'))}</button><pre><code>${esc(code.join('\n'))}</code></pre></div>`);
       continue;
     }
     if (/^\s*\|.*\|\s*$/.test(line) && i + 1 < lines.length && /^\s*\|?\s*:?-{2,}/.test(lines[i + 1])) {
@@ -1222,13 +1474,13 @@ function renderMarkdown(src) {
     closeList(); para.push(line); i++;
   }
   flushPara(); closeList();
-  return out.join('\n') || '<p style="color:var(--muted)">Nothing to preview yet.</p>';
+  return out.join('\n') || `<p style="color:var(--muted)">${esc(t('nothingToPreview'))}</p>`;
 }
 async function copyText(text) {
-  try { await navigator.clipboard.writeText(text); toast('Copied'); }
+  try { await navigator.clipboard.writeText(text); toast(t('copied')); }
   catch (e) {
     const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select();
-    try { document.execCommand('copy'); toast('Copied'); } catch (e2) { toast('Copy failed. Select the text and press Ctrl+C'); }
+    try { document.execCommand('copy'); toast(t('copied')); } catch (e2) { toast(t('copyFailed')); }
     ta.remove();
   }
 }
@@ -1249,12 +1501,12 @@ $('toastAct').addEventListener('click', () => { const f = toastAction; toastActi
 function snoozeOptions() {
   const now = new Date(), o = [];
   const at = (days, h) => { const d = sod(now); d.setDate(d.getDate() + days); d.setHours(h, 0, 0, 0); return d.getTime(); };
-  o.push(['5 minutes', Date.now() + 5 * 60000], ['10 minutes', Date.now() + 10 * 60000], ['30 minutes', Date.now() + 30 * 60000],
-         ['1 hour', Date.now() + 3600000], ['3 hours', Date.now() + 3 * 3600000]);
-  if (now.getHours() < 18) o.push(['This evening (19:00)', at(0, 19)]);
-  o.push(['Tomorrow 09:00', at(1, 9)]);
+  o.push([t('snMin', 5), Date.now() + 5 * 60000], [t('snMin', 10), Date.now() + 10 * 60000], [t('snMin', 30), Date.now() + 30 * 60000],
+         [t('snHour', 1), Date.now() + 3600000], [t('snHour', 3), Date.now() + 3 * 3600000]);
+  if (now.getHours() < 18) o.push([t('snEvening'), at(0, 19)]);
+  o.push([t('snTomorrow'), at(1, 9)]);
   const toMon = ((1 - now.getDay() + 7) % 7) || 7;
-  o.push(['Next Monday 09:00', at(toMon, 9)]);
+  o.push([t('snMonday'), at(toMon, 9)]);
   return o;
 }
 function openPop(anchor, items) {
@@ -1276,15 +1528,15 @@ function changed() { save(); renderReminders(); updateTitle(); }
 function complete(r) { if (r.repeat === 'none') { r.done = true; r.completedAt = Date.now(); } r.snoozeUntil = null; closeAlert(r.id); changed(); }
 function stopRepeating(r) { r.done = true; r.completedAt = Date.now(); r.snoozeUntil = null; closeAlert(r.id); changed(); }
 function reopen(r) { r.done = false; r.completedAt = null; r.fired = r.due <= Date.now(); changed(); }
-function snooze(r, until) { r.snoozeUntil = until; r.done = false; closeAlert(r.id); changed(); toast('Snoozed until ' + fmtWhen(new Date(until))); }
-function remove(r) { undoable('Reminder deleted', () => { S.reminders = S.reminders.filter(x => x !== r); closeAlert(r.id); changed(); }); }
+function snooze(r, until) { r.snoozeUntil = until; r.done = false; closeAlert(r.id); changed(); toast(t('snoozedUntil', fmtWhen(new Date(until)))); }
+function remove(r) { undoable(t('reminderDeleted'), () => { S.reminders = S.reminders.filter(x => x !== r); closeAlert(r.id); changed(); }); }
 function newReminder(fields) {
   return Object.assign({ id: uid(), title: '', notes: '', due: defaultDue(), repeat: 'none', every: null, cron: null, tags: [], priority: 0,
     done: false, fired: false, snoozeUntil: null, created: Date.now(), completedAt: null }, fields);
 }
 function askDone(r) {
   if (r.repeat === 'none') complete(r);
-  else if (confirm('Stop repeating “' + r.title + '”?')) stopRepeating(r);
+  else if (confirm(t('confirmStop', r.title))) stopRepeating(r);
 }
 
 // ---------------------------------------------------------------- quick add
@@ -1293,40 +1545,40 @@ function describe(p) {
   if (!p.when) return null;
   let s = '⏰ ' + fmtWhen(p.when) + '  (' + relative(p.when) + ')';
   if (p.repeat !== 'none') s += '  ·  ' + repeatLabel(p);
-  if (p.priority) s += '  ·  ' + PRIO[p.priority] + ' priority';
+  if (p.priority) s += '  ·  ' + t('priority', prioName(p.priority));
   if (p.tags.length) s += '  ·  ' + p.tags.map(t => '#' + t).join(' ');
-  if (p.title) s += '  ·  “' + p.title + '”';
+  if (p.title) s += lang() === 'en' ? '  ·  “' + p.title + '”' : '  ·  ”' + p.title + '”';
   return s;
 }
 function updateQuickPreview() {
-  const t = quickInput.value.trim();
+  const q = quickInput.value.trim();
   quickPreview.className = 'preview';
-  if (!t) { quickPreview.innerHTML = 'Write it like you would say it. <kbd>Enter</kbd> adds it, <kbd>Ctrl Enter</kbd> saves it as a note, <kbd>?</kbd> shows the syntax: <code>every 30 min</code>, <code>cron `0 9 * * 1-5`</code>, <code>#tag</code>, <code>!!!</code>'; return; }
-  const p = QuickParser.parse(t), d = describe(p);
+  if (!q) { quickPreview.innerHTML = t('quickHint'); return; }
+  const p = QuickParser.parse(q), d = describe(p);
   if (p.error) { quickPreview.classList.add('err'); quickPreview.textContent = p.error; }
   else if (d) { quickPreview.classList.add('ok'); quickPreview.textContent = d; }
-  else { quickPreview.classList.add('warn'); quickPreview.textContent = 'No time found yet. Enter lets you pick one, or add “tomorrow 9:00”, “in 20 min” or “every 2h”.'; }
+  else { quickPreview.classList.add('warn'); quickPreview.textContent = t('noTime'); }
 }
 function quickSubmit(mode) { // 0 add, 1 note, 2 editor
-  const t = quickInput.value.trim();
-  if (!t) { quickInput.focus(); return; }
+  const q = quickInput.value.trim();
+  if (!q) { quickInput.focus(); return; }
   if (mode === 1) {
-    const n = { id: uid(), text: t, created: Date.now(), modified: Date.now(), pinned: false };
+    const n = { id: uid(), text: q, created: Date.now(), modified: Date.now(), pinned: false };
     S.notes.unshift(n); save(); renderNotes();
     quickInput.value = ''; updateQuickPreview();
-    quickPreview.className = 'preview done'; quickPreview.textContent = '✓ Saved as a note';
+    quickPreview.className = 'preview done'; quickPreview.textContent = t('savedAsNote');
     return;
   }
-  const p = QuickParser.parse(t);
+  const p = QuickParser.parse(q);
   if (p.error && mode === 0) { quickPreview.className = 'preview err'; quickPreview.textContent = p.error; return; }
-  const r = newReminder({ title: p.title || t, repeat: p.repeat, every: p.every, cron: p.cron, tags: p.tags, priority: p.priority,
+  const r = newReminder({ title: p.title || q, repeat: p.repeat, every: p.every, cron: p.cron, tags: p.tags, priority: p.priority,
     due: p.when ? p.when.getTime() : defaultDue() });
   if (mode === 2 || !p.when) { openEditor(r, true, () => { quickInput.value = ''; updateQuickPreview(); }); return; }
   S.reminders.push(r); changed();
   if (S.settings.icsOnSave) downloadIcs(r);
   quickInput.value = ''; updateQuickPreview();
   quickPreview.className = 'preview done';
-  quickPreview.textContent = '✓ Set for ' + fmtWhen(new Date(r.due)) + '  (' + relative(new Date(r.due)) + ')' + (r.repeat !== 'none' ? '  ·  ' + repeatLabel(r) : '');
+  quickPreview.textContent = '✓ ' + t('setFor', fmtWhen(new Date(r.due))) + '  (' + relative(new Date(r.due)) + ')' + (r.repeat !== 'none' ? '  ·  ' + repeatLabel(r) : '');
   maybeAskNotif();
 }
 quickInput.addEventListener('input', updateQuickPreview);
@@ -1357,8 +1609,7 @@ function groupOf(r) {
   const dd = dayDiff(new Date(n));
   return dd <= 0 ? 'today' : dd === 1 ? 'tomorrow' : dd < 7 ? 'week' : 'later';
 }
-const GROUPS = [['overdue', 'Overdue'], ['today', 'Today'], ['tomorrow', 'Tomorrow'], ['week', 'Next 7 days'], ['later', 'Later'], ['done', 'Done']];
-const EXAMPLES = ['Review PR DATA-142 tomorrow 10:00 #review', 'Check pipeline runs every 30 min #etl !!', 'Standup cron `45 8 * * 1-5`', 'Deploy window friday 14:00 UTC #prod !!!', 'Ring mamma imorgon 18'];
+const GROUPS = [['overdue', 'gOverdue'], ['today', 'gToday'], ['tomorrow', 'gTomorrow'], ['week', 'gWeek'], ['later', 'gLater'], ['done', 'gDone']];
 
 function visibleReminders() {
   const q = $('search').value.trim().toLowerCase();
@@ -1393,42 +1644,42 @@ function renderReminders() {
   [...open, ...done].forEach(r => (by[groupOf(r)] ||= []).push(r));
 
   const overdue = S.reminders.filter(isOverdue).length, upcoming = S.reminders.filter(r => !r.done && !isOverdue(r)).length;
-  $('count').textContent = upcoming + ' upcoming' + (overdue ? ' · ' + overdue + ' overdue' : '');
+  $('count').textContent = t('count', upcoming, overdue);
 
   const g = $('groups');
   if (!items.length) {
     const fresh = S.reminders.length === 0;
-    g.innerHTML = `<div class="empty"><h3>${fresh ? 'No reminders yet' : 'Nothing matches'}</h3>
-      <div>${fresh ? 'Type one in the box above and press Enter. Click an example to try it:' : 'Try another filter, tag or search.'}</div>
-      ${fresh ? `<div class="examples">${EXAMPLES.map(x => `<button class="btn sm" type="button" data-example="${esc(x)}">${esc(x)}</button>`).join('')}</div>` : ''}</div>`;
+    g.innerHTML = `<div class="empty"><h3>${esc(t(fresh ? 'emptyFresh' : 'emptyNone'))}</h3>
+      <div>${esc(t(fresh ? 'emptyFreshP' : 'emptyNoneP'))}</div>
+      ${fresh ? `<div class="examples">${t('examples').map(x => `<button class="btn sm" type="button" data-example="${esc(x)}">${esc(x)}</button>`).join('')}</div>` : ''}</div>`;
     return;
   }
   g.innerHTML = GROUPS.filter(([k]) => by[k]).map(([k, label]) => `
-    <section class="group ${k}"><h2>${label} <span class="n">${by[k].length}</span></h2>
+    <section class="group ${k}"><h2>${esc(t(label))} <span class="n">${by[k].length}</span></h2>
       <ul class="list">${by[k].map(rowHtml).join('')}</ul></section>`).join('');
 }
 function rowHtml(r) {
   const n = new Date(nextAlert(r));
   const cls = [r.done ? 'done' : isOverdue(r) ? 'overdue' : '', r.id === selId ? 'sel' : ''].join(' ');
   const tags = [];
-  if (isOverdue(r)) tags.push(`<span class="tag overdue">Overdue · ${esc(relative(new Date(r.due)))}</span>`);
-  else if (isSnoozed(r)) tags.push(`<span class="tag snoozed">Snoozed · ${esc(relative(new Date(r.snoozeUntil)))}</span>`);
+  if (isOverdue(r)) tags.push(`<span class="tag overdue">${esc(t('tagOverdue'))} · ${esc(relative(new Date(r.due)))}</span>`);
+  else if (isSnoozed(r)) tags.push(`<span class="tag snoozed">${esc(t('tagSnoozed'))} · ${esc(relative(new Date(r.snoozeUntil)))}</span>`);
   else if (!r.done) tags.push(`<span>${esc(relative(n))}</span>`);
-  else tags.push(`<span>Done ${r.completedAt ? esc(fmtWhen(new Date(r.completedAt))) : ''}</span>`);
+  else tags.push(`<span>${esc(t('doneAt', r.completedAt ? fmtWhen(new Date(r.completedAt)) : ''))}</span>`);
   if (r.repeat !== 'none') tags.push(`<span class="tag repeat${r.repeat === 'cron' ? ' mono' : ''}">${esc(repeatLabel(r))}</span>`);
   r.tags.forEach(t => tags.push(`<span class="tag hash" data-tagclick="${esc(t)}">#${esc(t)}</span>`));
   if (r.notes) tags.push(`<span class="snip">${linkify(r.notes.split('\n')[0])}</span>`);
   const acts = r.done
-    ? `<button class="btn sm ghost" type="button" data-act="reopen">Reopen</button>`
-    : `<button class="btn sm" type="button" data-act="done" title="${r.repeat === 'none' ? 'Mark as done (x)' : 'Stop repeating'}">✓ Done</button>
-       <button class="btn sm ghost" type="button" data-act="snooze" title="Snooze (s)">Snooze</button>
-       <button class="btn sm ghost" type="button" data-act="ics" title="Download as an Outlook calendar entry">Outlook</button>`;
+    ? `<button class="btn sm ghost" type="button" data-act="reopen">${esc(t('reopen'))}</button>`
+    : `<button class="btn sm" type="button" data-act="done" title="${esc(t(r.repeat === 'none' ? 'markDoneTitle' : 'stopRepeating'))}">${esc(t('doneBtn'))}</button>
+       <button class="btn sm ghost" type="button" data-act="snooze" title="${esc(t('snoozeTitle'))}">${esc(t('snooze'))}</button>
+       <button class="btn sm ghost" type="button" data-act="ics" title="${esc(t('outlookTitle'))}">Outlook</button>`;
   return `<li class="rem ${cls}" data-id="${r.id}">
     <div class="when"><span class="t">${fmtTime(n)}</span><span class="d">${esc(fmtDay(n))}</span></div>
-    <div><div class="title">${r.priority ? `<span class="prio p${r.priority}">${PRIO[r.priority].toUpperCase()}</span>` : ''}<span>${linkify(r.title)}</span></div><div class="meta">${tags.join('')}</div></div>
+    <div><div class="title">${r.priority ? `<span class="prio p${r.priority}">${esc(prioName(r.priority).toUpperCase())}</span>` : ''}<span>${linkify(r.title)}</span></div><div class="meta">${tags.join('')}</div></div>
     <div class="acts">${acts}
-      <button class="btn sm ghost" type="button" data-act="edit" title="Edit (e)">Edit</button>
-      <button class="btn sm ghost danger" type="button" data-act="delete" title="Delete (Del)" aria-label="Delete">✕</button></div></li>`;
+      <button class="btn sm ghost" type="button" data-act="edit" title="${esc(t('editTitle'))}">${esc(t('edit'))}</button>
+      <button class="btn sm ghost danger" type="button" data-act="delete" title="${esc(t('deleteTitle'))}" aria-label="${esc(t('delete'))}">✕</button></div></li>`;
 }
 $('groups').addEventListener('click', e => {
   const ex = e.target.closest('[data-example]');
@@ -1465,7 +1716,7 @@ function moveSel(delta) {
 let edCtx = null;
 function openEditor(r, isNew, onSaved) {
   edCtx = { r, isNew, onSaved };
-  $('edHeading').textContent = isNew ? 'New reminder' : 'Edit reminder';
+  $('edHeading').textContent = t(isNew ? 'edNew' : 'edEdit');
   $('edTitle').value = r.title || '';
   $('edWhen').value = toLocalInput(r.due);
   $('edRepeat').value = r.repeat || 'none';
@@ -1500,11 +1751,11 @@ function updateCronRuns() {
   const out = $('edRuns');
   try {
     const c = Cron.parse($('edCron').value);
-    let t = Date.now(); const runs = [];
-    for (let i = 0; i < 4; i++) { t = Cron.next(c, t); if (!t) break; runs.push(new Date(t)); }
-    if (!runs.length) throw new Error('That schedule never runs');
+    let ms = Date.now(); const runs = [];
+    for (let i = 0; i < 4; i++) { ms = Cron.next(c, ms); if (!ms) break; runs.push(new Date(ms)); }
+    if (!runs.length) throw new Error(t('neverRuns'));
     out.classList.remove('rel', 'err');
-    out.innerHTML = 'Next runs: ' + runs.map(d => esc(fmtWhen(d))).join('  ·  ');
+    out.innerHTML = esc(t('nextRuns')) + runs.map(d => esc(fmtWhen(d))).join('  ·  ');
     $('edWhen').value = toLocalInput(runs[0].getTime()); updateRel();
     return runs[0].getTime();
   } catch (e) { out.classList.add('rel', 'err'); out.textContent = e.message; return null; }
@@ -1533,22 +1784,22 @@ $('editForm').addEventListener('submit', e => {
   let title = $('edTitle').value.trim();
   const notes = $('edNotes').value.trim();
   if (!title) title = (notes.split('\n').find(l => l.trim()) || '').trim();
-  if (!title) { $('edTitle').focus(); toast('Write what the reminder is about'); return; }
+  if (!title) { $('edTitle').focus(); toast(t('writeWhat')); return; }
   const repeat = $('edRepeat').value;
   let due = new Date($('edWhen').value).getTime(), every = null, cron = null;
   if (repeat === 'cron') {
     cron = $('edCron').value.trim().replace(/\s+/g, ' ');
     due = updateCronRuns();
-    if (!due) { $('edCron').focus(); toast('Fix the cron expression first'); return; }
+    if (!due) { $('edCron').focus(); toast(t('fixCron')); return; }
   }
   if (repeat === 'interval') {
     every = Math.round(parseFloat($('edEvery').value) * +$('edEveryUnit').value);
-    if (!(every >= 1)) { $('edEvery').focus(); toast('Enter how often it repeats'); return; }
+    if (!(every >= 1)) { $('edEvery').focus(); toast(t('enterEvery')); return; }
   }
-  if (isNaN(due)) { $('edWhen').focus(); toast('Pick a date and time'); return; }
+  if (isNaN(due)) { $('edWhen').focus(); toast(t('pickDate')); return; }
   const { r, isNew, onSaved } = edCtx;
   if (due <= Date.now() && repeat === 'none' && due !== r.due &&
-      !confirm('That time has already passed, so the reminder will pop up right away. Save anyway?')) return;
+      !confirm(t('confirmPast'))) return;
   const tags = [...new Set($('edTags').value.split(/[\s,]+/).map(t => t.replace(/^#/, '').toLowerCase()).filter(Boolean))];
   const timing = due !== r.due || repeat !== r.repeat || every !== r.every || cron !== r.cron;
   Object.assign(r, { title, notes, due, repeat, every, cron, tags, priority: +$('edPrio').value });
@@ -1557,7 +1808,7 @@ $('editForm').addEventListener('submit', e => {
   const ics = $('edIcs').checked;
   closeEditor(); changed();
   if (ics) downloadIcs(r);
-  toast(isNew ? 'Set for ' + fmtWhen(new Date(r.due)) : 'Saved');
+  toast(isNew ? t('setFor', fmtWhen(new Date(r.due))) : t('saved'));
   if (onSaved) onSaved();
   maybeAskNotif();
 });
@@ -1594,7 +1845,7 @@ function downloadIcs(r) {
     'BEGIN:VALARM', 'ACTION:DISPLAY', 'DESCRIPTION:' + icsText(r.title), 'TRIGGER:-PT0M', 'END:VALARM',
     'END:VEVENT', 'END:VCALENDAR');
   downloadFile((r.title.replace(/[\\/:*?"<>|]+/g, ' ').trim().slice(0, 60) || 'reminder') + '.ics', lines.map(fold).join('\r\n') + '\r\n', 'text/calendar');
-  toast(r.repeat === 'cron' ? 'Downloaded the next run only (Outlook can’t read cron). Open it and click Save & Close' : 'Calendar file downloaded. Open it and click Save & Close in Outlook');
+  toast(t(r.repeat === 'cron' ? 'icsCron' : 'icsDone'));
 }
 function exportCsv() {
   const q = v => { v = String(v ?? ''); return /[",\n\r]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
@@ -1602,7 +1853,7 @@ function exportCsv() {
   const head = ['id', 'title', 'next_alert_utc', 'due_utc', 'repeat', 'every_min', 'cron', 'tags', 'priority', 'done', 'completed_at_utc', 'created_utc', 'notes'];
   const rows = S.reminders.map(r => [r.id, r.title, iso(nextAlert(r)), iso(r.due), r.repeat, r.every ?? '', r.cron ?? '', r.tags.join(' '), r.priority, r.done, iso(r.completedAt), iso(r.created), r.notes]);
   downloadFile('ping-reminders-' + isoDate(new Date()) + '.csv', '\ufeff' + [head, ...rows].map(r => r.map(q).join(',')).join('\r\n'), 'text/csv');
-  toast('CSV downloaded');
+  toast(t('csvDone'));
 }
 
 // ---------------------------------------------------------------- notifications, sound, alerts
@@ -1612,34 +1863,29 @@ function updateNotifUi() {
   const perm = canNotify() ? Notification.permission : 'unsupported';
   chip.classList.toggle('on', perm === 'granted');
   chip.classList.toggle('off', perm !== 'granted');
-  txt.textContent = perm === 'granted' ? 'Notifications on' : perm === 'denied' ? 'Notifications blocked' : perm === 'unsupported' ? 'In-window alerts only' : 'Turn on notifications';
-  st.textContent = perm === 'granted' ? 'Windows notifications are on. Reminders also appear as an alert in this window.'
-    : perm === 'denied' ? 'Edge is blocking notifications for this page. Click the icon left of the address, set Notifications to Allow, then reload. Until then you get in-window alerts and a sound.'
-    : perm === 'unsupported' ? 'This browser can’t show notifications for this page, so reminders appear as an alert inside this window, with a sound.'
-    : 'Allow notifications so reminders reach you even when this window is behind others.';
+  txt.textContent = t(perm === 'granted' ? 'notifOn' : perm === 'denied' ? 'notifBlocked' : perm === 'unsupported' ? 'notifInWindow' : 'notifTurnOn');
+  st.textContent = perm === 'granted' ? t('stGranted') : perm === 'denied' ? t('stDenied', browserName()) : perm === 'unsupported' ? t('stUnsupported') : t('stDefault');
   $('notifBanner').hidden = !(perm === 'default' && !S.settings.bannerHidden);
-  if (notifError) st.textContent = `The last notification failed: ${notifError}. Check Windows Settings → System → Notifications, and that “Do not disturb” is off.`;
-  st.textContent += ` (Running in ${browserName()}${isLocalFile ? ' from a local file' : ''}. Each browser keeps its own copy of your reminders, so always open Ping the same way.)`;
+  if (notifError) st.textContent = t('stFailed', notifError);
+  st.textContent += t('stRunning', browserName(), isLocalFile);
 }
-const browserName = () => navigator.brave ? 'Brave' : /Edg\//.test(navigator.userAgent) ? 'Edge' : /Chrome\//.test(navigator.userAgent) ? 'Chrome' : /Firefox\//.test(navigator.userAgent) ? 'Firefox' : 'this browser';
+const browserName = () => navigator.brave ? 'Brave' : /Edg\//.test(navigator.userAgent) ? 'Edge' : /Chrome\//.test(navigator.userAgent) ? 'Chrome' : /Firefox\//.test(navigator.userAgent) ? 'Firefox' : t('thisBrowser');
 const isLocalFile = location.protocol === 'file:';
 async function askNotif() {
-  if (!canNotify()) { toast('Notifications are not available here; in-window alerts will be used'); return; }
+  if (!canNotify()) { toast(t('notifUnavailable')); return; }
   let answer;
   try { answer = await Notification.requestPermission(); } catch (e) { answer = 'error'; }
   updateNotifUi();
   if (Notification.permission === 'granted') {
-    toast('Notifications are on. Sending a test…');
-    systemNotify('Ping notifications work', { body: 'Reminders will appear like this.', tag: 'ping-test' })
-      .catch(e => { notifError = e.message || String(e); updateNotifUi(); toast('The test notification failed: ' + notifError); });
+    toast(t('notifTesting'));
+    systemNotify(t('testNotifTitle'), { body: t('testNotifBody'), tag: 'ping-test' })
+      .catch(e => { notifError = e.message || String(e); updateNotifUi(); toast(t('testNotifFailed', notifError)); });
     return;
   }
   // The browser did not keep the choice: say so instead of silently doing nothing.
-  const why = isLocalFile
-    ? `${browserName()} answered “${answer}”, so it didn’t keep your choice. Browsers often refuse to save notification permission for pages opened as a local file. Until that’s solved you still get the alert in this window and a sound.`
-    : `${browserName()} answered “${answer}”. Check that notifications are allowed for this site and that Windows notifications are on for ${browserName()}.`;
+  const why = t(isLocalFile ? 'notKeptLocal' : 'notKept', browserName(), answer);
   $('notifStatus').textContent = why;
-  toast('Notifications were not turned on. See Settings for details');
+  toast(t('notifNotOn'));
 }
 function maybeAskNotif() { if (canNotify() && Notification.permission === 'default') askNotif(); }
 $('notifChip').addEventListener('click', () => { if (canNotify() && Notification.permission === 'default') askNotif(); else showTab('settings'); });
@@ -1669,13 +1915,13 @@ function showAlert(r, occurrence) {
   const el = document.createElement('div');
   el.className = 'alert' + (r.priority === 3 ? ' p3' : ''); el.setAttribute('role', 'alertdialog');
   const occ = new Date(occurrence);
-  el.innerHTML = `<div class="k"><span>${r.priority === 3 ? 'High priority · ' : ''}${esc(fmtWhen(occ))} · ${esc(fmtUtc(occ))}${r.repeat !== 'none' ? ' · ' + esc(repeatLabel(r)) : ''}</span>
-      <button type="button" data-a="x" title="Dismiss (keeps it in the list)" aria-label="Dismiss">✕</button></div>
+  el.innerHTML = `<div class="k"><span>${r.priority === 3 ? esc(t('highPrio')) : ''}${esc(fmtWhen(occ))} · ${esc(fmtUtc(occ))}${r.repeat !== 'none' ? ' · ' + esc(repeatLabel(r)) : ''}</span>
+      <button type="button" data-a="x" title="${esc(t('dismissTitle'))}" aria-label="${esc(t('dismiss'))}">✕</button></div>
     <div class="at">${linkify(r.title)}</div>${r.notes ? `<div class="an">${linkify(r.notes)}</div>` : ''}
     ${r.tags.length ? `<div class="row">${r.tags.map(t => `<span class="tag hash">#${esc(t)}</span>`).join('')}</div>` : ''}
-    <div class="row"><button class="btn primary sm" type="button" data-a="done">${r.repeat === 'none' ? '✓ Done' : 'OK'}</button>
-      <button class="btn sm" type="button" data-a="snooze">Snooze</button>
-      <button class="btn ghost sm" type="button" data-a="edit">Edit</button></div>`;
+    <div class="row"><button class="btn primary sm" type="button" data-a="done">${r.repeat === 'none' ? esc(t('doneBtn')) : 'OK'}</button>
+      <button class="btn sm" type="button" data-a="snooze">${esc(t('snooze'))}</button>
+      <button class="btn ghost sm" type="button" data-a="edit">${esc(t('edit'))}</button></div>`;
   el.addEventListener('click', e => {
     const b = e.target.closest('button[data-a]'); if (!b) return;
     const cur = find(r.id);
@@ -1760,7 +2006,7 @@ function check() {
 let flashOn = false;
 function updateTitle() {
   const n = S.reminders.filter(isOverdue).length;
-  document.title = (flashOn ? '🔔 ' + openAlerts.size + ' reminder' + (openAlerts.size === 1 ? '' : 's') + ' · ' : (n ? `(${n}) ` : '')) + 'Ping';
+  document.title = (flashOn ? '🔔 ' + t('titleCount', openAlerts.size) + ' · ' : (n ? `(${n}) ` : '')) + 'Ping';
 }
 setInterval(() => {
   flashOn = document.hidden && openAlerts.size > 0 ? !flashOn : false; updateTitle();
@@ -1770,7 +2016,7 @@ setInterval(() => {
 // ---------------------------------------------------------------- notes
 let curNote = null, noteTimer = null, noteView = 'edit';
 const noteText = $('noteText');
-const noteTitle = n => { const l = (n.text || '').split('\n').map(x => x.trim()).filter(Boolean); return l[0] ? l[0].replace(/^#+\s*/, '').slice(0, 80) : '(empty note)'; };
+const noteTitle = n => { const l = (n.text || '').split('\n').map(x => x.trim()).filter(Boolean); return l[0] ? l[0].replace(/^#+\s*/, '').slice(0, 80) : t('noteEmpty'); };
 const notePreviewText = n => { const l = (n.text || '').split('\n').map(x => x.trim()).filter(Boolean); return (l[1] || '').replace(/^[#>*\-\s]+/, ''); };
 function sortedNotes() { return S.notes.slice().sort((a, b) => (b.pinned - a.pinned) || (b.modified - a.modified)); }
 function renderNotes() {
@@ -1778,10 +2024,10 @@ function renderNotes() {
   const list = sortedNotes().filter(n => !q || (n.text || '').toLowerCase().includes(q));
   $('noteList').innerHTML = list.length ? list.map(n => `<li role="option" data-id="${n.id}" aria-selected="${curNote && curNote.id === n.id}">
       <div class="nt">${n.pinned ? '📌 ' : ''}${esc(noteTitle(n))}</div><div class="ns">${esc(fmtWhen(new Date(n.modified)))}${notePreviewText(n) ? ' · ' + esc(notePreviewText(n)) : ''}</div></li>`).join('')
-    : `<li style="cursor:default;color:var(--muted)">${q ? 'No notes match.' : 'No notes yet.'}</li>`;
+    : `<li style="cursor:default;color:var(--muted)">${esc(t(q ? 'noNotesMatch' : 'noNotes'))}</li>`;
   ['delNoteBtn', 'noteRemindBtn', 'notePinBtn', 'noteCopyBtn'].forEach(id => $(id).disabled = !curNote);
-  $('notePinBtn').textContent = curNote && curNote.pinned ? 'Unpin' : 'Pin';
-  $('dataCount').textContent = S.reminders.length + ' reminders · ' + S.notes.length + ' notes';
+  $('notePinBtn').textContent = t(curNote && curNote.pinned ? 'unpin' : 'pin');
+  $('dataCount').textContent = t('dataCount', S.reminders.length, S.notes.length);
 }
 function setNoteView(v) {
   noteView = v;
@@ -1808,9 +2054,12 @@ function loadNote(n) {
   flushNote();
   curNote = n || null;
   noteText.value = curNote ? curNote.text : '';
-  $('noteStatus').textContent = curNote ? 'Edited ' + fmtWhen(new Date(curNote.modified)) + ' · saves automatically' : 'Start typing to create a note. Markdown works, and it saves automatically.';
+  updateNoteStatus();
   if (noteView === 'preview') $('notePreview').innerHTML = renderMarkdown(noteText.value);
   renderNotes();
+}
+function updateNoteStatus() {
+  $('noteStatus').textContent = curNote ? t('noteEdited', fmtWhen(new Date(curNote.modified))) : t('noteStart');
 }
 function flushNote() {
   if (noteTimer) { clearTimeout(noteTimer); noteTimer = null; save(); }
@@ -1819,9 +2068,9 @@ function flushNote() {
 noteText.addEventListener('input', () => {
   if (!curNote) { curNote = { id: uid(), text: '', created: Date.now(), modified: Date.now(), pinned: false }; S.notes.unshift(curNote); }
   curNote.text = noteText.value; curNote.modified = Date.now();
-  $('noteStatus').textContent = 'Saving…';
+  $('noteStatus').textContent = t('saving');
   clearTimeout(noteTimer);
-  noteTimer = setTimeout(() => { noteTimer = null; save(); $('noteStatus').textContent = 'Saved ✓ ' + fmtTime(new Date()); renderNotes(); }, 250);
+  noteTimer = setTimeout(() => { noteTimer = null; save(); $('noteStatus').textContent = t('savedAt', fmtTime(new Date())); renderNotes(); }, 250);
 });
 noteText.addEventListener('keydown', e => {
   if (e.key === 'Tab' && !e.ctrlKey && !e.altKey) {
@@ -1843,7 +2092,7 @@ function newNote(text) {
     S.notes.unshift(curNote); save(); loadNote(curNote);
   } else {
     curNote = null; noteText.value = '';
-    $('noteStatus').textContent = 'New note. Start typing.';
+    $('noteStatus').textContent = t('newNoteStatus');
     renderNotes();
   }
   setNoteView('edit');
@@ -1851,20 +2100,20 @@ function newNote(text) {
 function dailyLog() {
   const today = isoDate(new Date());
   const existing = S.notes.find(n => n.daily === today);
-  if (existing) { loadNote(existing); setNoteView('preview'); toast('Opened today’s log'); return; }
+  if (existing) { loadNote(existing); setNoteView('preview'); toast(t('openedLog')); return; }
   const start = sod(new Date()).getTime(), yStart = start - 86400000, end = start + 86400000;
   const doneRecently = S.reminders.filter(r => r.done && r.completedAt >= yStart).sort((a, b) => a.completedAt - b.completedAt);
   const dueToday = S.reminders.filter(r => !r.done && (isOverdue(r) || nextAlert(r) < end)).sort((a, b) => nextAlert(a) - nextAlert(b));
   const tagStr = r => r.tags.length ? ' ' + r.tags.map(t => '#' + t).join(' ') : '';
   const text = [
-    `# Daily log ${today}`, '',
-    '## Done', ...(doneRecently.length ? doneRecently.map(r => `- ${r.title}${tagStr(r)}`) : ['- ']), '',
-    '## Today', ...(dueToday.length ? dueToday.map(r => `- [ ] ${fmtTime(new Date(nextAlert(r)))} ${r.title}${tagStr(r)}`) : ['- [ ] ']), '',
-    '## Blockers', '- ', '',
-    '## Notes', ''].join('\n');
+    `# ${t('dTitle')} ${today}`, '',
+    '## ' + t('dDone'), ...(doneRecently.length ? doneRecently.map(r => `- ${r.title}${tagStr(r)}`) : ['- ']), '',
+    '## ' + t('dToday'), ...(dueToday.length ? dueToday.map(r => `- [ ] ${fmtTime(new Date(nextAlert(r)))} ${r.title}${tagStr(r)}`) : ['- [ ] ']), '',
+    '## ' + t('dBlockers'), '- ', '',
+    '## ' + t('dNotes'), ''].join('\n');
   newNote(text);
   curNote.daily = today; save();
-  toast('Daily log created from your reminders');
+  toast(t('logCreated'));
 }
 
 // ---------------------------------------------------------------- tabs, settings & global buttons
@@ -1888,6 +2137,11 @@ function applyTheme() {
   document.querySelectorAll('[data-palette-set]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.paletteSet === p)));
 }
 $('themeSeg').addEventListener('click', e => { const b = e.target.closest('[data-theme-set]'); if (!b) return; S.settings.theme = b.dataset.themeSet; save(); applyTheme(); });
+$('langSeg').addEventListener('click', e => {
+  const b = e.target.closest('[data-lang-set]'); if (!b || b.dataset.langSet === lang()) return;
+  S.settings.lang = b.dataset.langSet; save();
+  renderAll(); updateQuickPreview(); updateFileUi(); renderSnapshots(); updateNoteStatus();
+});
 $('paletteSet').addEventListener('click', e => { const b = e.target.closest('[data-palette-set]'); if (!b) return; S.settings.palette = b.dataset.paletteSet; save(); applyTheme(); });
 
 document.addEventListener('click', e => {
@@ -1898,7 +2152,7 @@ document.addEventListener('click', e => {
     case 'quick-more': quickInput.value.trim() ? quickSubmit(2) : openEditor(newReminder({}), true); break;
     case 'ask-notif': askNotif(); break;
     case 'hide-banner': S.settings.bannerHidden = true; save(); updateNotifUi(); break;
-    case 'test-alert': fire(newReminder({ id: 'test-' + uid(), title: 'This is a test reminder', notes: 'If you can see this, reminders work.', tags: ['test'] }), Date.now()); break;
+    case 'test-alert': fire(newReminder({ id: 'test-' + uid(), title: t('testTitle'), notes: t('testNotes'), tags: ['test'] }), Date.now()); break;
     case 'close-editor': closeEditor(); break;
     case 'keys': $('keysDlg').hidden = false; break;
     case 'close-keys': $('keysDlg').hidden = true; break;
@@ -1908,7 +2162,7 @@ document.addEventListener('click', e => {
       if (curNote) {
         const gone = curNote;
         clearTimeout(noteTimer); noteTimer = null;
-        undoable('Note deleted', () => { S.notes = S.notes.filter(n => n !== gone); curNote = null; save(); loadNote(null); });
+        undoable(t('noteDeleted'), () => { S.notes = S.notes.filter(n => n !== gone); curNote = null; save(); loadNote(null); });
       }
       break;
     case 'note-pin': if (curNote) { curNote.pinned = !curNote.pinned; save(); renderNotes(); } break;
@@ -1918,7 +2172,7 @@ document.addEventListener('click', e => {
       break;
     case 'export':
       downloadFile('ping-backup-' + isoDate(new Date()) + '.json', JSON.stringify(S, null, 2), 'application/json');
-      toast('Backup downloaded'); break;
+      toast(t('backupDone')); break;
     case 'export-csv': exportCsv(); break;
     case 'import': $('importFile').click(); break;
     case 'file-create': fileCreate(); break;
@@ -1960,9 +2214,7 @@ function openStartupGuide() {
   $('pingUrl').textContent = pingUrl();
   $('settingsUrl').textContent = brave ? 'brave://settings/getStarted' : 'edge://settings/startHomeNTP';
   $('startupBrave').hidden = !brave;
-  $('startupDlg').querySelector('ol li:nth-child(3)').innerHTML = brave
-    ? 'Under <strong>”Vid start”</strong>: välj <strong>”Öppna en viss sida eller uppsättning sidor”</strong>, klicka <strong>”Lägg till en ny sida”</strong> och klistra in Pings länk.'
-    : 'Under <strong>”När Microsoft Edge startar”</strong>: välj <strong>”Öppna de här sidorna”</strong>, klicka <strong>”Lägg till en ny sida”</strong> och klistra in Pings länk.';
+  $('startupStep3').innerHTML = t(brave ? 'startupStep3Brave' : 'startupStep3Edge');
   $('startupDlg').hidden = false;
 }
 
@@ -2004,14 +2256,14 @@ $('importFile').addEventListener('change', async e => {
     for (const r of data.reminders) if (!find(r.id)) { S.reminders.push(r); added++; }
     for (const n of data.notes) if (!S.notes.some(x => x.id === n.id)) { S.notes.push(n); added++; }
     save(); changed(); renderNotes();
-    toast(added ? 'Restored ' + added + ' items' : 'Nothing new in that backup');
-  } catch (err) { toast('That file is not a Ping backup'); }
+    toast(added ? t('restored', added) : t('nothingNew'));
+  } catch (err) { toast(t('notBackup')); }
 });
 $('setSound').addEventListener('change', e => { S.settings.sound = e.target.checked; save(); if (e.target.checked) chime(); });
 $('setIcs').addEventListener('change', e => { S.settings.icsOnSave = e.target.checked; save(); });
 $('setMono').addEventListener('change', e => { S.settings.mono = e.target.checked; save(); noteText.classList.toggle('mono', S.settings.mono); });
 $('setUtc').addEventListener('change', e => { S.settings.utcClock = e.target.checked; save(); });
-$('setTicket').addEventListener('change', e => { S.settings.ticketUrl = e.target.value.trim(); save(); renderReminders(); toast('Ticket links updated'); });
+$('setTicket').addEventListener('change', e => { S.settings.ticketUrl = e.target.value.trim(); save(); renderReminders(); toast(t('ticketsUpdated')); });
 
 // ---------------------------------------------------------------- keyboard
 const typing = el => el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || el.isContentEditable);
@@ -2040,7 +2292,7 @@ document.addEventListener('keydown', e => {
     case 'x': if (r) r.done ? reopen(r) : askDone(r); break;
     case 'e': case 'Enter': if (r) openEditor(r, false); break;
     case 's': if (r && !r.done) { const li = document.querySelector(`.rem[data-id="${r.id}"] [data-act="snooze"]`) || document.querySelector(`.rem[data-id="${r.id}"]`); if (li) openPop(li, snoozeOptions().map(([l, t]) => [l, () => snooze(r, t)])); } break;
-    case 'o': if (r) { const u = firstLink(r.title + ' ' + r.notes); if (u) window.open(u, '_blank', 'noopener'); else toast('No link in this reminder'); } break;
+    case 'o': if (r) { const u = firstLink(r.title + ' ' + r.notes); if (u) window.open(u, '_blank', 'noopener'); else toast(t('noLink')); } break;
     case 'Delete': if (r) remove(r); break;
   }
 });
@@ -2074,6 +2326,7 @@ function renderAll() {
   $('setUtc').checked = S.settings.utcClock;
   $('setTicket').value = S.settings.ticketUrl || '';
   noteText.classList.toggle('mono', S.settings.mono);
+  applyLang();
   applyTheme();
   renderReminders(); renderNotes(); updateTitle(); updateNotifUi();
 }
@@ -2090,6 +2343,7 @@ $('saveChip').addEventListener('click', () => {
   else showTab('settings');
 });
 renderAll();
+updateNoteStatus();
 updateQuickPreview();
 updateSaveChip();
 claimWindow(false);                     // become the editing window (or show the "already open" notice)

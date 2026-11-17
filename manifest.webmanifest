@@ -1,7 +1,8 @@
 {
   "name": "Ping",
   "short_name": "Ping",
-  "description": "Reminders and notes for engineers: natural-language quick add, cron schedules, tags, Markdown notes.",
+  "description": "Påminnelser och anteckningar för utvecklare: snabbinmatning med vanligt språk, cron-scheman, taggar och Markdown-anteckningar.",
+  "lang": "sv",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
