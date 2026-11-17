@@ -381,11 +381,6 @@ label.check input { margin-top: 3px; accent-color: var(--accent); }
         </div>
         <label class="check"><input type="checkbox" id="setSound"> <span>Play a sound when a reminder is due</span></label>
       </div>
-      <div class="card" id="installCard" hidden>
-        <h3>Install Ping as an app</h3>
-        <p id="installText">Install Ping as an app to get its own window and taskbar icon, and to be able to start it when you sign in to Windows. It also works offline.</p>
-        <div class="row"><button class="btn primary" type="button" data-act="install-app" id="installBtn">Install Ping</button></div>
-      </div>
       <div class="card">
         <h3>Ticket links</h3>
         <p>Ticket IDs like <code>DATA-123</code> in reminders and notes become links. Use <code>{key}</code> where the ID goes.</p>
@@ -1447,6 +1442,7 @@ function updateNotifUi() {
     : perm === 'unsupported' ? 'This browser can’t show notifications for this page, so reminders appear as an alert inside this window, with a sound.'
     : 'Allow notifications so reminders reach you even when this window is behind others.';
   $('notifBanner').hidden = !(perm === 'default' && !S.settings.bannerHidden);
+  if (notifError) st.textContent = `The last notification failed: ${notifError}. Check Windows Settings → System → Notifications, and that “Do not disturb” is off.`;
   st.textContent += ` (Running in ${browserName()}${isLocalFile ? ' from a local file' : ''}. Each browser keeps its own copy of your reminders, so always open Ping the same way.)`;
 }
 const browserName = () => navigator.brave ? 'Brave' : /Edg\//.test(navigator.userAgent) ? 'Edge' : /Chrome\//.test(navigator.userAgent) ? 'Chrome' : /Firefox\//.test(navigator.userAgent) ? 'Firefox' : 'this browser';
@@ -1458,7 +1454,8 @@ async function askNotif() {
   updateNotifUi();
   if (Notification.permission === 'granted') {
     toast('Notifications are on. Sending a test…');
-    try { new Notification('Ping notifications work', { body: 'Reminders will appear like this.', tag: 'ping-test' }); } catch (e) { }
+    systemNotify('Ping notifications work', { body: 'Reminders will appear like this.', tag: 'ping-test' })
+      .catch(e => { notifError = e.message || String(e); updateNotifUi(); toast('The test notification failed: ' + notifError); });
     return;
   }
   // The browser did not keep the choice: say so instead of silently doing nothing.
@@ -1526,13 +1523,29 @@ function fire(r, occurrence) {
   const a = showAlert(r, occurrence);
   chime(r.priority === 3);
   if (canNotify() && Notification.permission === 'granted') {
-    try {
-      const body = fmtWhen(new Date(occurrence)) + (r.tags.length ? '  ' + r.tags.map(t => '#' + t).join(' ') : '') + (r.notes ? '\n' + r.notes.slice(0, 140) : '');
-      const n = new Notification((r.priority === 3 ? '‼ ' : '') + r.title, { body, tag: r.id, requireInteraction: true });
-      n.onclick = () => { window.focus(); n.close(); };
-      a.notif = n;
-    } catch (e) { }
+    const body = fmtWhen(new Date(occurrence)) + (r.tags.length ? '  ' + r.tags.map(t => '#' + t).join(' ') : '') + (r.notes ? '\n' + r.notes.slice(0, 140) : '');
+    systemNotify((r.priority === 3 ? '‼ ' : '') + r.title, { body, tag: r.id, requireInteraction: true })
+      .then(n => { if (openAlerts.get(r.id) === a) a.notif = n; else if (n) n.close(); })
+      .catch(e => { notifError = e.message || String(e); updateNotifUi(); });
   }
+}
+// Prefer the service worker route (what installed apps use); fall back to the page Notification API.
+let notifError = '';
+async function systemNotify(title, opts) {
+  const icon = location.protocol.startsWith('http') ? 'icon-192.png' : undefined;
+  opts = Object.assign({ icon, badge: icon }, opts);
+  if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+    const reg = await Promise.race([navigator.serviceWorker.ready, new Promise(res => setTimeout(() => res(null), 3000))]);
+    if (reg && reg.showNotification) {
+      await reg.showNotification(title, opts);
+      notifError = '';
+      return { close: () => reg.getNotifications({ tag: opts.tag }).then(ns => ns.forEach(n => n.close())).catch(() => { }) };
+    }
+  }
+  const n = new Notification(title, opts);
+  n.onclick = () => { window.focus(); n.close(); };
+  notifError = '';
+  return n;
 }
 // Several open windows must not all fire the same reminder.
 function claim(key) {
@@ -1728,9 +1741,6 @@ document.addEventListener('click', e => {
       toast('Backup downloaded'); break;
     case 'export-csv': exportCsv(); break;
     case 'import': $('importFile').click(); break;
-    case 'install-app':
-      if (installPrompt) { installPrompt.prompt(); installPrompt.userChoice.finally(() => { installPrompt = null; updateInstallUi(); }); }
-      break;
     case 'file-create': fileCreate(); break;
     case 'file-open': fileOpen(); break;
     case 'file-reconnect': fileReconnect(); break;
@@ -1819,31 +1829,12 @@ function renderAll() {
   renderReminders(); renderNotes(); updateTitle(); updateNotifUi();
 }
 
-// ---------------------------------------------------------------- installable app (when served over https)
-let installPrompt = null;
-const isInstalled = () => matchMedia('(display-mode: standalone)').matches || matchMedia('(display-mode: window-controls-overlay)').matches;
-function updateInstallUi() {
-  const card = $('installCard');
-  if (isLocalFile) { card.hidden = true; return; }
-  card.hidden = false;
-  if (isInstalled()) {
-    $('installText').textContent = 'Ping is installed as an app. To start it when you sign in, open edge://apps, click the ⋯ on Ping, and turn on “Auto-start on device login”.';
-    $('installBtn').hidden = true;
-  } else if (installPrompt) {
-    $('installBtn').hidden = false;
-  } else {
-    $('installText').textContent = 'To install Ping as an app, click the “App available” icon at the right of the address bar (or ⋯ menu → Apps → Install Ping). You get its own window and taskbar icon, and it can start when you sign in.';
-    $('installBtn').hidden = true;
-  }
-}
-addEventListener('beforeinstallprompt', e => { e.preventDefault(); installPrompt = e; updateInstallUi(); });
-addEventListener('appinstalled', () => { installPrompt = null; updateInstallUi(); toast('Ping is installed'); });
+// ---------------------------------------------------------------- service worker (offline + system notifications)
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
   navigator.serviceWorker.register('sw.js').catch(e => console.warn('Service worker not registered', e));
 }
 
 // ---------------------------------------------------------------- start
-updateInstallUi();
 renderAll();
 updateQuickPreview();
 initFile();

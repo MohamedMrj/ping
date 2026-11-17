@@ -1,6 +1,6 @@
 // Ping service worker: makes the app installable and usable offline.
 // Pages load from the network first (so everyone gets updates), falling back to the cached copy offline.
-const CACHE = 'ping-v1';
+const CACHE = 'ping-v2';
 const ASSETS = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e => {
