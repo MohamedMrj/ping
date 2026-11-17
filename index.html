@@ -242,11 +242,16 @@ label.check { display: flex; gap: 9px; align-items: flex-start; cursor: pointer;
 label.check input { margin-top: 3px; accent-color: var(--accent); }
 .input { padding: 7px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); min-width: 0; }
 .input.wide { flex: 1 1 340px; font-family: var(--mono); font-size: 13px; }
+.form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px 16px; }
+.form-grid .row { flex-wrap: nowrap; }
+.form-grid select { flex: 1; min-width: 0; }
+input[type=range] { accent-color: var(--accent); width: 100%; }
+.swatches { display: flex; gap: 8px; flex-wrap: wrap; }
+.swatches button { width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--surface); box-shadow: 0 0 0 1px var(--line); background: var(--sw); cursor: pointer; color: var(--accent-ink); font: 700 11px var(--font); }
+.swatches button[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--ink); }
+.rem.colored { box-shadow: inset 4px 0 0 var(--rc); }
 details.adv summary { cursor: pointer; font-size: 13px; color: var(--muted); }
 details.adv[open] { display: grid; gap: 8px; }
-#ticketResult { margin: 0; font-size: 13.5px; overflow-wrap: anywhere; }
-#ticketResult.ok { color: var(--ok); }
-#ticketResult.err { color: var(--danger); }
 
 /* modal */
 .scrim { position: fixed; inset: 0; background: rgba(5, 15, 14, .45); display: grid; place-items: center; z-index: 50; padding: 16px; }
@@ -270,10 +275,21 @@ details.adv[open] { display: grid; gap: 8px; }
 
 /* alerts */
 .alerts { position: fixed; right: max(16px, env(safe-area-inset-right, 0px)); bottom: 16px; z-index: 70; display: grid; gap: 10px; width: min(390px, calc(100vw - 32px)); }
-.alert { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); padding: 14px 16px; display: grid; gap: 6px; border-left: 4px solid var(--accent); animation: rise .25s ease-out; }
-.alert.p3 { border-left-color: var(--danger); }
-.alert .k { font: 700 11px/1 var(--font); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); display: flex; justify-content: space-between; gap: 8px; }
-.alert.p3 .k { color: var(--danger); }
+.alert { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); padding: 14px 16px; display: grid; gap: 6px; border-left: 4px solid var(--al, var(--accent)); animation: rise .25s ease-out; }
+.alert.p3 { --al: var(--danger); }
+.alert .k { font: 700 11px/1 var(--font); letter-spacing: .08em; text-transform: uppercase; color: var(--al, var(--accent)); display: flex; justify-content: space-between; gap: 8px; }
+/* where and how big the alert box is (Settings → Sound and look) */
+.alerts.pos-tr { top: 16px; bottom: auto; }
+.alerts.pos-tc { top: 16px; bottom: auto; right: auto; left: 50%; transform: translateX(-50%); }
+.alerts.pos-bl { right: auto; left: max(16px, env(safe-area-inset-left, 0px)); }
+.alerts.pos-center { top: 50%; bottom: auto; right: auto; left: 50%; transform: translate(-50%, -50%); }
+.alerts.size-large { width: min(520px, calc(100vw - 32px)); }
+.alerts.size-large .alert { padding: 18px 20px; border-left-width: 6px; }
+.alerts.size-large .alert .at { font-size: 21px; }
+.alerts.size-huge { width: min(720px, calc(100vw - 32px)); }
+.alerts.size-huge .alert { padding: 24px 26px; border-left-width: 8px; gap: 10px; }
+.alerts.size-huge .alert .at { font-size: 28px; }
+.alerts.size-huge .alert .an { font-size: 15px; max-height: 9em; }
 .alert .k button { border: 0; background: none; cursor: pointer; color: var(--muted); font-size: 15px; line-height: 1; padding: 0 2px; }
 .alert .at { font: 600 16.5px var(--font-display); overflow-wrap: anywhere; }
 .alert .an { font-size: 13px; color: var(--muted); white-space: pre-wrap; max-height: 5.5em; overflow: hidden; overflow-wrap: anywhere; }
@@ -413,26 +429,26 @@ details.adv[open] { display: grid; gap: 8px; }
           <button class="btn primary" type="button" data-act="ask-notif" data-i18n="allowNotif">Tillåt aviseringar</button>
           <button class="btn" type="button" data-act="test-alert" data-i18n="testAlert">Skicka en testpåminnelse</button>
         </div>
-        <label class="check"><input type="checkbox" id="setSound"> <span data-i18n="soundLabel">Spela ett ljud när en påminnelse är dags</span></label>
       </div>
-      <div class="card">
-        <h3 data-i18n="ticketsH">Klickbara ärendenummer</h3>
-        <p data-i18n="ticketsP">Använder ni ett ärendesystem, till exempel Jira, Azure DevOps eller ett supportsystem? Då kan Ping göra ärendenummer som <code>DATA-123</code> i dina påminnelser och anteckningar till länkar som öppnar ärendet direkt. Behöver du inte det kan du hoppa över det här.</p>
-        <ol class="steps">
-          <li data-i18n="ticketsS1">Öppna ett ärende, vilket som helst, i webbläsaren.</li>
-          <li data-i18n="ticketsS2">Klicka i adressfältet högst upp och kopiera adressen (Ctrl+C).</li>
-          <li data-i18n="ticketsS3">Klistra in den här (Ctrl+V). Ping räknar ut resten.</li>
-        </ol>
-        <div class="row">
-          <input class="input wide" id="ticketPaste" type="text" spellcheck="false" autocomplete="off" placeholder="Klistra in länken till ett ärende här" aria-label="Länk till ett ärende" data-i18n-ph="ticketPastePh" data-i18n-aria="ticketPasteAria">
-          <button class="btn ghost danger" type="button" data-act="ticket-clear" id="ticketClear" hidden data-i18n="ticketClear">Ta bort länkningen</button>
+      <div class="card" id="alertCard">
+        <h3 data-i18n="alertH">Ljud och utseende</h3>
+        <p data-i18n="alertP">Bestäm hur en påminnelse låter och ser ut när det är dags. Ska en viss påminnelse låta eller se annorlunda ut väljer du det när du redigerar den.</p>
+        <label class="check"><input type="checkbox" id="setSound"> <span data-i18n="soundLabel">Spela ett ljud när en påminnelse är dags</span></label>
+        <div class="form-grid">
+          <div class="field"><span data-i18n="alSound">Ljud</span><div class="row"><select id="alSound" class="input" data-al></select><button class="btn sm" type="button" data-act="al-preview" data-for="alSound" data-i18n="listen">▶ Lyssna</button></div></div>
+          <div class="field"><span data-i18n="alSoundHigh">Ljud vid hög prioritet</span><div class="row"><select id="alSoundHigh" class="input" data-al></select><button class="btn sm" type="button" data-act="al-preview" data-for="alSoundHigh" data-i18n="listen">▶ Lyssna</button></div></div>
+          <label class="field"><span><span data-i18n="alVolume">Volym</span> <b id="alVolumeVal"></b></span><input type="range" id="alVolume" min="5" max="100" step="5" data-al></label>
+          <label class="field"><span data-i18n="alLoop">Hur länge ljudet spelas</span><select id="alLoop" class="input" data-al></select></label>
+          <label class="field" data-loop-only><span data-i18n="alLoopEvery">Spela igen var</span><select id="alLoopEvery" class="input" data-al></select></label>
+          <label class="field" data-loop-only><span data-i18n="alLoopMax">Sluta efter högst</span><select id="alLoopMax" class="input" data-al></select></label>
+          <label class="field"><span data-i18n="alPosition">Var rutan visas</span><select id="alPosition" class="input" data-al></select></label>
+          <label class="field"><span data-i18n="alSize">Storlek på rutan</span><select id="alSize" class="input" data-al></select></label>
+          <label class="field"><span data-i18n="alAutoHide">Rutan försvinner</span><select id="alAutoHide" class="input" data-al></select></label>
         </div>
-        <p id="ticketResult"></p>
-        <details class="adv">
-          <summary data-i18n="ticketsAdv">Avancerat: skriv mallen själv</summary>
-          <p data-i18n="ticketsAdvP">Skriv <code>{key}</code> där hela ärende-ID:t ska stå, eller <code>{num}</code> för bara siffrorna. Exempel för Azure DevOps: <code>https://dev.azure.com/org/project/_workitems/edit/{num}</code></p>
-          <div class="row"><input class="input wide" id="setTicket" type="text" spellcheck="false" placeholder="https://yourcompany.atlassian.net/browse/{key}" aria-label="Länkmall" data-i18n-aria="ticketTplAria"></div>
-        </details>
+        <div class="field"><span data-i18n="alColor">Färg</span><div class="swatches" id="alColor" role="group" aria-label="Färg" data-i18n-aria="alColor"></div></div>
+        <label class="check"><input type="checkbox" id="alSticky" data-al> <span data-i18n="alSticky">Windows-aviseringen ligger kvar tills jag stänger den</span></label>
+        <label class="check"><input type="checkbox" id="alFlash" data-al> <span data-i18n="alFlash">Blinka fliken när en påminnelse väntar och Ping ligger i bakgrunden</span></label>
+        <div class="row"><button class="btn primary" type="button" data-act="test-alert" data-i18n="testAlertShow">Visa en testpåminnelse</button></div>
       </div>
       <div class="card">
         <h3 data-i18n="lookH">Utseende</h3>
@@ -530,6 +546,11 @@ details.adv[open] { display: grid; gap: 8px; }
         </select>
       </label>
     </div>
+    <div class="two">
+      <div class="field"><span data-i18n="alSound">Ljud</span><div class="row"><select id="edSound" class="input" style="flex:1;min-width:0"></select><button class="btn sm" type="button" data-act="al-preview" data-for="edSound" title="Lyssna" data-i18n-title="listenTitle">▶</button></div></div>
+      <label class="field"><span data-i18n="alLoop">Hur länge ljudet spelas</span><select id="edLoop"></select></label>
+    </div>
+    <div class="field"><span data-i18n="alColor">Färg</span><div class="swatches" id="edColor" role="group" aria-label="Färg" data-i18n-aria="alColor"></div></div>
     <div class="field" id="edIntervalRow" hidden>
       <span data-i18n="repeatEvery">Upprepa var</span>
       <div class="row"><input type="number" id="edEvery" min="1" value="30" style="width:110px"><select id="edEveryUnit" class="input"><option value="1" data-i18n="minutes">minuter</option><option value="60" data-i18n="hours">timmar</option></select></div>
@@ -540,7 +561,7 @@ details.adv[open] { display: grid; gap: 8px; }
       <div class="runs" id="edRuns"></div>
     </div>
     <label class="field"><span data-i18n="tags">Taggar</span><input type="text" id="edTags" spellcheck="false" placeholder="#etl #prod"></label>
-    <label class="field"><span data-i18n="tabNotes">Anteckningar</span><textarea id="edNotes" placeholder="Detaljer, länkar, ärende-ID:n…" data-i18n-ph="notesPh"></textarea></label>
+    <label class="field"><span data-i18n="tabNotes">Anteckningar</span><textarea id="edNotes" placeholder="Detaljer, länkar…" data-i18n-ph="notesPh"></textarea></label>
     <label class="check"><input type="checkbox" id="edIcs"> <span data-i18n="edIcsLabel">Ladda också ner en Outlook-kalenderpost</span></label>
     <div class="modal-foot">
       <button class="btn danger ghost" type="button" id="edDelete" data-i18n="delete">Ta bort</button>
@@ -963,12 +984,6 @@ const T = {
     noteViewAria: 'Note view', edit: 'Edit', preview: 'Preview', copy: 'Copy', remindMe: 'Remind me…',
     notePh: '# Title\n\nWrite anything. Markdown works: **bold**, `code`, ```sql blocks```, - [ ] tasks, | tables |', noteAria: 'Note text',
     notifications: 'Notifications', testAlert: 'Send a test reminder', soundLabel: 'Play a sound when a reminder is due',
-    ticketsH: 'Clickable ticket numbers',
-    ticketsP: 'Does your team use a ticket system, such as Jira, Azure DevOps or a support desk? Then Ping can turn ticket numbers like <code>DATA-123</code> in your reminders and notes into links that open the ticket directly. If you don’t need this, you can skip it.',
-    ticketsS1: 'Open any ticket in your browser.', ticketsS2: 'Click the address bar at the top and copy the address (Ctrl+C).', ticketsS3: 'Paste it here (Ctrl+V). Ping works out the rest.',
-    ticketPastePh: 'Paste the link to a ticket here', ticketPasteAria: 'Link to a ticket', ticketClear: 'Remove ticket links',
-    ticketsAdv: 'Advanced: write the template yourself', ticketTplAria: 'Link template',
-    ticketsAdvP: 'Write <code>{key}</code> where the whole ticket ID goes, or <code>{num}</code> for the number only. Azure DevOps example: <code>https://dev.azure.com/org/project/_workitems/edit/{num}</code>',
     lookH: 'Look and feel', themeAria: 'Theme', palLagoon: 'Calm teal, the default', palFjord: 'Cool blue and slate', palSolarized: 'The classic editor palette',
     mode: 'Mode', modeAria: 'Light or dark mode', light: 'Light', dark: 'Dark',
     monoLabel: 'Monospace font in the note editor', utcLabel: 'Show the UTC clock next to the name',
@@ -983,7 +998,7 @@ const T = {
     plus1h: '+1 hour', plus3h: '+3 hours', tonight19: 'Tonight 19:00', tomorrow9: 'Tomorrow 09:00', monday9: 'Monday 09:00',
     repeat: 'Repeat', rNone: 'Does not repeat', rInterval: 'Every N minutes / hours', rWeekdays: 'Every weekday (Mon–Fri)', rCron: 'Cron schedule',
     prio: 'Priority', pNone: 'None', pLow: 'Low', pMed: 'Medium', pHigh: 'High', repeatEvery: 'Repeat every', minutes: 'minutes', hours: 'hours',
-    cronLabel: 'Cron expression (minute hour day month weekday)', tags: 'Tags', notesPh: 'Details, links, ticket IDs…',
+    cronLabel: 'Cron expression (minute hour day month weekday)', tags: 'Tags', notesPh: 'Details, links…',
     edIcsLabel: 'Also download an Outlook calendar entry', cancel: 'Cancel', save: 'Save',
     k1: 'New reminder (from anywhere)', k2: 'Add the reminder · <kbd>Ctrl Enter</kbd> save as a note', k3: 'Move down / up the list',
     k4: 'Mark selected done', k5: 'Snooze selected', k6: 'Edit selected', k7: 'Open the first link in the selected reminder', k8: 'Delete selected',
@@ -1017,6 +1032,13 @@ const T = {
     copyPingUrl: 'Copy Ping’s link', st2a: 'Paste', st2b: 'into the address bar and press Enter.',
     startupApp: 'If you installed Ping as an app, you can instead open <code>edge://apps</code>, click ⋯ next to Ping and turn on <strong>“Auto-start on device login”</strong>.',
     finished: 'Done',
+    alertH: 'Sound and look',
+    alertP: 'Choose how a reminder sounds and looks when it’s time. To make one particular reminder sound or look different, choose that when you edit it.',
+    alSound: 'Sound', alSoundHigh: 'Sound for high priority', alVolume: 'Volume', alLoop: 'How long the sound plays',
+    alLoopEvery: 'Play again every', alLoopMax: 'Stop after at most', alPosition: 'Where the box appears', alSize: 'Size of the box',
+    alAutoHide: 'The box disappears', alColor: 'Colour', alSticky: 'The Windows notification stays until I close it',
+    alFlash: 'Flash the tab while a reminder is waiting and Ping is in the background', testAlertShow: 'Show a test reminder',
+    listen: '▶ Listen', listenTitle: 'Listen',
     // dynamic
     startupStepEdge: 'Under <strong>“When Microsoft Edge starts”</strong>: choose <strong>“Open these pages”</strong>, click <strong>“Add a new page”</strong> and paste Ping’s link.',
     startupStepChrome: 'Under <strong>“On startup”</strong>: choose <strong>“Open a specific page or set of pages”</strong>, click <strong>“Add a new page”</strong> and paste Ping’s link.',
@@ -1071,7 +1093,7 @@ const T = {
     stFailed: e => `The last notification failed: ${e}. Check Windows Settings → System → Notifications, and that “Do not disturb” is off.`,
     stRunning: (b, local) => ` (Running in ${b}${local ? ' from a local file' : ''}. Each browser keeps its own copy of your reminders, so always open Ping the same way.)`,
     thisBrowser: 'this browser', notifUnavailable: 'Notifications are not available here; in-window alerts will be used',
-    notifTesting: 'Notifications are on. Sending a test…', testNotifTitle: 'Ping notifications work', testNotifBody: 'Reminders will appear like this.',
+    notifTesting: 'Test sent. Nothing in the corner of the screen? Press Win+N and check that “Do not disturb” is off', testNotifTitle: 'Ping notifications work', testNotifBody: 'Reminders will appear like this.',
     testNotifFailed: e => 'The test notification failed: ' + e,
     notKeptLocal: (b, a) => `${b} answered “${a}”, so it didn’t keep your choice. Browsers often refuse to save notification permission for pages opened as a local file. Until that’s solved you still get the alert in this window and a sound.`,
     notKept: (b, a) => `${b} answered “${a}”. Check that notifications are allowed for this site and that Windows notifications are on for ${b}.`,
@@ -1083,15 +1105,18 @@ const T = {
     noteStart: 'Start typing to create a note. Markdown works, and it saves automatically.', saving: 'Saving…', savedAt: x => 'Saved ✓ ' + x,
     newNoteStatus: 'New note. Start typing.', openedLog: 'Opened today’s log',
     dTitle: 'Daily log', dDone: 'Done', dToday: 'Today', dBlockers: 'Blockers', dNotes: 'Notes', logCreated: 'Daily log created from your reminders',
+    snd_chime: 'Chime', snd_urgent: 'Urgent', snd_bell: 'Bell', snd_marimba: 'Marimba', snd_soft: 'Soft', snd_pop: 'Pop',
+    snd_beep: 'Beep', snd_digital: 'Digital', snd_alarm: 'Alarm', sndNone: 'Silent',
+    loopOnce: 'Once', loopUntil: 'Over and over until I respond', useDefault: x => `Default (${x})`,
+    secs: n => n + ' seconds', mins: n => n === 1 ? '1 minute' : n + ' minutes',
+    pos_br: 'Bottom right', pos_tr: 'Top right', pos_tc: 'Top centre', pos_bl: 'Bottom left', pos_center: 'Middle of the screen',
+    size_normal: 'Normal', size_large: 'Large', size_huge: 'Extra large',
+    hideNever: 'Never, it stays until I respond', hideAfter: n => 'After ' + (n < 60 ? n + ' seconds' : (n / 60 === 1 ? '1 minute' : n / 60 + ' minutes')),
+    color_red: 'Red', color_orange: 'Orange', color_yellow: 'Yellow', color_green: 'Green', color_blue: 'Blue', color_purple: 'Purple', color_pink: 'Pink',
+    colorTheme: 'Theme colour', colorDefault: 'Default', mute: 'Silence',
     noteDeleted: 'Note deleted', testTitle: 'This is a test reminder', testNotes: 'If you can see this, reminders work.',
     backupDone: 'Backup downloaded', restored: n => 'Restored ' + n + ' items', nothingNew: 'Nothing new in that backup', notBackup: 'That file is not a Ping backup',
-    ticketsUpdated: 'Ticket links updated', noLink: 'No link in this reminder',
-    ticketNone: 'Not set up. Ticket numbers show as plain text.',
-    ticketOk: (ex, link) => `✓ Done! When you write <code>${ex}</code> in a reminder or note, it becomes a link to that ticket. In notes, the link becomes clickable when you switch to Preview (Ctrl+E). Try it: ${link}`,
-    ticketOkNum: (ex, link) => `✓ Done! Write the ticket number with a few letters and a dash in front, for example <code>${ex}</code>, and it becomes a link. In notes, the link becomes clickable when you switch to Preview (Ctrl+E). Try it: ${link}`,
-    ticketNotUrl: 'That doesn’t look like a web address. Copy the whole address from the address bar; it starts with https://',
-    ticketNoId: 'Couldn’t find a ticket number in that link. Open a single ticket (not a list or board) and copy the address again.',
-    ticketsRemoved: 'Ticket numbers are plain text again'
+    noLink: 'No link in this reminder'
   },
   sv: {
     startupStepEdge: 'Under <strong>”När Microsoft Edge startar”</strong>: välj <strong>”Öppna de här sidorna”</strong>, klicka <strong>”Lägg till en ny sida”</strong> och klistra in Pings länk.',
@@ -1145,7 +1170,7 @@ const T = {
     stFailed: e => `Den senaste aviseringen misslyckades: ${e}. Kontrollera Inställningar i Windows → System → Meddelanden och att ”Stör ej” är avstängt.`,
     stRunning: (b, local) => ` (Körs i ${b}${local ? ' från en lokal fil' : ''}. Varje webbläsare har sin egen kopia av dina påminnelser, så öppna alltid Ping på samma sätt.)`,
     thisBrowser: 'den här webbläsaren', notifUnavailable: 'Aviseringar finns inte här; rutor i fönstret används i stället',
-    notifTesting: 'Aviseringar är på. Skickar ett test…', testNotifTitle: 'Pings aviseringar fungerar', testNotifBody: 'Påminnelser kommer att se ut så här.',
+    notifTesting: 'Testet skickat. Syns inget i skärmens hörn? Tryck Win+N och kontrollera att ”Stör ej” är avstängt', testNotifTitle: 'Pings aviseringar fungerar', testNotifBody: 'Påminnelser kommer att se ut så här.',
     testNotifFailed: e => 'Testaviseringen misslyckades: ' + e,
     notKeptLocal: (b, a) => `${b} svarade ”${a}”, så valet sparades inte. Webbläsare vägrar ofta spara aviseringstillstånd för sidor som öppnats som en lokal fil. Tills det är löst får du ändå en ruta i fönstret och ett ljud.`,
     notKept: (b, a) => `${b} svarade ”${a}”. Kontrollera att aviseringar är tillåtna för den här webbplatsen och att Windows-aviseringar är på för ${b}.`,
@@ -1158,15 +1183,18 @@ const T = {
     newNoteStatus: 'Ny anteckning. Börja skriva.', openedLog: 'Öppnade dagens logg',
     dTitle: 'Dagslogg', dDone: 'Klart', dToday: 'Idag', dBlockers: 'Hinder', dNotes: 'Anteckningar', logCreated: 'Dagsloggen skapades från dina påminnelser',
     setupNotifOn: '✓ Aviseringar är redan på i den här webbläsaren.',
+    snd_chime: 'Klang', snd_urgent: 'Brådskande', snd_bell: 'Klocka', snd_marimba: 'Marimba', snd_soft: 'Mjuk', snd_pop: 'Plopp',
+    snd_beep: 'Pip', snd_digital: 'Digital', snd_alarm: 'Larm', sndNone: 'Tyst',
+    loopOnce: 'En gång', loopUntil: 'Om och om igen tills jag svarar', useDefault: x => `Standard (${x})`,
+    secs: n => n + ' sekunder', mins: n => n === 1 ? '1 minut' : n + ' minuter',
+    pos_br: 'Nere till höger', pos_tr: 'Uppe till höger', pos_tc: 'Uppe i mitten', pos_bl: 'Nere till vänster', pos_center: 'Mitt på skärmen',
+    size_normal: 'Normal', size_large: 'Stor', size_huge: 'Extra stor',
+    hideNever: 'Aldrig, den ligger kvar tills jag svarar', hideAfter: n => 'Efter ' + (n < 60 ? n + ' sekunder' : (n / 60 === 1 ? '1 minut' : n / 60 + ' minuter')),
+    color_red: 'Röd', color_orange: 'Orange', color_yellow: 'Gul', color_green: 'Grön', color_blue: 'Blå', color_purple: 'Lila', color_pink: 'Rosa',
+    colorTheme: 'Temafärg', colorDefault: 'Standard', mute: 'Tysta',
     noteDeleted: 'Anteckningen togs bort',testTitle: 'Det här är en testpåminnelse', testNotes: 'Ser du det här fungerar påminnelserna.',
     backupDone: 'Säkerhetskopian har laddats ner', restored: n => 'Återställde ' + n + ' objekt', nothingNew: 'Inget nytt i den säkerhetskopian', notBackup: 'Den filen är inte en säkerhetskopia från Ping',
-    ticketsUpdated: 'Ärendelänkarna har uppdaterats', noLink: 'Ingen länk i den här påminnelsen',
-    ticketNone: 'Inte inställt. Ärendenummer visas som vanlig text.',
-    ticketOk: (ex, link) => `✓ Klart! När du skriver <code>${ex}</code> i en påminnelse eller anteckning blir det en länk till ärendet. I anteckningar går länken att klicka på när du byter till Förhandsvisa (Ctrl+E). Testa: ${link}`,
-    ticketOkNum: (ex, link) => `✓ Klart! Skriv ärendenumret med några bokstäver och ett bindestreck framför, till exempel <code>${ex}</code>, så blir det en länk. I anteckningar går länken att klicka på när du byter till Förhandsvisa (Ctrl+E). Testa: ${link}`,
-    ticketNotUrl: 'Det där ser inte ut som en webbadress. Kopiera hela adressen från adressfältet; den börjar med https://',
-    ticketNoId: 'Hittade inget ärendenummer i länken. Öppna ett enskilt ärende (inte en lista eller tavla) och kopiera adressen igen.',
-    ticketsRemoved: 'Ärendenummer visas som vanlig text igen'
+    noLink: 'Ingen länk i den här påminnelsen'
   }
 };
 const lang = () => { try { return S.settings.lang === 'en' ? 'en' : 'sv'; } catch (e) { return 'sv'; } };
@@ -1200,7 +1228,7 @@ function applyLang() {
 // Sync through one shared save file (e.g. in OneDrive) used by several browsers or computers.
 // Every reminder and note carries `updated` (set whenever it changes) and a deletion leaves a tombstone in
 // `deleted` (id -> time), so the two sides combine item by item: the newest version of each item wins.
-const SHARED_SETTINGS = ['ticketUrl', 'ticketExample', 'sound', 'icsOnSave', 'mono', 'utcClock', 'lang', 'theme', 'palette'];
+const SHARED_SETTINGS = ['sound', 'icsOnSave', 'mono', 'utcClock', 'lang', 'theme', 'palette', 'alert'];
 const TOMBSTONE_MS = 90 * 86400000;
 const itemStamp = x => x.updated || x.modified || x.created || 0;
 const sharedSettings = st => { const o = {}; for (const k of SHARED_SETTINGS) o[k] = (st || {})[k]; return o; };
@@ -1248,6 +1276,13 @@ function stampChanges(d, base, now = Date.now()) {
 }
 /*SYNC-END*/
 
+// How a reminder sounds and looks. Global defaults live in settings.alert; a reminder can override
+// sound, loop and colour with its own r.sound / r.loop / r.color ('' = use the default).
+const SOUND_IDS = ['chime', 'urgent', 'bell', 'marimba', 'soft', 'pop', 'beep', 'digital', 'alarm'];
+const COLORS = { red: '#d64545', orange: '#dd7a1b', yellow: '#c49b00', green: '#2f9e5b', blue: '#2f6fd6', purple: '#8a4fd1', pink: '#d14f9a' };
+const ALERT_DEFAULTS = { sound: 'chime', soundHigh: 'urgent', volume: 70, loop: 'once', loopEvery: 15, loopMax: 5,
+  position: 'br', size: 'normal', color: '', autoHide: 0, sticky: true, flash: true };
+
 function normalize(j) {
   j = j && typeof j === 'object' ? j : {};
   if (!Array.isArray(j.reminders)) j.reminders = [];
@@ -1255,7 +1290,8 @@ function normalize(j) {
   if (!j.deleted || typeof j.deleted !== 'object') j.deleted = {};
   j.reminders.forEach(r => { if (!Array.isArray(r.tags)) r.tags = []; r.priority = r.priority || 0; });
   j.notes.forEach(n => { n.pinned = !!n.pinned; });
-  j.settings = Object.assign({ sound: true, icsOnSave: false, bannerHidden: false, ticketUrl: '', theme: 'system', palette: 'lagoon', mono: true, utcClock: true, lang: 'sv' }, j.settings || {});
+  j.settings = Object.assign({ sound: true, icsOnSave: false, bannerHidden: false, theme: 'system', palette: 'lagoon', mono: true, utcClock: true, lang: 'sv' }, j.settings || {});
+  j.settings.alert = Object.assign({}, ALERT_DEFAULTS, j.settings.alert || {});
   return j;
 }
 function load() { try { return normalize(JSON.parse(localStorage.getItem(KEY))); } catch (e) { return normalize(null); } }
@@ -1549,34 +1585,18 @@ function defaultDue() { const d = new Date(Date.now() + 3600000); d.setSeconds(0
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 const prioName = p => t('prioNames')[p] || '';
 
-// ---------------------------------------------------------------- links, ticket IDs, markdown
+// ---------------------------------------------------------------- links, markdown
 const URL_RE = /\bhttps?:\/\/[^\s<>"'`)\]]+[^\s<>"'`)\].,;:!?]/g;
-const TICKET_RE = /\b([A-Z][A-Z0-9]{1,9})-(\d{1,7})\b/g;
-function ticketHref(key, n) {
-  const t = (S.settings.ticketUrl || '').trim();
-  if (!t) return null;
-  return t.replace('{key}', key + '-' + n).replace('{num}', n);   // {key} is the whole ID (DATA-123), {num} the number only
-}
-// Escapes text, then turns URLs and ticket IDs into links.
+// Escapes text, then turns web addresses into links.
 function linkify(text) {
   const parts = []; let last = 0; const src = String(text ?? '');
-  const found = [];
-  src.replace(URL_RE, (u, i) => { found.push([i, u.length, `<a href="${esc(u)}" target="_blank" rel="noopener">${esc(u)}</a>`]); return u; });
-  src.replace(TICKET_RE, (k, key, n, i) => {
-    const href = ticketHref(key, n);
-    if (href && !found.some(([a, l]) => i >= a && i < a + l)) found.push([i, k.length, `<a href="${esc(href)}" target="_blank" rel="noopener">${esc(k)}</a>`]);
-    return k;
-  });
-  found.sort((a, b) => a[0] - b[0]);
-  for (const [i, l, html] of found) { if (i < last) continue; parts.push(esc(src.slice(last, i)), html); last = i + l; }
+  src.replace(URL_RE, (u, i) => { parts.push(esc(src.slice(last, i)), `<a href="${esc(u)}" target="_blank" rel="noopener">${esc(u)}</a>`); last = i + u.length; return u; });
   parts.push(esc(src.slice(last)));
   return parts.join('');
 }
 function firstLink(text) {
-  const src = String(text ?? ''); URL_RE.lastIndex = 0; TICKET_RE.lastIndex = 0;
-  const u = src.match(URL_RE); if (u) return u[0];
-  const t = TICKET_RE.exec(src); TICKET_RE.lastIndex = 0;
-  return t ? ticketHref(t[1], t[2]) : null;
+  const u = String(text ?? '').match(URL_RE);
+  return u ? u[0] : null;
 }
 function inlineMd(text) {
   const codes = [];
@@ -1648,7 +1668,7 @@ function toast(msg, actionLabel, actionFn) {
   b.hidden = !actionLabel; b.textContent = actionLabel || '';
   toastAction = actionFn || null;
   t.hidden = false; clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => { t.hidden = true; toastAction = null; }, actionLabel ? 8000 : 2600);
+  toastTimer = setTimeout(() => { t.hidden = true; toastAction = null; }, actionLabel ? 8000 : Math.max(2600, msg.length * 65));
 }
 $('toastAct').addEventListener('click', () => { const f = toastAction; toastAction = null; $('toast').hidden = true; if (f) f(); });
 
@@ -1686,7 +1706,7 @@ function snooze(r, until) { r.snoozeUntil = until; r.done = false; closeAlert(r.
 function remove(r) { undoable(t('reminderDeleted'), () => { S.reminders = S.reminders.filter(x => x !== r); closeAlert(r.id); changed(); }); }
 function newReminder(fields) {
   return Object.assign({ id: uid(), title: '', notes: '', due: defaultDue(), repeat: 'none', every: null, cron: null, tags: [], priority: 0,
-    done: false, fired: false, snoozeUntil: null, created: Date.now(), completedAt: null }, fields);
+    done: false, fired: false, snoozeUntil: null, created: Date.now(), completedAt: null, sound: '', loop: '', color: '' }, fields);
 }
 function askDone(r) {
   if (r.repeat === 'none') complete(r);
@@ -1828,7 +1848,8 @@ function rowHtml(r) {
     : `<button class="btn sm" type="button" data-act="done" title="${esc(t(r.repeat === 'none' ? 'markDoneTitle' : 'stopRepeating'))}">${esc(t('doneBtn'))}</button>
        <button class="btn sm ghost" type="button" data-act="snooze" title="${esc(t('snoozeTitle'))}">${esc(t('snooze'))}</button>
        <button class="btn sm ghost" type="button" data-act="ics" title="${esc(t('outlookTitle'))}">Outlook</button>`;
-  return `<li class="rem ${cls}" data-id="${r.id}">
+  const rc = COLORS[r.color];
+  return `<li class="rem ${cls}${rc ? ' colored' : ''}" data-id="${r.id}"${rc ? ` style="--rc:${rc}"` : ''}>
     <div class="when"><span class="t">${fmtTime(n)}</span><span class="d">${esc(fmtDay(n))}</span></div>
     <div><div class="title">${r.priority ? `<span class="prio p${r.priority}">${esc(prioName(r.priority).toUpperCase())}</span>` : ''}<span>${linkify(r.title)}</span></div><div class="meta">${tags.join('')}</div></div>
     <div class="acts">${acts}
@@ -1882,6 +1903,8 @@ function openEditor(r, isNew, onSaved) {
   $('edNotes').value = r.notes || '';
   $('edIcs').checked = !!S.settings.icsOnSave;
   $('edDelete').hidden = isNew;
+  buildAlertControls();
+  $('edSound').value = r.sound || ''; $('edLoop').value = r.loop || ''; setSwatch($('edColor'), r.color || '');
   updateRepeatRows(); updateRel();
   $('editor').hidden = false;
   setTimeout(() => { $('edTitle').focus(); $('edTitle').select(); }, 0);
@@ -1956,7 +1979,8 @@ $('editForm').addEventListener('submit', e => {
       !confirm(t('confirmPast'))) return;
   const tags = [...new Set($('edTags').value.split(/[\s,]+/).map(t => t.replace(/^#/, '').toLowerCase()).filter(Boolean))];
   const timing = due !== r.due || repeat !== r.repeat || every !== r.every || cron !== r.cron;
-  Object.assign(r, { title, notes, due, repeat, every, cron, tags, priority: +$('edPrio').value });
+  Object.assign(r, { title, notes, due, repeat, every, cron, tags, priority: +$('edPrio').value,
+    sound: $('edSound').value, loop: $('edLoop').value, color: swatchValue($('edColor')) });
   if (isNew) { r.fired = false; r.done = false; r.snoozeUntil = null; S.reminders.push(r); }
   else if (timing) { r.fired = false; r.snoozeUntil = null; r.done = false; r.completedAt = null; closeAlert(r.id); }
   const ics = $('edIcs').checked;
@@ -2058,27 +2082,55 @@ $('notifChip').addEventListener('click', () => { if (canNotify() && Notification
 let audioCtx = null;
 function unlockAudio() { try { audioCtx ||= new (window.AudioContext || window.webkitAudioContext)(); if (audioCtx.state === 'suspended') audioCtx.resume(); } catch (e) { } }
 ['pointerdown', 'keydown'].forEach(ev => addEventListener(ev, unlockAudio, { capture: true }));
-function chime(urgent) {
-  if (!S.settings.sound) return;
-  try {
-    unlockAudio(); const c = audioCtx; if (!c) return;
-    const notes = urgent ? [[1046.5, 0], [1046.5, 0.22], [1568, 0.44], [1568, 0.66]] : [[880, 0], [1318.5, 0.18], [1760, 0.36]];
-    notes.forEach(([f, t]) => {
-      const o = c.createOscillator(), g = c.createGain();
-      o.type = 'sine'; o.frequency.value = f;
-      g.gain.setValueAtTime(0.0001, c.currentTime + t);
-      g.gain.exponentialRampToValueAtTime(0.25, c.currentTime + t + 0.02);
-      g.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + t + 0.6);
-      o.connect(g).connect(c.destination); o.start(c.currentTime + t); o.stop(c.currentTime + t + 0.65);
-    });
-  } catch (e) { }
+// ---------------------------------------------------------------- sounds (all synthesised: no sound files to load)
+function tone(c, out, t0, { f, f2, type = 'sine', dur = 0.6, peak = 0.25, attack = 0.02 }) {
+  const o = c.createOscillator(), g = c.createGain();
+  o.type = type; o.frequency.setValueAtTime(f, t0);
+  if (f2) o.frequency.exponentialRampToValueAtTime(f2, t0 + dur);
+  g.gain.setValueAtTime(0.0001, t0);
+  g.gain.exponentialRampToValueAtTime(peak, t0 + attack);
+  g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+  o.connect(g).connect(out); o.start(t0); o.stop(t0 + dur + 0.05);
 }
+const SOUNDS = {
+  chime: (c, o, t) => [[880, 0], [1318.5, .18], [1760, .36]].forEach(([f, d]) => tone(c, o, t + d, { f })),
+  urgent: (c, o, t) => [[1046.5, 0], [1046.5, .22], [1568, .44], [1568, .66]].forEach(([f, d]) => tone(c, o, t + d, { f })),
+  bell: (c, o, t) => { tone(c, o, t, { f: 660, dur: 2.2, peak: .3, attack: .005 }); tone(c, o, t, { f: 1821, dur: 1.2, peak: .08, attack: .005 }); tone(c, o, t, { f: 2640, dur: .6, peak: .04, attack: .005 }); },
+  marimba: (c, o, t) => [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => tone(c, o, t + i * .11, { f, type: 'triangle', dur: .35, peak: .35, attack: .005 })),
+  soft: (c, o, t) => { tone(c, o, t, { f: 523.25, dur: 1.4, peak: .18, attack: .25 }); tone(c, o, t + .35, { f: 659.25, dur: 1.4, peak: .16, attack: .25 }); },
+  pop: (c, o, t) => [0, .16].forEach(d => tone(c, o, t + d, { f: 900, f2: 260, dur: .12, peak: .35, attack: .004 })),
+  beep: (c, o, t) => [0, .2, .4].forEach(d => tone(c, o, t + d, { f: 1000, type: 'square', dur: .12, peak: .08, attack: .004 })),
+  digital: (c, o, t) => [1200, 900, 1200, 900].forEach((f, i) => tone(c, o, t + i * .13, { f, type: 'square', dur: .11, peak: .07, attack: .004 })),
+  alarm: (c, o, t) => [0, .6].forEach(d => tone(c, o, t + d, { f: 600, f2: 1300, type: 'sawtooth', dur: .55, peak: .09, attack: .02 }))
+};
+// Plays a sound `times` times, `every` seconds apart. Every repeat is scheduled on the audio clock up front,
+// so a looping alert keeps time even when the browser slows down timers in a background tab. Returns stop().
+function playSound(id, volume, times = 1, every = 0) {
+  if (!SOUNDS[id]) return () => { };
+  try {
+    unlockAudio(); const c = audioCtx; if (!c) return () => { };
+    const out = c.createGain();
+    out.gain.value = Math.max(0, Math.min(100, +volume || 0)) / 70;   // 70 = the original loudness
+    out.connect(c.destination);
+    for (let i = 0; i < times; i++) SOUNDS[id](c, out, c.currentTime + 0.05 + i * every);
+    return () => { try { out.disconnect(); } catch (e) { } };
+  } catch (e) { return () => { }; }
+}
+const alertCfg = () => Object.assign({}, ALERT_DEFAULTS, S.settings.alert);
+function soundFor(r) {
+  if (!S.settings.sound) return 'none';
+  const a = alertCfg();
+  return r.sound || (r.priority === 3 ? a.soundHigh : a.sound);
+}
+const loopFor = r => r.loop || alertCfg().loop;
 
 const openAlerts = new Map();
 function showAlert(r, occurrence) {
   closeAlert(r.id);
-  const el = document.createElement('div');
+  const el = document.createElement('div'), cfg = alertCfg();
   el.className = 'alert' + (r.priority === 3 ? ' p3' : ''); el.setAttribute('role', 'alertdialog');
+  const col = COLORS[r.color || cfg.color];
+  if (col) el.style.setProperty('--al', col);
   const occ = new Date(occurrence);
   el.innerHTML = `<div class="k"><span>${r.priority === 3 ? esc(t('highPrio')) : ''}${esc(fmtWhen(occ))} · ${esc(fmtUtc(occ))}${r.repeat !== 'none' ? ' · ' + esc(repeatLabel(r)) : ''}</span>
       <button type="button" data-a="x" title="${esc(t('dismissTitle'))}" aria-label="${esc(t('dismiss'))}">✕</button></div>
@@ -2086,7 +2138,8 @@ function showAlert(r, occurrence) {
     ${r.tags.length ? `<div class="row">${r.tags.map(t => `<span class="tag hash">#${esc(t)}</span>`).join('')}</div>` : ''}
     <div class="row"><button class="btn primary sm" type="button" data-a="done">${r.repeat === 'none' ? esc(t('doneBtn')) : 'OK'}</button>
       <button class="btn sm" type="button" data-a="snooze">${esc(t('snooze'))}</button>
-      <button class="btn ghost sm" type="button" data-a="edit">${esc(t('edit'))}</button></div>`;
+      <button class="btn ghost sm" type="button" data-a="edit">${esc(t('edit'))}</button>
+      <button class="btn ghost sm" type="button" data-a="mute" hidden>${esc(t('mute'))}</button></div>`;
   el.addEventListener('click', e => {
     const b = e.target.closest('button[data-a]'); if (!b) return;
     const cur = find(r.id);
@@ -2095,23 +2148,32 @@ function showAlert(r, occurrence) {
     else if (b.dataset.a === 'done') cur.repeat === 'none' ? complete(cur) : closeAlert(r.id);
     else if (b.dataset.a === 'snooze') openPop(b, snoozeOptions().map(([l, t]) => [l, () => snooze(cur, t)]));
     else if (b.dataset.a === 'edit') openEditor(cur, false);
+    else if (b.dataset.a === 'mute') { const a = openAlerts.get(r.id); if (a && a.stopSound) a.stopSound(); b.hidden = true; }
   });
   $('alerts').prepend(el);
-  openAlerts.set(r.id, { el, notif: null });
+  const entry = { el, notif: null, stopSound: null, hideTimer: null };
+  if (+cfg.autoHide > 0) entry.hideTimer = setTimeout(() => { if (openAlerts.get(r.id) === entry) closeAlert(r.id); }, +cfg.autoHide * 1000);
+  openAlerts.set(r.id, entry);
   updateTitle();
   return openAlerts.get(r.id);
 }
 function closeAlert(id) {
   const a = openAlerts.get(id); if (!a) return;
   a.el.remove(); try { a.notif && a.notif.close(); } catch (e) { }
+  if (a.stopSound) a.stopSound();
+  clearTimeout(a.hideTimer);
   openAlerts.delete(id); updateTitle();
 }
 function fire(r, occurrence) {
-  const a = showAlert(r, occurrence);
-  chime(r.priority === 3);
+  const a = showAlert(r, occurrence), cfg = alertCfg();
+  const sound = soundFor(r), every = Math.max(5, +cfg.loopEvery || 15);
+  // "until I respond": repeat until the alert is answered, dismissed or hidden, at most loopMax minutes
+  const times = loopFor(r) === 'until' ? Math.min(200, Math.max(1, Math.floor((+cfg.loopMax || 5) * 60 / every))) : 1;
+  a.stopSound = playSound(sound, cfg.volume, times, every);
+  if (times > 1 && SOUNDS[sound]) a.el.querySelector('[data-a=mute]').hidden = false;
   if (canNotify() && Notification.permission === 'granted') {
     const body = fmtWhen(new Date(occurrence)) + (r.tags.length ? '  ' + r.tags.map(t => '#' + t).join(' ') : '') + (r.notes ? '\n' + r.notes.slice(0, 140) : '');
-    systemNotify((r.priority === 3 ? '‼ ' : '') + r.title, { body, tag: r.id, requireInteraction: true })
+    systemNotify((r.priority === 3 ? '‼ ' : '') + r.title, { body, tag: r.id, requireInteraction: !!cfg.sticky })
       .then(n => { if (openAlerts.get(r.id) === a) a.notif = n; else if (n) n.close(); })
       .catch(e => { notifError = e.message || String(e); updateNotifUi(); });
   }
@@ -2120,13 +2182,17 @@ function fire(r, occurrence) {
 let notifError = '';
 async function systemNotify(title, opts) {
   const icon = location.protocol.startsWith('http') ? 'icon-192.png' : undefined;
-  opts = Object.assign({ icon, badge: icon }, opts);
+  const shownAt = Date.now();
+  // renotify: a notification with the same tag as one still in the Windows notification centre would otherwise
+  // replace it silently, with no pop-up and no sound (that is what made repeat tests and repeating reminders vanish).
+  opts = Object.assign({ icon, badge: icon, timestamp: shownAt }, opts, opts.tag ? { renotify: true } : {});
   if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
     const reg = await Promise.race([navigator.serviceWorker.ready, new Promise(res => setTimeout(() => res(null), 3000))]);
     if (reg && reg.showNotification) {
       await reg.showNotification(title, opts);
       notifError = '';
-      return { close: () => reg.getNotifications({ tag: opts.tag }).then(ns => ns.forEach(n => n.close())).catch(() => { }) };
+      // close only this one, never a newer notification for the same reminder
+      return { close: () => reg.getNotifications({ tag: opts.tag }).then(ns => ns.forEach(n => { if (!n.timestamp || n.timestamp <= shownAt) n.close(); })).catch(() => { }) };
     }
   }
   const n = new Notification(title, opts);
@@ -2174,7 +2240,7 @@ function updateTitle() {
   document.title = (flashOn ? '🔔 ' + t('titleCount', openAlerts.size) + ' · ' : (n ? `(${n}) ` : '')) + 'Ping';
 }
 setInterval(() => {
-  flashOn = document.hidden && openAlerts.size > 0 ? !flashOn : false; updateTitle();
+  flashOn = alertCfg().flash && document.hidden && openAlerts.size > 0 ? !flashOn : false; updateTitle();
   $('clock').textContent = S.settings.utcClock ? new Date().toISOString().slice(11, 16) + ' UTC' : '';
 }, 1000);
 
@@ -2302,6 +2368,64 @@ function applyTheme() {
   document.querySelectorAll('[data-palette-set]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.paletteSet === p)));
 }
 $('themeSeg').addEventListener('click', e => { const b = e.target.closest('[data-theme-set]'); if (!b) return; S.settings.theme = b.dataset.themeSet; save(); applyTheme(); });
+// ---------------------------------------------------------------- Settings → Sound and look
+const opt = (v, label) => `<option value="${esc(v)}">${esc(label)}</option>`;
+function fillSelect(sel, html) { const v = sel.value; sel.innerHTML = html; if ([...sel.options].some(o => o.value === v)) sel.value = v; }
+function buildAlertControls() {
+  const a = alertCfg(), sounds = SOUND_IDS.map(id => opt(id, t('snd_' + id))).join('');
+  fillSelect($('alSound'), sounds);
+  fillSelect($('alSoundHigh'), sounds);
+  fillSelect($('alLoop'), opt('once', t('loopOnce')) + opt('until', t('loopUntil')));
+  fillSelect($('alLoopEvery'), [5, 10, 15, 30, 60].map(n => opt(n, t('secs', n))).join(''));
+  fillSelect($('alLoopMax'), [1, 2, 5, 10, 15].map(n => opt(n, t('mins', n))).join(''));
+  fillSelect($('alPosition'), ['br', 'tr', 'tc', 'bl', 'center'].map(k => opt(k, t('pos_' + k))).join(''));
+  fillSelect($('alSize'), ['normal', 'large', 'huge'].map(k => opt(k, t('size_' + k))).join(''));
+  fillSelect($('alAutoHide'), opt(0, t('hideNever')) + [15, 30, 60, 300].map(n => opt(n, t('hideAfter', n))).join(''));
+  // the editor's per-reminder choices: '' means "use the setting"
+  fillSelect($('edSound'), opt('', t('useDefault', t('snd_' + a.sound))) + sounds + opt('none', t('sndNone')));
+  fillSelect($('edLoop'), opt('', t('useDefault', t(a.loop === 'until' ? 'loopUntil' : 'loopOnce'))) + opt('once', t('loopOnce')) + opt('until', t('loopUntil')));
+  buildSwatches($('alColor'), 'colorTheme');
+  buildSwatches($('edColor'), 'colorDefault');
+}
+function buildSwatches(el, firstLabel) {
+  const cur = swatchValue(el);
+  el.innerHTML = ['', ...Object.keys(COLORS)].map(k => {
+    const label = t(k ? 'color_' + k : firstLabel);
+    return `<button type="button" data-color="${k}" title="${esc(label)}" aria-label="${esc(label)}" aria-pressed="false" style="--sw:${k ? COLORS[k] : 'var(--accent)'}">${k ? '' : 'A'}</button>`;
+  }).join('');
+  setSwatch(el, cur);
+}
+const swatchValue = el => { const b = el.querySelector('[aria-pressed="true"]'); return b ? b.dataset.color : ''; };
+function setSwatch(el, v) { el.querySelectorAll('[data-color]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.color === (v || '')))); }
+function renderAlertSettings() {
+  buildAlertControls();
+  const a = alertCfg();
+  for (const [id, k] of [['alSound', 'sound'], ['alSoundHigh', 'soundHigh'], ['alLoop', 'loop'], ['alLoopEvery', 'loopEvery'], ['alLoopMax', 'loopMax'],
+    ['alPosition', 'position'], ['alSize', 'size'], ['alAutoHide', 'autoHide'], ['alVolume', 'volume']]) $(id).value = String(a[k]);
+  $('alSticky').checked = !!a.sticky; $('alFlash').checked = !!a.flash;
+  setSwatch($('alColor'), a.color);
+  $('alVolumeVal').textContent = a.volume + ' %';
+  document.querySelectorAll('[data-loop-only]').forEach(x => x.hidden = a.loop !== 'until');
+  $('alerts').className = `alerts pos-${a.position} size-${a.size}`;
+}
+function readAlertSettings() {
+  S.settings.alert = Object.assign(alertCfg(), {
+    sound: $('alSound').value, soundHigh: $('alSoundHigh').value, volume: +$('alVolume').value, loop: $('alLoop').value,
+    loopEvery: +$('alLoopEvery').value, loopMax: +$('alLoopMax').value, position: $('alPosition').value, size: $('alSize').value,
+    autoHide: +$('alAutoHide').value, color: swatchValue($('alColor')), sticky: $('alSticky').checked, flash: $('alFlash').checked });
+  save(); renderAlertSettings();
+}
+$('alertCard').addEventListener('change', e => { if (e.target.matches('[data-al]')) readAlertSettings(); });
+$('alVolume').addEventListener('input', e => { $('alVolumeVal').textContent = e.target.value + ' %'; });
+$('alColor').addEventListener('click', e => { const b = e.target.closest('[data-color]'); if (b) { setSwatch($('alColor'), b.dataset.color); readAlertSettings(); } });
+$('edColor').addEventListener('click', e => { const b = e.target.closest('[data-color]'); if (b) setSwatch($('edColor'), b.dataset.color); });
+// ▶ Listen: play the chosen sound once at the chosen volume (even if sounds are switched off)
+function previewSound(selId) {
+  const a = alertCfg(); let id = $(selId).value;
+  if (selId === 'edSound' && !id) id = +$('edPrio').value === 3 ? a.soundHigh : a.sound;
+  playSound(id, +$('alVolume').value || a.volume);
+}
+
 $('langSeg').addEventListener('click', e => {
   const b = e.target.closest('[data-lang-set]'); if (!b || b.dataset.langSet === lang()) return;
   S.settings.lang = b.dataset.langSet; save();
@@ -2317,6 +2441,7 @@ document.addEventListener('click', e => {
     case 'quick-more': quickInput.value.trim() ? quickSubmit(2) : openEditor(newReminder({}), true); break;
     case 'ask-notif': askNotif(); break;
     case 'hide-banner': S.settings.bannerHidden = true; save(); updateNotifUi(); break;
+    case 'al-preview': previewSound(b.dataset.for); break;
     case 'test-alert': fire(newReminder({ id: 'test-' + uid(), title: t('testTitle'), notes: t('testNotes'), tags: ['test'] }), Date.now()); break;
     case 'close-editor': closeEditor(); break;
     case 'keys': $('keysDlg').hidden = false; break;
@@ -2339,7 +2464,6 @@ document.addEventListener('click', e => {
       downloadFile('ping-backup-' + isoDate(new Date()) + '.json', JSON.stringify(S, null, 2), 'application/json');
       S.settings.lastBackup = Date.now(); save(); updateBackupBanner();
       toast(t('backupDone')); break;
-    case 'ticket-clear': S.settings.ticketUrl = ''; S.settings.ticketExample = ''; $('setTicket').value = ''; save(); renderReminders(); updateTicketUi(); toast(t('ticketsRemoved')); break;
     case 'backup-later': S.settings.backupSnoozeUntil = Date.now() + 86400000; save(); updateBackupBanner(); break;
     case 'export-csv': exportCsv(); break;
     case 'import': $('importFile').click(); break;
@@ -2453,43 +2577,10 @@ $('importFile').addEventListener('change', async e => {
     toast(added ? t('restored', added) : t('nothingNew'));
   } catch (err) { toast(t('notBackup')); }
 });
-$('setSound').addEventListener('change', e => { S.settings.sound = e.target.checked; save(); if (e.target.checked) chime(); });
+$('setSound').addEventListener('change', e => { S.settings.sound = e.target.checked; save(); if (e.target.checked) { const a = alertCfg(); playSound(a.sound, a.volume); } });
 $('setIcs').addEventListener('change', e => { S.settings.icsOnSave = e.target.checked; save(); });
 $('setMono').addEventListener('change', e => { S.settings.mono = e.target.checked; save(); noteText.classList.toggle('mono', S.settings.mono); });
 $('setUtc').addEventListener('change', e => { S.settings.utcClock = e.target.checked; save(); });
-$('setTicket').addEventListener('change', e => { S.settings.ticketUrl = e.target.value.trim(); S.settings.ticketExample = ''; save(); renderReminders(); updateTicketUi(); toast(t('ticketsUpdated')); });
-// Non-technical setup: paste the address of any one ticket; Ping finds the ticket ID in it and builds the template.
-function ticketTemplateFrom(u) {
-  u = u.trim();
-  if (!/^https?:\/\/[^/\s]+/i.test(u) || /\s/.test(u)) return { error: 'ticketNotUrl' };
-  if (/\{key\}|\{num\}/.test(u)) return { tpl: u };
-  const keys = [...u.matchAll(/[A-Z][A-Z0-9]{1,9}-\d{1,7}/g)];
-  if (keys.length) { const m = keys[keys.length - 1]; return { tpl: u.slice(0, m.index) + '{key}' + u.slice(m.index + m[0].length), example: m[0] }; }
-  const host = u.match(/^https?:\/\/[^/?#]+/i)[0], rest = u.slice(host.length);
-  const nums = [...rest.matchAll(/\d{2,9}/g)];
-  if (nums.length) { const m = nums[nums.length - 1]; return { tpl: host + rest.slice(0, m.index) + '{num}' + rest.slice(m.index + m[0].length), example: 'AB-' + m[0] }; }
-  return { error: 'ticketNoId' };
-}
-function updateTicketUi(errKey) {
-  const out = $('ticketResult'), tpl = (S.settings.ticketUrl || '').trim();
-  $('ticketClear').hidden = !tpl;
-  out.className = errKey ? 'err' : tpl ? 'ok' : 'hint';
-  if (errKey) { out.textContent = t(errKey); return; }
-  if (!tpl) { out.textContent = t('ticketNone'); return; }
-  const isNum = !tpl.includes('{key}') && tpl.includes('{num}');
-  const ex = S.settings.ticketExample || (isNum ? 'AB-123' : 'DATA-123');
-  const m = ex.match(/^([A-Z][A-Z0-9]*)-(\d+)$/), href = m ? ticketHref(m[1], m[2]) : null;
-  const link = href ? `<a href="${esc(href)}" target="_blank" rel="noopener">${esc(ex)}</a>` : esc(ex);
-  out.innerHTML = t(isNum ? 'ticketOkNum' : 'ticketOk', esc(ex), link);
-}
-$('ticketPaste').addEventListener('input', e => {
-  const v = e.target.value.trim(); if (!v) { updateTicketUi(); return; }
-  const r = ticketTemplateFrom(v);
-  if (r.error) { updateTicketUi(r.error); return; }
-  S.settings.ticketUrl = r.tpl; S.settings.ticketExample = r.example || '';
-  save(); $('setTicket').value = r.tpl; e.target.value = '';
-  renderReminders(); updateTicketUi(); toast(t('ticketsUpdated'));
-});
 
 // ---------------------------------------------------------------- keyboard
 const typing = el => el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || el.isContentEditable);
@@ -2554,11 +2645,10 @@ function renderAll() {
   $('setIcs').checked = S.settings.icsOnSave;
   $('setMono').checked = S.settings.mono;
   $('setUtc').checked = S.settings.utcClock;
-  $('setTicket').value = S.settings.ticketUrl || '';
-  updateTicketUi();
   noteText.classList.toggle('mono', S.settings.mono);
   applyLang();
   applyTheme();
+  renderAlertSettings();
   renderReminders(); renderNotes(); updateTitle(); updateNotifUi(); updateBackupBanner();
 }
 
