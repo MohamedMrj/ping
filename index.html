@@ -236,7 +236,12 @@ kbd { font-size: 11.5px; line-height: 1; padding: 2px 5px; border: 1px solid var
 .find-bar .input { flex: 1 1 220px; }
 .note-body { display: grid; gap: 10px; min-width: 0; }
 .note-body.split { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
-.note-body.split .md { position: sticky; top: 10px; max-height: calc(100vh - 20px); overflow: auto; }
+.note-body.split .md { position: sticky; top: calc(var(--note-head-h, 0px) + 10px); max-height: calc(100vh - var(--note-head-h, 0px) - 20px); overflow: auto; }
+/* the note's buttons and toolbar stay at the top of the window while you scroll through a long note */
+.note-head { position: sticky; top: 0; z-index: 20; display: flex; flex-direction: column; gap: 8px; padding: 8px 0; margin: -8px 0; background: var(--bg); transition: box-shadow .15s; }
+.note-head.stuck { box-shadow: 0 10px 12px -12px rgba(0, 0, 0, .45); }
+.note-head-sentinel { height: 0; }
+html { scroll-padding-top: var(--note-head-h, 0px); }
 @media (max-width: 1000px) { .note-body.split { grid-template-columns: minmax(0, 1fr); } .note-body.split .md { position: static; max-height: none; } }
 .trash-list, .hist-list { list-style: none; margin: 0; padding: 0; border: 1px solid var(--line); border-radius: 10px; max-height: 50vh; overflow: auto; }
 .trash-list li { display: flex; gap: 8px; align-items: center; padding: 9px 12px; border-top: 1px solid var(--line); }
@@ -496,6 +501,8 @@ details.adv[open] { display: grid; gap: 8px; }
         </div>
       </div>
       <div class="note-main">
+        <div class="note-head-sentinel" id="noteHeadSentinel" aria-hidden="true"></div>
+        <div class="note-head" id="noteHead">
         <div class="note-bar">
           <span class="status" id="noteStatus"></span>
           <div class="seg" role="group" aria-label="Anteckningsvy" data-i18n-aria="noteViewAria">
@@ -539,6 +546,7 @@ details.adv[open] { display: grid; gap: 8px; }
           <span class="lbl" id="sugText"></span>
           <button class="btn sm" type="button" data-act="sug-all" title="Ctrl+Shift+M" data-i18n="sugMarkAll">Markera alla</button>
           <button class="btn sm ghost" type="button" data-act="sug-show" data-i18n="sugShow">Visa vilka</button>
+        </div>
         </div>
         <div class="note-body" id="noteBody">
           <div class="ed-wrap" id="noteWrap"><pre class="ed-find" id="noteFind" aria-hidden="true"></pre><pre class="ed-hl" id="noteHl" aria-hidden="true"></pre><textarea id="noteText" class="ed-in" spellcheck="false" placeholder="# Rubrik&#10;&#10;Skriv vad som helst. Markdown fungerar: **fetstil**, `kod`, ```sql-block```, - [ ] uppgifter, | tabeller |" aria-label="Anteckningstext" data-i18n-ph="notePh" data-i18n-aria="noteAria"></textarea></div>
@@ -3648,7 +3656,7 @@ function findStep(d) {
   if (!findHits.length) return;
   findCur = (findCur + d + findHits.length) % findHits.length; renderFind();
   const m = $('noteFind').querySelector('mark.cur');
-  if (m) { const r = m.getBoundingClientRect(); if (r.top < 90 || r.bottom > innerHeight - 40) scrollBy(0, r.top - innerHeight / 3); }
+  if (m) { const r = m.getBoundingClientRect(); if (r.top < headH() + 20 || r.bottom > innerHeight - 40) scrollBy(0, r.top - innerHeight / 3); }
 }
 function openFind() {
   if (currentTab() !== 'notes') showTab('notes');
@@ -3757,6 +3765,35 @@ noteText.addEventListener('click', () => {
 });
 ['keydown', 'input'].forEach(ev => noteText.addEventListener(ev, () => { if (!popEl.hidden && popEl.dataset.soft) closePop(); }));
 
+
+// ---------------------------------------------------------------- notes: pinned header while scrolling
+// The header's height is shared as --note-head-h (0 while Notes is hidden) so the side-by-side preview,
+// find and the cursor line keep clear of it.
+const headH = () => $('noteHead').offsetHeight || 0;
+function syncHeadHeight() { document.documentElement.style.setProperty('--note-head-h', headH() + 'px'); }
+if ('ResizeObserver' in window) new ResizeObserver(syncHeadHeight).observe($('noteHead'));
+if ('IntersectionObserver' in window) new IntersectionObserver(([en]) => $('noteHead').classList.toggle('stuck', !en.isIntersecting)).observe($('noteHeadSentinel'));
+// Where the cursor is on screen, measured with the invisible find layer (same letters, same positions).
+function caretRect() {
+  const pre = $('noteFind'), saved = pre.innerHTML;
+  pre.innerHTML = esc(noteText.value.slice(0, noteText.selectionEnd)) + '<span id="caretProbe">\u200b</span>';
+  const r = $('caretProbe').getBoundingClientRect();
+  pre.innerHTML = saved;
+  return r;
+}
+// Keep the line being written out from under the pinned header (and above the bottom edge).
+function keepCaretVisible() {
+  const h = headH();
+  if (!h || $('noteWrap').hidden || document.activeElement !== noteText) return;
+  const r = caretRect();
+  if (r.top < h + 8) scrollBy(0, r.top - h - 40);
+  else if (r.bottom > innerHeight - 8) scrollBy(0, r.bottom - innerHeight + 40);
+}
+let caretQueued = false;
+const queueCaretCheck = () => { if (!caretQueued) { caretQueued = true; requestAnimationFrame(() => { caretQueued = false; keepCaretVisible(); }); } };
+noteText.addEventListener('input', queueCaretCheck);
+noteText.addEventListener('keyup', e => { if (/^(Arrow|Page|Home|End|Enter|Backspace|Delete)/.test(e.key)) queueCaretCheck(); });
+
 // ---------------------------------------------------------------- notes: pictures
 // Pictures are shrunk, stored in the browser's database (the main data in localStorage has a ~5 MB limit)
 // and referenced from the note as ![Skärmbild](ping-img:ID). They travel in the save file and in backups.
@@ -3846,6 +3883,7 @@ function showTab(name) {
   if (name === 'notes') { renderNotes(); if (!curNote && liveNotes().length) loadNote(sortedNotes()[0]); }
   if (name === 'reminders') quickInput.focus();
   if (name === 'settings') renderSnapshots();
+  syncHeadHeight();
 }
 const currentTab = () => document.querySelector('.tabs [aria-selected="true"]').dataset.tab;
 document.querySelector('.tabs').addEventListener('click', e => { const b = e.target.closest('button[data-tab]'); if (b) showTab(b.dataset.tab); });
