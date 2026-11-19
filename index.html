@@ -83,6 +83,21 @@
   color-scheme: dark;
 }
 
+/* code colours: one set per theme and mode */
+:root { --tk-kw: #0b6e66; --tk-str: #a3501b; --tk-com: #7c8c89; --tk-num: #b0306a; --tk-fn: #2558b8; --tk-type: #7a4ec2; --tk-var: #8a5a00; --tk-op: #4a5c59; --tk-tag: #0b6e66; --tk-attr: #8a5a00; --tk-prop: #2558b8; --tk-meta: #8a3d9c; --tk-lit: #b0306a; --tk-ins: #1d7a43; --tk-del: #c2352b; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --tk-kw: #4fd1c1; --tk-str: #e8a970; --tk-com: #6f8783; --tk-num: #f08fc0; --tk-fn: #82aaff; --tk-type: #c3a6ff; --tk-var: #e6c07b; --tk-op: #a9bcb8; --tk-tag: #4fd1c1; --tk-attr: #e6c07b; --tk-prop: #82aaff; --tk-meta: #d9a0e6; --tk-lit: #f08fc0; --tk-ins: #5cc98a; --tk-del: #f07a70; } }
+:root[data-theme="dark"] { --tk-kw: #4fd1c1; --tk-str: #e8a970; --tk-com: #6f8783; --tk-num: #f08fc0; --tk-fn: #82aaff; --tk-type: #c3a6ff; --tk-var: #e6c07b; --tk-op: #a9bcb8; --tk-tag: #4fd1c1; --tk-attr: #e6c07b; --tk-prop: #82aaff; --tk-meta: #d9a0e6; --tk-lit: #f08fc0; --tk-ins: #5cc98a; --tk-del: #f07a70; }
+:root[data-palette="fjord"] { --tk-kw: #2457c5; --tk-str: #b3541e; --tk-com: #7a8499; --tk-num: #a3317a; --tk-fn: #0d7c72; --tk-type: #7046c2; --tk-var: #8a5a00; --tk-op: #4b5568; --tk-tag: #2457c5; --tk-attr: #8a5a00; --tk-prop: #0d7c72; --tk-meta: #8a3d9c; --tk-lit: #a3317a; --tk-ins: #1f7a4a; --tk-del: #c43b3b; }
+@media (prefers-color-scheme: dark) { :root[data-palette="fjord"]:not([data-theme="light"]) { --tk-kw: #7ea6ff; --tk-str: #f0b27a; --tk-com: #6c7891; --tk-num: #f28fc6; --tk-fn: #5fd4c4; --tk-type: #c4a7ff; --tk-var: #e8c27a; --tk-op: #aab4c8; --tk-tag: #7ea6ff; --tk-attr: #e8c27a; --tk-prop: #5fd4c4; --tk-meta: #e0a3ec; --tk-lit: #f28fc6; --tk-ins: #63cf95; --tk-del: #f2827a; } }
+:root[data-palette="fjord"][data-theme="dark"] { --tk-kw: #7ea6ff; --tk-str: #f0b27a; --tk-com: #6c7891; --tk-num: #f28fc6; --tk-fn: #5fd4c4; --tk-type: #c4a7ff; --tk-var: #e8c27a; --tk-op: #aab4c8; --tk-tag: #7ea6ff; --tk-attr: #e8c27a; --tk-prop: #5fd4c4; --tk-meta: #e0a3ec; --tk-lit: #f28fc6; --tk-ins: #63cf95; --tk-del: #f2827a; }
+:root[data-palette="solarized"] { --tk-kw: #859900; --tk-str: #2aa198; --tk-com: #93a1a1; --tk-num: #d33682; --tk-fn: #268bd2; --tk-type: #b58900; --tk-var: #cb4b16; --tk-op: #657b83; --tk-tag: #268bd2; --tk-attr: #b58900; --tk-prop: #268bd2; --tk-meta: #6c71c4; --tk-lit: #d33682; --tk-ins: #859900; --tk-del: #dc322f; }
+@media (prefers-color-scheme: dark) { :root[data-palette="solarized"]:not([data-theme="light"]) { --tk-kw: #859900; --tk-str: #2aa198; --tk-com: #6c8a91; --tk-num: #d33682; --tk-fn: #268bd2; --tk-type: #b58900; --tk-var: #cb4b16; --tk-op: #93a1a1; --tk-tag: #268bd2; --tk-attr: #b58900; --tk-prop: #268bd2; --tk-meta: #6c71c4; --tk-lit: #d33682; --tk-ins: #859900; --tk-del: #dc322f; } }
+:root[data-palette="solarized"][data-theme="dark"] { --tk-kw: #859900; --tk-str: #2aa198; --tk-com: #6c8a91; --tk-num: #d33682; --tk-fn: #268bd2; --tk-type: #b58900; --tk-var: #cb4b16; --tk-op: #93a1a1; --tk-tag: #268bd2; --tk-attr: #b58900; --tk-prop: #268bd2; --tk-meta: #6c71c4; --tk-lit: #d33682; --tk-ins: #859900; --tk-del: #dc322f; }
+.tk-kw { color: var(--tk-kw); } .tk-str { color: var(--tk-str); } .tk-com { color: var(--tk-com); } .tk-num { color: var(--tk-num); }
+.tk-fn { color: var(--tk-fn); } .tk-type { color: var(--tk-type); } .tk-var { color: var(--tk-var); } .tk-op { color: var(--tk-op); }
+.tk-tag { color: var(--tk-tag); } .tk-attr { color: var(--tk-attr); } .tk-prop { color: var(--tk-prop); } .tk-meta { color: var(--tk-meta); }
+.tk-lit { color: var(--tk-lit); } .tk-ins { color: var(--tk-ins); } .tk-del { color: var(--tk-del); }
+
 * { box-sizing: border-box; }
 html, body { height: 100%; }
 body { margin: 0; background: var(--bg); color: var(--ink); font: 14.5px/1.45 var(--font); }
@@ -192,7 +207,7 @@ kbd { font-size: 11.5px; line-height: 1; padding: 2px 5px; border: 1px solid var
 .examples .btn { font-family: var(--mono); font-weight: 500; font-size: 12.5px; }
 
 /* popover */
-.pop { position: fixed; z-index: 60; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow); padding: 5px; min-width: 200px; display: grid; }
+.pop { max-height: min(60vh, 440px); overflow: auto; position: fixed; z-index: 60; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow); padding: 5px; min-width: 200px; display: grid; }
 .pop button { text-align: left; border: 0; background: none; padding: 7px 10px; border-radius: 6px; cursor: pointer; }
 .pop button:hover, .pop button:focus-visible { background: var(--surface-2); }
 
@@ -209,9 +224,18 @@ kbd { font-size: 11.5px; line-height: 1; padding: 2px 5px; border: 1px solid var
 .note-main { display: grid; grid-template-rows: auto minmax(0, 1fr); gap: 8px; min-width: 0; }
 .note-bar { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
 .note-bar .status { margin-right: auto; }
-#noteText { width: 100%; min-height: 500px; resize: vertical; padding: 14px 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); font-size: 15px; line-height: 1.6; tab-size: 4; }
-#noteText.mono { font-family: var(--mono); font-size: 13.5px; }
-#noteText:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+/* note editor: a transparent textarea over a coloured copy of the same text. Both use identical font, size,
+   padding, border and wrapping, and colours never change letter widths, so every character lines up. */
+.ed-wrap { position: relative; }
+.ed-hl, .ed-in { margin: 0; padding: 14px 16px; border: 1px solid var(--line); border-radius: 12px; font: 15px/1.6 var(--font); tab-size: 4; white-space: pre-wrap; overflow-wrap: break-word; word-break: normal; letter-spacing: normal; text-align: left; }
+.ed-hl.mono, .ed-in.mono { font-family: var(--mono); font-size: 13.5px; }
+.ed-hl { position: absolute; inset: 0; overflow: hidden; pointer-events: none; color: var(--ink); background: var(--surface); border-color: transparent; }
+.ed-in { position: relative; display: block; width: 100%; min-height: 500px; resize: none; overflow: hidden; background: transparent; color: transparent; caret-color: var(--ink); }
+.ed-in::placeholder { color: var(--muted); }
+.ed-in::selection { background: color-mix(in srgb, var(--accent) 28%, transparent); color: transparent; }
+.ed-in:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.ed-hl .md-h { color: var(--accent); }
+.code-ed .ed-in { min-height: 240px; }
 .md { min-height: 500px; padding: 6px 22px 18px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); overflow-wrap: anywhere; min-width: 0; }
 .md h1, .md h2, .md h3, .md h4 { font-family: var(--font-display); line-height: 1.25; margin: 1.1em 0 .4em; text-wrap: balance; }
 .md h1 { font-size: 22px; } .md h2 { font-size: 18px; } .md h3 { font-size: 15.5px; } .md h4 { font-size: 14.5px; }
@@ -222,10 +246,21 @@ kbd { font-size: 11.5px; line-height: 1; padding: 2px 5px; border: 1px solid var
 .md li.task.checked > span { color: var(--muted); text-decoration: line-through; }
 .md blockquote { border-left: 3px solid var(--line); padding-left: 12px; color: var(--muted); }
 .md :not(pre) > code { background: var(--code-bg); padding: 1px 5px; border-radius: 4px; font-size: .9em; }
-.md .code { position: relative; }
 .md pre { background: var(--code-bg); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; overflow-x: auto; font-size: 13px; line-height: 1.5; margin: 0; }
-.md .code .lang { position: absolute; top: 6px; right: 62px; font: 11px var(--mono); color: var(--muted); }
-.md .code .copy { position: absolute; top: 5px; right: 6px; }
+.md .code { border: 1px solid var(--line); border-radius: 8px; background: var(--code-bg); overflow: hidden; }
+.md .code-bar { display: flex; align-items: center; gap: 2px; padding: 3px 6px; border-bottom: 1px solid var(--line); }
+.md .code-bar .spacer { flex: 1; }
+.md .code-lang { border: 0; background: none; color: var(--muted); font: 600 12px var(--mono); cursor: pointer; padding: 3px 6px; border-radius: 5px; }
+.md .code-lang:hover, .md .code-lang:focus-visible { background: var(--surface-2); color: var(--ink); }
+.md .code-bar .btn { padding: 2px 9px; font-size: 12px; }
+.md .code-bar [data-wrap][aria-pressed="true"] { background: var(--accent-soft); color: var(--accent); }
+.md .code pre { border: 0; border-radius: 0; background: none; padding: 10px 14px 10px 4px; counter-reset: ln; }
+.md .code .ln { display: block; padding-left: 3.2em; text-indent: -3.2em; }
+.md .code .ln::before { counter-increment: ln; content: counter(ln); display: inline-block; width: 2.4em; margin-right: .8em; text-align: right; color: var(--muted); opacity: .55; text-indent: 0; user-select: none; -webkit-user-select: none; }
+.md .code.wrap pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+.md .code.collapsed pre { max-height: calc(20 * 1.5em + 20px); overflow: hidden; -webkit-mask-image: linear-gradient(#000 75%, transparent); mask-image: linear-gradient(#000 75%, transparent); }
+.md .code-more { display: block; width: 100%; border: 0; border-top: 1px solid var(--line); background: var(--surface-2); padding: 6px; cursor: pointer; font-weight: 600; font-size: 12.5px; color: var(--accent); }
+.md .tk-com { font-style: italic; }
 .md hr { border: 0; border-top: 1px solid var(--line); margin: 1.2em 0; }
 .md .tbl { overflow-x: auto; }
 .md table { border-collapse: collapse; font-size: 13.5px; font-variant-numeric: tabular-nums; }
@@ -411,11 +446,12 @@ details.adv[open] { display: grid; gap: 8px; }
             <button type="button" data-view="edit" aria-pressed="true" data-i18n="edit">Redigera</button>
             <button type="button" data-view="preview" aria-pressed="false" data-i18n="preview">Förhandsvisa</button>
           </div>
+          <button class="btn sm ghost" type="button" data-act="code-insert" title="Infoga kod" aria-label="Infoga kod" data-i18n-title="codeInsert" data-i18n-aria="codeInsert"><span class="mono" aria-hidden="true">&lt;/&gt;</span></button>
           <button class="btn sm" type="button" data-act="note-pin" id="notePinBtn">Fäst</button>
           <button class="btn sm" type="button" data-act="note-copy" id="noteCopyBtn" data-i18n="copy">Kopiera</button>
           <button class="btn sm" type="button" data-act="note-remind" id="noteRemindBtn" data-i18n="remindMe">Påminn mig…</button>
         </div>
-        <textarea id="noteText" spellcheck="false" placeholder="# Rubrik&#10;&#10;Skriv vad som helst. Markdown fungerar: **fetstil**, `kod`, ```sql-block```, - [ ] uppgifter, | tabeller |" aria-label="Anteckningstext" data-i18n-ph="notePh" data-i18n-aria="noteAria"></textarea>
+        <div class="ed-wrap" id="noteWrap"><pre class="ed-hl" id="noteHl" aria-hidden="true"></pre><textarea id="noteText" class="ed-in" spellcheck="false" placeholder="# Rubrik&#10;&#10;Skriv vad som helst. Markdown fungerar: **fetstil**, `kod`, ```sql-block```, - [ ] uppgifter, | tabeller |" aria-label="Anteckningstext" data-i18n-ph="notePh" data-i18n-aria="noteAria"></textarea></div>
         <div class="md" id="notePreview" hidden></div>
       </div>
     </div>
@@ -617,6 +653,8 @@ details.adv[open] { display: grid; gap: 8px; }
       <kbd>/</kbd><span data-i18n="k9">Sök</span>
       <kbd>1 2 3</kbd><span data-i18n="k10">Påminnelser · Anteckningar · Inställningar</span>
       <kbd>Ctrl E</kbd><span data-i18n="k11">Anteckningar: växla mellan redigering och förhandsvisning</span>
+      <kbd>Ctrl /</kbd><span data-i18n="k13">Anteckningar: kommentera eller avkommentera kodrader</span>
+      <kbd>Shift Tab</kbd><span data-i18n="k14">Anteckningar: dra in (Tab) eller ut (Shift Tab) markerade rader</span>
       <kbd>Esc</kbd><span data-i18n="k12">Stäng dialoger</span>
     </div>
     <h2 style="margin-top:6px" data-i18n="syntaxH">Snabbsyntax</h2>
@@ -632,6 +670,19 @@ details.adv[open] { display: grid; gap: 8px; }
     </div>
     <div class="modal-foot"><span class="spacer"></span><button class="btn primary" type="button" data-act="close-keys" data-i18n="close">Stäng</button></div>
   </div>
+</div>
+
+<!-- insert code into a note -->
+<div class="scrim" id="codeDlg" hidden>
+  <form class="modal" id="codeForm" autocomplete="off" aria-labelledby="codeDlgTitle" style="width:min(760px,100%)">
+    <h2 id="codeDlgTitle" data-i18n="codeDlgH">Infoga kod</h2>
+    <label class="field"><span data-i18n="codeLang">Språk</span><select id="codeLang"></select></label>
+    <div class="field"><span data-i18n="codeText">Kod</span>
+      <div class="ed-wrap code-ed"><pre class="ed-hl mono" id="codeHl" aria-hidden="true"></pre><textarea id="codeText" class="ed-in mono" spellcheck="false" placeholder="Klistra in eller skriv din kod här" aria-label="Kod" data-i18n-ph="codePh" data-i18n-aria="codeText"></textarea></div>
+      <span class="hint" id="codeGuess"></span>
+    </div>
+    <div class="modal-foot"><span class="spacer"></span><button class="btn" type="button" data-act="close-code" data-i18n="cancel">Avbryt</button><button class="btn primary" type="submit" data-i18n="codeInsertBtn">Infoga</button></div>
+  </form>
 </div>
 
 <div class="alerts" id="alerts" aria-live="assertive"></div>
@@ -989,6 +1040,380 @@ const QuickParser = (() => {
 })();
 /*PARSER-END*/
 
+/*HL-START*/
+// ---------------------------------------------------------------- code colouring (built in: no library, works offline)
+// Each language is a list of [sticky regex, token type] rules tried in order at every position; the first rule
+// that matches wins. A rule's type can be a function (to classify words) that returns a type or a list of
+// [text, type] pieces (for nested languages such as JavaScript inside HTML). The output is a flat token list
+// whose text joins back to exactly the input, so it can sit under the editor letter for letter.
+const Hl = (() => {
+  const y = (re, f = '') => new RegExp(re.source || re, (re.flags || '') .replace(/[gy]/g, '') + 'y' + f);
+  const W = s => new Set(s.split(/\s+/).filter(Boolean));
+  const escH = s => s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+  const FN_AFTER = /\s*\(/y;
+
+  function run(src, rules) {
+    const out = []; let i = 0, plain = '';
+    const push = (t, ty) => {
+      if (!t) return;
+      if (!ty) { plain += t; return; }
+      if (plain) { out.push([plain, null]); plain = ''; }
+      out.push([t, ty]);
+    };
+    outer: while (i < src.length) {
+      for (const [re, ty] of rules) {
+        re.lastIndex = i;
+        const m = re.exec(src);
+        if (!m || !m[0].length) continue;
+        const end = i + m[0].length;
+        const r = typeof ty === 'function' ? ty(m, src, end) : ty;
+        if (Array.isArray(r)) r.forEach(([a, b]) => push(a, b)); else push(m[0], r);
+        i = end; continue outer;
+      }
+      plain += src[i++];
+    }
+    if (plain) out.push([plain, null]);
+    return out;
+  }
+
+  // Classifies identifiers: keyword, literal, type, function call (followed by "("), PascalCase type.
+  function words(o) {
+    const ci = !!o.ci, kw = o.kw || new Set(), lit = o.lit || new Set(), types = o.types || new Set();
+    return [y(o.ident || /[A-Za-z_][\w]*/), (m, src, end) => {
+      const w = ci ? m[0].toLowerCase() : m[0];
+      if (kw.has(w)) return 'kw';
+      if (lit.has(w)) return 'lit';
+      if (types.has(w)) return 'type';
+      FN_AFTER.lastIndex = end;
+      if (FN_AFTER.test(src)) return 'fn';
+      if (o.macro && src[end] === '!') return 'fn';
+      if (o.pascal && /^[A-Z][a-z0-9]/.test(m[0])) return 'type';
+      return null;
+    }];
+  }
+  const WS = [/\s+/y, null];
+  const NUM = [/(?:0[xX][\da-fA-F_]+|0[bB][01_]+|0[oO][0-7_]+|\d[\d_]*(?:\.\d[\d_]*)?(?:[eE][+-]?\d+)?|\.\d+(?:[eE][+-]?\d+)?)[a-zA-Z]*/y, 'num'];
+  const DQ = [/"(?:[^"\\\n]|\\.)*"?/y, 'str'];
+  const SQ = [/'(?:[^'\\\n]|\\.)*'?/y, 'str'];
+  const BT = [/`(?:[^`\\]|\\[\s\S])*`?/y, 'str'];
+  const LC = p => [y(new RegExp(p + '[^\\n]*')), 'com'];
+  const BC = [/\/\*[\s\S]*?(?:\*\/|$)/y, 'com'];
+  const HASH = LC('#');
+  const OP = [/[+\-*/%=&|^!<>?:~]+/y, 'op'];
+  const ANNO = [/@[A-Za-z_][\w.]*/y, 'meta'];
+
+  function clike(o) {
+    return [WS, ...(o.pre || []), BC, LC('//'), ...(o.strings || [DQ, SQ]), ...(o.extra || []), NUM, words(o), OP];
+  }
+
+  const L = {};
+  const ALIAS = {};
+  function def(id, name, aliases, rules, comment) {
+    L[id] = { id, name, rules, comment };
+    [id, ...aliases].forEach(a => { ALIAS[a.toLowerCase()] = id; });
+  }
+
+  // ---- web
+  const JS_KW = 'break case catch class const continue debugger default delete do else export extends finally for from function get if import in instanceof let new of return set static super switch this throw try typeof var void while with yield async await as';
+  const JS_LIT = W('true false null undefined NaN Infinity');
+  const jsRules = extraKw => clike({ kw: W(JS_KW + ' ' + (extraKw || '')), lit: JS_LIT, pascal: true, ident: /[A-Za-z_$][\w$]*/,
+    types: extraKw ? W('string number boolean any unknown never void object bigint symbol') : undefined,
+    strings: [DQ, SQ, BT], extra: [ANNO] });
+  def('javascript', 'JavaScript', ['js', 'jsx', 'mjs', 'cjs', 'node'], jsRules(), ['//']);
+  def('typescript', 'TypeScript', ['ts', 'tsx'], jsRules('abstract declare enum implements interface keyof namespace private protected public readonly type infer is satisfies override module'), ['//']);
+
+  const CSS_RULES = [WS, BC,
+    [/@[\w-]+/y, 'kw'],
+    [/[^{};@\s][^{};]*(?=\{)/y, 'tag'],
+    [/--[\w-]+|[a-zA-Z-]+(?=\s*:(?!:))/y, 'prop'],
+    [/#[\da-fA-F]{3,8}\b/y, 'num'],
+    DQ, SQ,
+    [/-?(?:\d+\.?\d*|\.\d+)(?:px|em|rem|%|vh|vw|vmin|vmax|ch|ex|s|ms|deg|rad|turn|fr|dpi|dppx)?/y, 'num'],
+    [/!important/y, 'kw'],
+    [/[\w-]+(?=\()/y, 'fn'],
+    [/[:;,>+~*()]/y, 'op']];
+  def('css', 'CSS', ['scss', 'less'], CSS_RULES, ['/*', '*/']);
+
+  function markup(html) {
+    const tagPieces = t => {
+      const out = [];
+      const m = t.match(/^(<\/?)([\w:.-]+)([\s\S]*?)(\/?>)?$/);
+      if (!m) return [[t, 'tag']];
+      out.push([m[1], 'op'], [m[2], 'tag']);
+      run(m[3], [WS, [/[^\s=>\/"']+/y, 'attr'], [/=/y, 'op'], [/"[^"]*"?|'[^']*'?/y, 'str']]).forEach(p => out.push(p));
+      if (m[4]) out.push([m[4], 'op']);
+      return out;
+    };
+    const rules = [WS,
+      [/<!--[\s\S]*?(?:-->|$)/y, 'com'],
+      [/<!\[CDATA\[[\s\S]*?(?:\]\]>|$)/y, 'str'],
+      [/<[!?][^>]*>?/y, 'meta'],
+      [/&#?\w+;/y, 'lit']];
+    if (html) {
+      const embed = (tag, lang) => [new RegExp(`(<${tag}\\b[^>]*>)([\\s\\S]*?)(?=</${tag}>|$)`, 'iy'),
+        m => [...tagPieces(m[1]), ...run(m[2], L[lang].rules)]];
+      rules.push(embed('script', 'javascript'), embed('style', 'css'));
+    }
+    rules.push([/<\/?[\w:.-]+(?:\s+[^\s=>\/]+(?:\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+))?)*\s*\/?>?/y, m => tagPieces(m[0])]);
+    return rules;
+  }
+  def('xml', 'XML', ['svg', 'xaml', 'xsl', 'csproj', 'plist', 'rss'], markup(false), ['<!--', '-->']);
+  def('html', 'HTML', ['htm', 'xhtml', 'vue'], markup(true), ['<!--', '-->']);
+
+  def('php', 'PHP', [], [WS, [/<\?(?:php|=)?|\?>/y, 'meta'], BC, LC('//'), HASH, DQ, SQ, [/\$[A-Za-z_]\w*/y, 'var'], NUM,
+    words({ ci: true, kw: W('abstract and array as break callable case catch class clone const continue declare default do echo else elseif empty enddeclare endfor endforeach endif endswitch endwhile extends final finally fn for foreach function global goto if implements include include_once instanceof insteadof interface isset list match namespace new or print private protected public readonly require require_once return static switch throw trait try unset use var while xor yield'), lit: W('true false null'), pascal: true }),
+    OP], ['//']);
+
+  // ---- data & scripting
+  const SQL_KW = 'select from where and or not insert into values update set delete create alter drop table view index procedure proc function trigger as on join inner left right full outer cross union all distinct group by order having limit offset top case when then else end is like in between exists asc desc primary key foreign references default constraint unique check begin commit rollback transaction tran declare with over partition row_number rank dense_rank cast convert if while return exec execute go use database schema grant revoke truncate merge using matched output inserted deleted pivot unpivot apply fetch next rows only nolock returns replace temporary temp recursive lateral window filter coalesce nullif isnull';
+  def('sql', 'SQL', ['tsql', 't-sql', 'mssql', 'mysql', 'postgres', 'postgresql', 'psql', 'plsql', 'sqlite', 'snowflake', 'bigquery', 'spark-sql', 'sparksql', 'hive'], [WS,
+    LC('--'), BC,
+    [/'(?:[^']|'')*'?/y, 'str'],
+    [/N'(?:[^']|'')*'?/y, 'str'],
+    [/"[^"\n]*"?|\[[^\]\n]*\]?|`[^`\n]*`?/y, 'prop'],
+    [/[@:$][A-Za-z_][\w@$#]*/y, 'var'],
+    NUM,
+    words({ ci: true, kw: W(SQL_KW), lit: W('true false null'), types: W('int integer bigint smallint tinyint bit decimal numeric float real double money smallmoney date datetime datetime2 datetimeoffset smalldatetime time timestamp timestamptz interval char varchar nchar nvarchar text ntext uniqueidentifier boolean bool serial bigserial json jsonb xml varbinary binary image uuid string number variant array object') }),
+    [/[+\-*/%=<>!|&^~]+/y, 'op']], ['--']);
+
+  def('kql', 'KQL', ['kusto'], [WS, LC('//'), DQ, SQ,
+    [/\|/y, 'op'],
+    NUM,
+    words({ kw: W('where project extend summarize by take limit top sort order asc desc join kind on union render let count dcount distinct and or not in has contains startswith endswith matches regex between ago now datetime timespan mv-expand parse evaluate as print range invoke make-series externaldata project-away project-rename project-reorder lookup materialize search find getschema sample'), lit: W('true false null'), types: W('bool datetime dynamic guid int long real string timespan decimal'), ident: /[A-Za-z_][\w-]*/ }),
+    [/[+\-*/%=<>!~]+/y, 'op']], ['//']);
+
+  const PY_STR = [/(?:[rRbBuUfF]{1,2})?(?:"""[\s\S]*?(?:"""|$)|'''[\s\S]*?(?:'''|$)|"(?:[^"\\\n]|\\.)*"?|'(?:[^'\\\n]|\\.)*'?)/y, 'str'];
+  def('python', 'Python', ['py', 'py3', 'python3', 'ipython', 'jupyter', 'pyspark'], [WS, HASH, PY_STR, [/@[A-Za-z_][\w.]*/y, 'meta'], NUM,
+    words({ kw: W('and as assert async await break class continue def del elif else except finally for from global if import in is lambda nonlocal not or pass raise return try while with yield match case'), lit: W('True False None'), types: W('int float str list dict set tuple bool bytes object complex frozenset range type'), pascal: true }),
+    OP], ['#']);
+
+  def('r', 'R', ['rlang', 'rscript'], [WS, HASH, DQ, SQ, [/%[^%\n]*%|<<-|->>|<-|->|\|>/y, 'op'], NUM,
+    words({ kw: W('if else repeat while function for in next break return library require switch'), lit: W('TRUE FALSE NULL NA Inf NaN T F NA_integer_ NA_real_ NA_character_'), ident: /[A-Za-z_.][\w.]*/ }),
+    OP], ['#']);
+
+  def('bash', 'Bash', ['sh', 'shell', 'zsh', 'ksh', 'console', 'terminal', 'shellscript'], [WS,
+    [/^#![^\n]*/my, 'meta'], HASH,
+    [/"(?:[^"\\]|\\[\s\S])*"?/y, 'str'], [/'[^']*'?/y, 'str'],
+    [/\$\{[^}\n]*\}?|\$\(|\$[\w@*#?$!-]/y, 'var'],
+    [/--?[A-Za-z][\w-]*/y, 'attr'],
+    NUM,
+    words({ kw: W('if then else elif fi case esac for while until do done in function select time return exit break continue export local readonly declare unset shift source alias'), types: W('echo cd ls grep sed awk cat printf read test sudo chmod chown mkdir rm cp mv curl wget git docker kubectl apt apt-get yum dnf brew ssh scp find xargs tar zip unzip pip npm node python touch head tail sort uniq wc cut tr tee kill ps systemctl'), ident: /[A-Za-z_][\w-]*/ }),
+    [/[|&;<>]+/y, 'op']], ['#']);
+
+  const PS_OPS = W('-eq -ne -gt -ge -lt -le -like -notlike -match -notmatch -contains -notcontains -in -notin -and -or -not -xor -replace -split -join -is -isnot -as -band -bor -f -ceq -cne -ieq -imatch -cmatch');
+  def('powershell', 'PowerShell', ['ps', 'ps1', 'psm1', 'pwsh', 'posh'], [WS,
+    [/<#[\s\S]*?(?:#>|$)/y, 'com'], HASH,
+    [/@"[\s\S]*?(?:"@|$)|@'[\s\S]*?(?:'@|$)/y, 'str'],
+    [/"(?:[^"`]|`[\s\S]|"")*"?/y, 'str'], [/'(?:[^']|'')*'?/y, 'str'],
+    [/\$(?:\{[^}\n]*\}?|[A-Za-z_]\w*(?::[A-Za-z_]\w*)?|[_?^$])/y, 'var'],
+    [/\[[A-Za-z_][\w.]*(?:\[\])?\]/y, 'type'],
+    [/-[A-Za-z]+/y, m => PS_OPS.has(m[0].toLowerCase()) ? 'op' : 'attr'],
+    [/[A-Za-z]+-[A-Za-z]+\w*/y, 'fn'],
+    NUM,
+    words({ ci: true, kw: W('begin break catch class continue data define do dynamicparam else elseif end enum exit filter finally for foreach from function hidden if in param process return static switch throw trap try until using var while workflow'), lit: W('true false null') }),
+    [/[+*/%=<>!|&]+/y, 'op']], ['#']);
+
+  def('json', 'JSON', ['jsonc', 'json5', 'geojson', 'ipynb'], [WS, LC('//'), BC,
+    [/"(?:[^"\\\n]|\\.)*"?(?=\s*:)/y, 'prop'], DQ,
+    [/-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?/y, 'num'],
+    [/\b(?:true|false|null)\b/y, 'lit'],
+    [/[{}\[\],:]/y, 'op']], ['//']);
+
+  def('yaml', 'YAML', ['yml'], [WS, HASH,
+    [/^---|^\.\.\./my, 'meta'],
+    [/(?:-\s+)?[\w"'][^:#\n]*?(?=:(?:\s|$))/y, m => {
+      const d = m[0].match(/^(-\s+)?([\s\S]*)$/);
+      return [...(d[1] ? [[d[1], 'op']] : []), [d[2], 'prop']];
+    }],
+    [/-(?=\s)/y, 'op'],
+    DQ, SQ,
+    [/[&*][\w-]+/y, 'var'],
+    [/!!?[\w/]+/y, 'meta'],
+    [/[|>][-+]?(?=\s*$)/my, 'op'],
+    [/\b(?:true|false|null|yes|no|on|off|True|False|Null|TRUE|FALSE|NULL|~)\b/y, 'lit'],
+    [/-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?\b/y, 'num'],
+    [/[:{}\[\],]/y, 'op']], ['#']);
+
+  def('csv', 'CSV', ['tsv'], [
+    [/"(?:[^"]|"")*"?/y, 'str'],
+    [/[,;\t|]/y, 'op'],
+    [/-?\d+(?:[.,]\d+)?(?=[,;\t|\n]|$)/y, 'num'],
+    [/[^,;\t|"\n]+/y, null]], null);
+
+  // ---- compiled / backend
+  def('csharp', 'C#', ['cs', 'c#', 'dotnet'], clike({
+    kw: W('abstract as base break case catch checked class const continue default delegate do else enum event explicit extern finally fixed for foreach goto if implicit in interface internal is lock namespace new operator out override params private protected public readonly ref return sealed sizeof stackalloc static struct switch this throw try typeof unchecked unsafe using virtual volatile while var async await get set init value yield record when where select from group by orderby let join into nameof dynamic global partial required with not and or'),
+    types: W('bool byte char decimal double float int long object sbyte short string uint ulong ushort void nint nuint'), lit: W('true false null'), pascal: true,
+    pre: [[/#\s*[a-z]+[^\n]*/y, 'meta']],
+    strings: [[/\$?@"(?:[^"]|"")*"?|@?\$"(?:[^"\\\n]|\\.)*"?/y, 'str'], DQ, SQ],
+    extra: [[/\[(?=[A-Z]\w*(?:\(|\]))/y, 'op']] }), ['//']);
+  def('java', 'Java', ['jdk'], clike({
+    kw: W('abstract assert break case catch class const continue default do else enum extends final finally for goto if implements import instanceof interface native new package private protected public return static strictfp super switch synchronized this throw throws transient try volatile while var record yield sealed permits non-sealed'),
+    types: W('boolean byte char double float int long short void String Integer Long Double Boolean Object List Map Set'), lit: W('true false null'), pascal: true,
+    strings: [[/"""[\s\S]*?(?:"""|$)/y, 'str'], DQ, SQ], extra: [ANNO] }), ['//']);
+  def('kotlin', 'Kotlin', ['kt', 'kts'], clike({
+    kw: W('as break class continue do else for fun if in interface is object package return super this throw try typealias typeof val var when while by catch constructor delegate dynamic field file finally get import init param property receiver set setparam where abstract actual annotation companion const crossinline data enum expect external final infix inline inner internal lateinit noinline open operator out override private protected public reified sealed suspend tailrec vararg'),
+    types: W('Int Long Double Float Boolean String Char Unit Any Nothing List Map Set Array Byte Short'), lit: W('true false null'), pascal: true,
+    strings: [[/"""[\s\S]*?(?:"""|$)/y, 'str'], DQ, SQ], extra: [ANNO] }), ['//']);
+  def('go', 'Go', ['golang'], clike({
+    kw: W('break case chan const continue default defer else fallthrough for func go goto if import interface map package range return select struct switch type var'),
+    types: W('bool byte complex64 complex128 error float32 float64 int int8 int16 int32 int64 rune string uint uint8 uint16 uint32 uint64 uintptr any'), lit: W('true false nil iota'),
+    strings: [DQ, SQ, [/`[^`]*`?/y, 'str']] }), ['//']);
+  def('rust', 'Rust', ['rs'], clike({
+    kw: W('as async await break const continue crate dyn else enum extern fn for if impl in let loop match mod move mut pub ref return self Self static struct super trait type unsafe use where while'),
+    types: W('i8 i16 i32 i64 i128 isize u8 u16 u32 u64 u128 usize f32 f64 bool char str String Vec Option Result Box HashMap'), lit: W('true false None Some Ok Err'), pascal: true, macro: true,
+    strings: [[/b?r#*"[\s\S]*?(?:"#*|$)/y, 'str'], DQ, [/'(?:[^'\\\n]|\\.)'/y, 'str'], [/'[A-Za-z_]\w*/y, 'meta']],
+    extra: [[/#!?\[[^\]\n]*\]?/y, 'meta']] }), ['//']);
+  const C_KW = 'auto break case char const continue default do double else enum extern float for goto if inline int long register restrict return short signed sizeof static struct switch typedef union unsigned void volatile while _Bool';
+  const C_PRE = [[/#\s*[a-z]+[^\n]*/y, 'meta']];
+  def('c', 'C', ['h'], clike({ kw: W(C_KW), types: W('size_t ssize_t uint8_t uint16_t uint32_t uint64_t int8_t int16_t int32_t int64_t bool FILE wchar_t'), lit: W('true false NULL'), pre: C_PRE }), ['//']);
+  def('cpp', 'C++', ['c++', 'cc', 'cxx', 'hpp', 'hh', 'hxx', 'ino'], clike({
+    kw: W(C_KW + ' alignas alignof and asm catch class concept consteval constexpr constinit const_cast co_await co_return co_yield decltype delete dynamic_cast explicit export friend mutable namespace new noexcept not nullptr operator or private protected public reinterpret_cast requires static_assert static_cast template this thread_local throw try typeid typename using virtual override final'),
+    types: W('bool wchar_t size_t std string vector map set unordered_map unique_ptr shared_ptr auto'), lit: W('true false nullptr NULL'), pre: C_PRE, pascal: true }), ['//']);
+  def('swift', 'Swift', [], clike({
+    kw: W('associatedtype class deinit enum extension fileprivate func import init inout internal let open operator private protocol public rethrows static struct subscript typealias var break case continue default defer do else fallthrough for guard if in repeat return switch where while as catch is super self Self throw throws try async await some any actor'),
+    types: W('Int Double Float Bool String Character Array Dictionary Set Optional Void UInt'), lit: W('true false nil'), pascal: true,
+    strings: [[/"""[\s\S]*?(?:"""|$)/y, 'str'], DQ], extra: [ANNO, [/#[a-zA-Z]+/y, 'meta']] }), ['//']);
+  def('scala', 'Scala', ['sc', 'sbt'], clike({
+    kw: W('abstract case catch class def do else extends final finally for forSome if implicit import lazy match new object override package private protected return sealed super this throw trait try type val var while with yield given using enum then export'),
+    types: W('Int Long Double Float Boolean String Unit Any Nothing Option List Map Seq Array'), lit: W('true false null None Some'), pascal: true,
+    strings: [[/"""[\s\S]*?(?:"""|$)/y, 'str'], [/[sf]?"(?:[^"\\\n]|\\.)*"?/y, 'str'], SQ], extra: [ANNO] }), ['//']);
+
+  // ---- config & devops
+  def('dockerfile', 'Dockerfile', ['docker', 'containerfile'], [WS, HASH,
+    [/(?<=^[ \t]*)(?:FROM|RUN|CMD|LABEL|MAINTAINER|EXPOSE|ENV|ADD|COPY|ENTRYPOINT|VOLUME|USER|WORKDIR|ARG|ONBUILD|STOPSIGNAL|HEALTHCHECK|SHELL)\b/imy, 'kw'],
+    [/\bAS\b/y, 'kw'],
+    [/"(?:[^"\\]|\\.)*"?/y, 'str'], [/'[^']*'?/y, 'str'],
+    [/\$\{[^}\n]*\}?|\$[A-Za-z_]\w*/y, 'var'],
+    [/--[\w-]+/y, 'attr'],
+    NUM, [/[A-Za-z_][\w.-]*/y, null], [/[&|;=\\]+/y, 'op']], ['#']);
+
+  def('terraform', 'Terraform', ['tf', 'hcl', 'tfvars'], [WS, HASH, LC('//'), BC,
+    [/<<-?(\w+)[\s\S]*?^\s*\1\b/my, 'str'],
+    DQ,
+    [/[A-Za-z_][\w-]*(?=\s*=(?!=))/y, 'prop'],
+    NUM,
+    words({ kw: W('resource data variable output provider module locals terraform for_each count depends_on lifecycle dynamic content if for in backend required_providers'), lit: W('true false null'), types: W('string number bool list map set object tuple any'), ident: /[A-Za-z_][\w-]*/ }),
+    [/[=!<>?:&|+\-*/%]+|=>/y, 'op']], ['#']);
+
+  def('ini', 'INI / TOML', ['toml', 'cfg', 'conf', 'properties', 'editorconfig', 'gitconfig', 'env', 'dotenv'], [WS,
+    [/[;#][^\n]*/y, 'com'],
+    [/(?<=^[ \t]*)\[\[?[^\]\n]*\]?\]?/my, 'tag'],
+    [/(?<=^[ \t]*)[\w."'$-][\w."' $-]*?(?=\s*[=:])/my, 'prop'],
+    [/"""[\s\S]*?(?:"""|$)/y, 'str'], DQ, SQ,
+    [/\b(?:true|false|yes|no|on|off)\b/iy, 'lit'],
+    [/-?\d[\d_]*(?:\.\d+)?(?:[eE][+-]?\d+)?|\d{4}-\d\d-\d\d(?:[T ][\d:.]+Z?)?/y, 'num'],
+    [/[=:,{}\[\]]/y, 'op']], ['#']);
+
+  def('nginx', 'Nginx / Apache', ['nginxconf', 'apache', 'apacheconf', 'htaccess', 'httpd'], [WS, HASH,
+    [/<\/?[A-Za-z]+[^>\n]*>?/y, 'tag'],
+    DQ, SQ,
+    [/\$\{?[\w]+\}?|%\{[^}\n]*\}?/y, 'var'],
+    [/(?<=^[ \t]*)[A-Za-z_]\w*/my, 'kw'],
+    [/\d+(?:\.\d+)?[kKmMgGsShHdD]?\b/y, 'num'],
+    [/[A-Za-z_][\w.-]*/y, null],
+    [/[{};~^=*]/y, 'op']], ['#']);
+
+  def('markdown', 'Markdown', ['md', 'mkd', 'mdx'], [
+    [/^```[^\n]*$|^~~~[^\n]*$/my, 'meta'],
+    [/^#{1,6}\s[^\n]*/my, 'kw'],
+    [/(?<=^[ \t]*)>[^\n]*/my, 'com'],
+    [/(?<=^[ \t]*)(?:[-*+]|\d+[.)])(?=\s)/my, 'op'],
+    [/`[^`\n]+`/y, 'str'],
+    [/\*\*[^*\n]+\*\*|__[^_\n]+__/y, 'type'],
+    [/\*[^*\s][^*\n]*\*|_[^_\s][^_\n]*_/y, 'lit'],
+    [/!?\[[^\]\n]*\]\([^)\n]*\)/y, 'fn'],
+    [/https?:\/\/[^\s)]+/y, 'fn'],
+    [/[^\n`*_\[!h#>-]+|[\s\S]/y, null]], ['<!--', '-->']);
+
+  def('diff', 'Diff', ['patch', 'udiff'], [
+    [/^(?:diff|index|\+\+\+|---)[^\n]*/my, 'meta'],
+    [/^@@[^\n]*/my, 'fn'],
+    [/^\+[^\n]*/my, 'ins'],
+    [/^-[^\n]*/my, 'del'],
+    [/[^\n]+|\n/y, null]], null);
+
+  def('makefile', 'Makefile', ['make', 'mk', 'mak'], [
+    HASH,
+    [/(?<=^[ \t]*)(?:ifeq|ifneq|ifdef|ifndef|else|endif|include|-include|define|endef|export|unexport|override|vpath)\b/my, 'kw'],
+    [/^\.[A-Z]+(?=\s*:)/my, 'kw'],
+    [/^[\w.-]+\s*(?=[:+?]?=)/my, 'prop'],
+    [/^[^\s:#=][^:#=\n]*(?=:(?!=))/my, 'fn'],
+    [/\$\([^)\n]*\)?|\$\{[^}\n]*\}?|\$[@<^+?*%]/y, 'var'],
+    DQ, SQ,
+    [/[:+?]?=|:/y, 'op'],
+    [/[^\s$#"':=]+|\s+/y, null]], ['#']);
+
+  def('regex', 'Regex', ['regexp', 're', 'pcre'], [
+    [/\\[dDwWsSbBnrtfv0]|\\[pP]\{[^}]*\}|\\u[\da-fA-F]{4}|\\x[\da-fA-F]{2}|\\./y, 'kw'],
+    [/\[(?:\\.|[^\]\\])*\]?/y, 'str'],
+    [/\(\?(?:[:=!>]|<[=!]|<\w+>|P<\w+>)|[()]/y, 'op'],
+    [/[*+?]\??|\{\d+(?:,\d*)?\}\??/y, 'num'],
+    [/[\^$]/y, 'meta'],
+    [/\|/y, 'op']], null);
+
+  // ---- guessing the language of unlabelled code
+  const SIGNS = [
+    ['json', c => { const s = c.trim(); if (!/^[\[{]/.test(s)) return 0; try { JSON.parse(s); return 10; } catch (e) { return 0; } }],
+    ['html', [[/<!doctype html|<html[\s>]/i, 10], [/<(?:div|span|body|head|script|style|a|p|ul|li|table|button|input|form|section|main|nav|img|h[1-6])[\s>]/i, 5], [/<\/\w+>/, 2]]],
+    ['xml', [[/^\s*<\?xml/, 8], [/^\s*<[\w:.-]+[^>]*>[\s\S]*<\/[\w:.-]+>\s*$/, 3]]],
+    ['php', [[/<\?php/, 10], [/\$\w+\s*=[^=]/, 1], [/->\w+\(/, 1], [/\becho\s/, 1]]],
+    ['sql', [[/\b(?:select\s[\s\S]+?\sfrom|insert\s+into|update\s+\w+\s+set|delete\s+from|create\s+(?:or\s+replace\s+)?(?:table|view|procedure|function|index)|alter\s+table|drop\s+table|truncate\s+table)\b/i, 6], [/\b(?:where|join|group\s+by|order\s+by|having)\b/i, 1]]],
+    ['kql', [[/^\s*\w+\s*\n?\s*\|\s*(?:where|project|summarize|extend|take|order\s+by|sort\s+by|render|join|count|top|limit)\b/im, 8], [/\|\s*(?:where|project|summarize|extend|take|render)\b/, 3], [/\bago\(\d+[dhms]\)/, 3]]],
+    ['powershell', [[/\b(?:Get|Set|New|Remove|Add|Write|Import|Export|Invoke|Start|Stop|Test|Select|Where|ForEach|Out|Format|Convert(?:To|From))-[A-Z][A-Za-z]+/, 6], [/\$_\.|\$env:|\$PSScriptRoot/i, 4], [/\s-(?:eq|ne|gt|lt|ge|le|like|match|contains)\s/i, 3], [/\[(?:string|int|bool|datetime|array)\]\$/i, 3]]],
+    ['bash', [[/^#!.*\b(?:ba|z|k)?sh\b/m, 10], [/^\s*(?:echo|export|sudo|apt(?:-get)?|yum|cd|ls|grep|curl|wget|chmod|chown|mkdir|rm|cp|mv|git|docker|kubectl|npm|pip)\s/m, 3], [/\b(?:fi|done|esac|then)\b/, 3], [/\$\{?\w+\}?/, 1], [/&&|\|\|/, 1]]],
+    ['dockerfile', [[/^\s*FROM\s+[\w./:-]+/m, 6], [/^\s*(?:RUN|COPY|WORKDIR|ENTRYPOINT|CMD|EXPOSE|ENV|ARG)\s/m, 3]]],
+    ['terraform', [[/\b(?:resource|data|module|provider|variable|output)\s+"[^"]+"(?:\s+"[^"]+")?\s*\{/, 8], [/\bterraform\s*\{/, 5]]],
+    ['nginx', [[/\b(?:server_name|proxy_pass|listen|location|root|try_files|upstream)\b[^;\n]*[;{]/, 6], [/<(?:VirtualHost|Directory|IfModule)\b/, 8], [/^\s*RewriteRule\b/m, 6]]],
+    ['makefile', [[/^[\w.-]+\s*:[^=\n]*\n\t/m, 6], [/\$\(\w+\)/, 2], [/^\.PHONY\s*:/m, 8]]],
+    ['diff', [[/^(?:diff --git|---\s|\+\+\+\s|@@\s-\d)/m, 8], [/^[+-][^+-]/m, 1]]],
+    ['yaml', [[/^---\s*$/m, 3], [/^\s*[\w.-]+:\s+\S/m, 2], [/^\s*-\s+[\w.-]+:\s/m, 3], [/^\s*[\w.-]+:\s*$/m, 1]]],
+    ['ini', [[/^\s*\[[\w. "-]+\]\s*$/m, 4], [/^\s*[\w.-]+\s*=\s*\S/m, 2]]],
+    ['css', [[/(?:^|\})\s*[.#]?[\w-][\w\s.#:>,\[\]="-]*\{\s*[\w-]+\s*:[^;{}]+;/, 6], [/@media\b|@import\b|!important/, 3]]],
+    ['markdown', [[/^#{1,6}\s+\S/m, 3], [/^\s*[-*]\s+\S/m, 1], [/\[[^\]]+\]\([^)]+\)/, 2], [/\*\*[^*]+\*\*/, 1]]],
+    ['python', [[/^\s*def\s+\w+\s*\(.*\)\s*(?:->\s*[\w\[\], .]+)?:\s*$/m, 6], [/^\s*(?:import\s+[\w.]+|from\s+[\w.]+\s+import\b)/m, 4], [/\bprint\(/, 2], [/\bself\./, 3], [/^\s*(?:if|for|while|elif|else|try|except|with|class)\b.*:\s*$/m, 2], [/\b(?:None|True|False)\b/, 2], [/\bpd\.|\bnp\./, 3]]],
+    ['r', [[/\w\s*<-\s*/, 5], [/\blibrary\(\w+\)/, 6], [/%>%|\|>/, 3], [/\bdata\.frame\(|ggplot\(|\bc\(/, 4]]],
+    ['csharp', [[/\busing\s+System\b|\bnamespace\s+[\w.]+/, 6], [/\bpublic\s+(?:async\s+)?(?:static\s+)?(?:void|Task|string|int|class)\b/, 2], [/Console\.Write/, 6], [/\$"[^"]*\{/, 3], [/\bvar\s+\w+\s*=\s*new\b/, 3], [/\{\s*get;\s*set;\s*\}/, 6]]],
+    ['java', [[/\bpublic\s+static\s+void\s+main\s*\(\s*String/, 8], [/System\.out\.print/, 6], [/^\s*import\s+java\./m, 8], [/^\s*package\s+[\w.]+;/m, 5], [/@Override\b/, 4]]],
+    ['kotlin', [[/\bfun\s+\w+\s*\(/, 5], [/\bval\s+\w+(?:\s*:\s*\w+)?\s*=/, 3], [/\bprintln\(/, 2], [/\bdata\s+class\b/, 5]]],
+    ['go', [[/^\s*package\s+\w+\s*$/m, 6], [/\bfunc\s+(?:\(\w+\s+\*?\w+\)\s*)?\w+\s*\(/, 4], [/\bfmt\.\w+\(/, 6], [/:=/, 2]]],
+    ['rust', [[/\bfn\s+\w+\s*(?:<[^>]*>)?\s*\(/, 4], [/\blet\s+mut\b/, 6], [/\w+!\(/, 2], [/\bimpl\b|\buse\s+std::/, 5], [/->\s*(?:Result|Option|Self|i32|u32|String)\b/, 3]]],
+    ['cpp', [[/#include\s*<(?:iostream|vector|string|map|memory|algorithm)>/, 8], [/\bstd::/, 5], [/\bcout\s*<</, 6], [/\btemplate\s*</, 5]]],
+    ['c', [[/#include\s*<(?:stdio|stdlib|string|math)\.h>/, 8], [/\bprintf\s*\(/, 3], [/\bint\s+main\s*\(/, 3], [/\bmalloc\(/, 3]]],
+    ['swift', [[/\bimport\s+(?:UIKit|SwiftUI|Foundation)\b/, 8], [/\bguard\s+let\b/, 6], [/\bfunc\s+\w+\s*\([^)]*\)\s*->/, 3], [/\blet\s+\w+\s*:\s*\w+\s*=/, 2], [/\bvar\s+body\s*:\s*some\s+View\b/, 8]]],
+    ['scala', [[/\bobject\s+\w+(?:\s+extends\s+\w+)?\s*\{/, 5], [/\bcase\s+class\b/, 6], [/\bdef\s+\w+\s*\([^)]*\)\s*:\s*\w+\s*=/, 5], [/^\s*import\s+scala\./m, 8]]],
+    ['typescript', [[/:\s*(?:string|number|boolean|any|void|unknown)\b/, 4], [/\binterface\s+\w+\s*\{/, 4], [/\btype\s+\w+\s*=/, 3], [/\bas\s+const\b/, 4]]],
+    ['javascript', [[/\b(?:const|let|var)\s+\w+\s*=/, 2], [/\bfunction\s*\w*\s*\(/, 2], [/=>/, 2], [/\bconsole\.log\(/, 4], [/\bdocument\.|\bwindow\./, 4], [/\brequire\(|\bimport\s+.+\s+from\s+['"]|\bexport\s+(?:default|const|function)\b/, 3]]],
+    ['csv', c => { const ls = c.trim().split('\n'); if (ls.length < 2) return 0; for (const d of [',', ';', '\t']) { const n = ls[0].split(d).length; if (n >= 2 && ls.slice(0, 6).every(l => l.split(d).length === n) && !/[{}()=<>]/.test(c)) return 5; } return 0; }],
+  ];
+  function detect(code) {
+    if (!code || !code.trim()) return null;
+    let best = null, bestScore = 0;
+    for (const [id, sign] of SIGNS) {
+      const score = typeof sign === 'function' ? sign(code) : sign.reduce((s, [re, w]) => s + (re.test(code) ? w : 0), 0);
+      if (score > bestScore) { best = id; bestScore = score; }
+    }
+    if (best === 'javascript' && SIGNS.find(s => s[0] === 'typescript')[1].some(([re]) => re.test(code))) best = 'typescript';
+    return bestScore >= 3 ? best : null;
+  }
+
+  const resolve = name => name ? ALIAS[String(name).toLowerCase()] || null : null;
+  const tokens = (code, id) => L[id] ? run(code, L[id].rules) : [[code, null]];
+  const span = (t, ty) => ty ? `<span class="tk-${ty}">${escH(t)}</span>` : escH(t);
+  const html = (code, id) => tokens(code, id).map(([t, ty]) => span(t, ty)).join('');
+  // One HTML string per source line; a token that spans lines is closed and reopened at each line end.
+  function lines(code, id) {
+    const out = [''];
+    for (const [t, ty] of tokens(code, id)) {
+      t.split('\n').forEach((part, k) => { if (k) out.push(''); if (part) out[out.length - 1] += span(part, ty); });
+    }
+    return out;
+  }
+  const list = () => Object.values(L).map(l => ({ id: l.id, name: l.name })).sort((a, b) => a.name.localeCompare(b.name));
+  return { resolve, detect, tokens, html, lines, list, name: id => L[id] ? L[id].name : id, comment: id => L[id] ? L[id].comment : null };
+})();
+/*HL-END*/
+
 // ---------------------------------------------------------------- state
 // Storage keys keep their original names so existing data carries over.
 const KEY = 'reminder-by-me.v1';
@@ -1069,6 +1494,8 @@ const T = {
     alAutoHide: 'The box disappears', alColor: 'Colour', alSticky: 'The Windows notification stays until I close it',
     alFlash: 'Flash the tab while a reminder is waiting and Ping is in the background', testAlertShow: 'Show a test reminder',
     listen: '▶ Listen', listenTitle: 'Listen',
+    codeDlgH: 'Insert code', codeLang: 'Language', codeText: 'Code', codePh: 'Paste or type your code here', codeInsertBtn: 'Insert', codeInsert: 'Insert code',
+    k13: 'Notes: comment or uncomment code lines', k14: 'Notes: indent (Tab) or unindent (Shift Tab) selected lines',
     alSecSound: 'Sound', alSoundHint: 'The sound also plays when Ping is in the background or minimised, as long as Ping is open.',
     alSecBox: 'The box in the Ping window', alSecBoxP: 'Shows when Ping is in front, or on top of every other window if you use “Keep Ping on top” below.',
     alSecWin: 'When Ping is behind other windows', alSecWinP: 'Then Windows shows a notification in the corner of the screen. Windows decides how it looks, but the icon gets the reminder’s colour.',
@@ -1149,6 +1576,9 @@ const T = {
     hideNever: 'Never, it stays until I respond', hideAfter: n => 'After ' + (n < 60 ? n + ' seconds' : (n / 60 === 1 ? '1 minute' : n / 60 + ' minutes')),
     color_red: 'Red', color_orange: 'Orange', color_yellow: 'Yellow', color_green: 'Green', color_blue: 'Blue', color_purple: 'Purple', color_pink: 'Pink',
     colorTheme: 'Theme colour', colorDefault: 'Default', mute: 'Silence',
+    autoDetect: 'Detect automatically', plainText: 'Plain text', guessed: 'guessed', changeLang: 'Change language',
+    wrapTitle: 'Wrap long lines', showAllLines: n => `Show all ${n} lines`, showLess: 'Show less',
+    looksLike: n => `Looks like ${n}.`, cantTell: 'Couldn’t tell the language. Choose it above to get colours.', codeEmpty: 'Paste or type some code first',
     pipOpen: 'Keep Ping on top', pipClose: 'Close the small window', pipOpenMain: 'Open Ping', pipNext: 'Coming up', pipNothing: 'No upcoming reminders',
     pipUnsupported: b => `${b} can’t keep Ping on top of other windows. It works in Chrome and Edge.`, pipFailed: e => 'Couldn’t open the small window: ' + e,
     noteDeleted: 'Note deleted', testTitle: 'This is a test reminder', testNotes: 'If you can see this, reminders work.',
@@ -1229,6 +1659,9 @@ const T = {
     hideNever: 'Aldrig, den ligger kvar tills jag svarar', hideAfter: n => 'Efter ' + (n < 60 ? n + ' sekunder' : (n / 60 === 1 ? '1 minut' : n / 60 + ' minuter')),
     color_red: 'Röd', color_orange: 'Orange', color_yellow: 'Gul', color_green: 'Grön', color_blue: 'Blå', color_purple: 'Lila', color_pink: 'Rosa',
     colorTheme: 'Temafärg', colorDefault: 'Standard', mute: 'Tysta',
+    autoDetect: 'Upptäck automatiskt', plainText: 'Vanlig text', guessed: 'gissat', changeLang: 'Byt språk',
+    wrapTitle: 'Radbrytning', showAllLines: n => `Visa alla ${n} rader`, showLess: 'Visa mindre',
+    looksLike: n => `Ser ut som ${n}.`, cantTell: 'Kunde inte avgöra språket. Välj det ovan om du vill ha färger.', codeEmpty: 'Klistra in eller skriv kod först',
     pipOpen: 'Håll Ping ovanpå', pipClose: 'Stäng det lilla fönstret', pipOpenMain: 'Öppna Ping', pipNext: 'Härnäst', pipNothing: 'Inga kommande påminnelser',
     pipUnsupported: b => `${b} kan inte hålla Ping ovanpå andra fönster. Det fungerar i Chrome och Edge.`, pipFailed: e => 'Kunde inte öppna det lilla fönstret: ' + e,
     noteDeleted: 'Anteckningen togs bort',testTitle: 'Det här är en testpåminnelse', testNotes: 'Ser du det här fungerar påminnelserna.',
@@ -1648,6 +2081,20 @@ function inlineMd(text) {
   s = s.replace(/\u0001(\d+)\u0001/g, (_, i) => `<a href="${esc(links[i][1])}" target="_blank" rel="noopener">${esc(links[i][0])}</a>`);
   return s.replace(/\u0000(\d+)\u0000/g, (_, i) => `<code>${esc(codes[i])}</code>`);
 }
+// A code block in Förhandsvisa: language label (click to change), wrap toggle, Copy, line numbers, folding.
+function codeBlockHtml(raw, given, fenceLine) {
+  const id = Hl.resolve(given), guessed = !given ? Hl.detect(raw) : null, use = id || guessed;
+  const rows = use ? Hl.lines(raw, use) : raw.split('\n').map(esc);
+  const label = use ? Hl.name(use) + (guessed ? ' · ' + t('guessed') : '') : (given || t('plainText'));
+  const long = rows.length > 20;
+  return `<div class="code${long ? ' collapsed' : ''}" data-fence="${fenceLine}">`
+    + `<div class="code-bar"><button class="code-lang" type="button" data-lang-pick title="${esc(t('changeLang'))}">${esc(label)} ▾</button><span class="spacer"></span>`
+    + `<button class="btn ghost" type="button" data-wrap aria-pressed="false" title="${esc(t('wrapTitle'))}" aria-label="${esc(t('wrapTitle'))}">↵</button>`
+    + `<button class="btn ghost" type="button" data-copy>${esc(t('copy'))}</button></div>`
+    + `<pre><code>${rows.map(r => `<span class="ln">${r}</span>`).join('')}</code></pre>`
+    + (long ? `<button class="code-more" type="button" data-more data-n="${rows.length}">${esc(t('showAllLines', rows.length))}</button>` : '')
+    + '</div>';
+}
 function renderMarkdown(src) {
   const lines = String(src).replace(/\r\n/g, '\n').split('\n');
   const out = []; let i = 0, list = null, para = [];
@@ -1658,10 +2105,10 @@ function renderMarkdown(src) {
     let m;
     if ((m = line.match(/^\s*```\s*([\w+#.-]*)\s*$/))) {
       flushPara(); closeList();
-      const lang = m[1], code = []; i++;
+      const fenceLine = i, code = []; i++;
       while (i < lines.length && !/^\s*```\s*$/.test(lines[i])) code.push(lines[i++]);
       i++;
-      out.push(`<div class="code">${lang ? `<span class="lang">${esc(lang)}</span>` : ''}<button class="btn sm copy" type="button" data-copy>${esc(t('copy'))}</button><pre><code>${esc(code.join('\n'))}</code></pre></div>`);
+      out.push(codeBlockHtml(code.join('\n'), m[1], fenceLine));
       continue;
     }
     if (/^\s*\|.*\|\s*$/.test(line) && i + 1 < lines.length && /^\s*\|?\s*:?-{2,}/.test(lines[i + 1])) {
@@ -2323,10 +2770,10 @@ function renderNotes() {
 function setNoteView(v) {
   noteView = v;
   document.querySelectorAll('.seg [data-view]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.view === v)));
-  noteText.hidden = v !== 'edit';
+  $('noteWrap').hidden = v !== 'edit';
   $('notePreview').hidden = v !== 'preview';
   if (v === 'preview') $('notePreview').innerHTML = renderMarkdown(noteText.value);
-  else noteText.focus();
+  else { noteOverlay.paint(); noteText.focus(); }
 }
 document.querySelector('.seg [data-view]').parentElement.addEventListener('click', e => { const b = e.target.closest('[data-view]'); if (b) setNoteView(b.dataset.view); });
 $('notePreview').addEventListener('click', e => {
@@ -2339,8 +2786,25 @@ $('notePreview').addEventListener('click', e => {
     return;
   }
   const cp = e.target.closest('[data-copy]');
-  if (cp) copyText(cp.parentElement.querySelector('code').textContent);
+  if (cp) { copyText([...cp.closest('.code').querySelectorAll('.ln')].map(l => l.textContent).join('\n')); return; }
+  const wr = e.target.closest('[data-wrap]');
+  if (wr) { wr.setAttribute('aria-pressed', String(wr.closest('.code').classList.toggle('wrap'))); return; }
+  const more = e.target.closest('[data-more]');
+  if (more) { const c = more.closest('.code').classList.toggle('collapsed'); more.textContent = c ? t('showAllLines', +more.dataset.n) : t('showLess'); return; }
+  const lp = e.target.closest('[data-lang-pick]');
+  if (lp && curNote) {
+    const fl = +lp.closest('.code').dataset.fence;
+    openPop(lp, [['', t('autoDetect')], ...Hl.list().map(l => [l.id, l.name])].map(([id, name]) => [name, () => setFenceLang(fl, id)]));
+  }
 });
+// Change the language written on a code block's opening ``` line.
+function setFenceLang(line, id) {
+  const lines = curNote.text.replace(/\r\n/g, '\n').split('\n');
+  if (!/^\s*```/.test(lines[line] || '')) return;
+  lines[line] = lines[line].replace(/```\s*[\w+#.-]*/, '```' + id);
+  curNote.text = noteText.value = lines.join('\n'); curNote.modified = Date.now(); save();
+  $('notePreview').innerHTML = renderMarkdown(curNote.text); renderNotes();
+}
 function loadNote(n) {
   flushNote();
   curNote = n || null;
@@ -2363,12 +2827,172 @@ noteText.addEventListener('input', () => {
   clearTimeout(noteTimer);
   noteTimer = setTimeout(() => { noteTimer = null; save(); $('noteStatus').textContent = t('savedAt', fmtTime(new Date())); renderNotes(); }, 250);
 });
-noteText.addEventListener('keydown', e => {
-  if (e.key === 'Tab' && !e.ctrlKey && !e.altKey) {
-    e.preventDefault();
-    const s = noteText.selectionStart, en = noteText.selectionEnd;
-    noteText.setRangeText('    ', s, en, 'end'); noteText.dispatchEvent(new Event('input'));
+// ---------------------------------------------------------------- code in notes: colours while typing
+const FENCE_OPEN = /^\s*```\s*([\w+#.-]*)\s*$/, FENCE_CLOSE = /^\s*```\s*$/;
+// The note's text as coloured HTML: code blocks coloured by language, ``` lines and headings tinted, the rest plain.
+function noteHlHtml(text) {
+  const lines = text.split('\n'), out = [];
+  let k = 0;
+  while (k < lines.length) {
+    const m = lines[k].match(FENCE_OPEN);
+    if (!m) { out.push(/^#{1,6}\s/.test(lines[k]) ? `<span class="md-h">${esc(lines[k])}</span>` : esc(lines[k])); k++; continue; }
+    let html = `<span class="tk-meta">${esc(lines[k])}</span>`;
+    const body = []; k++;
+    while (k < lines.length && !FENCE_CLOSE.test(lines[k])) body.push(lines[k++]);
+    if (body.length) {
+      const code = body.join('\n'), id = Hl.resolve(m[1]) || (m[1] ? null : Hl.detect(code));
+      html += '\n' + (id ? Hl.html(code, id) : esc(code));
+    }
+    if (k < lines.length) { html += '\n' + `<span class="tk-meta">${esc(lines[k])}</span>`; k++; }
+    out.push(html);
   }
+  return out.join('\n');
+}
+// Keeps a coloured <pre> under a transparent textarea in step: repaints whenever the text changes, however it changes,
+// and grows the textarea with its content so the two never scroll apart.
+function overlay(ta, pre, render) {
+  let queued = false;
+  const fit = () => { const y = scrollY; ta.style.height = 'auto'; ta.style.height = (ta.scrollHeight + 2) + 'px'; if (scrollY !== y) scrollTo(scrollX, y); };
+  const paint = () => { queued = false; pre.innerHTML = render(ta.value); fit(); };
+  const schedule = () => { if (!queued) { queued = true; requestAnimationFrame(paint); } };
+  const proto = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value');
+  Object.defineProperty(ta, 'value', { configurable: true, get() { return proto.get.call(this); }, set(v) { proto.set.call(this, v); schedule(); } });
+  ta.addEventListener('input', schedule);
+  addEventListener('resize', schedule);
+  return { paint, schedule };
+}
+const noteOverlay = overlay(noteText, $('noteHl'), noteHlHtml);
+
+// ---------------------------------------------------------------- code in notes: typing helpers
+// Is the cursor inside a ``` block? Then which language (written on the fence, or guessed from the block).
+function fenceAt(text, pos) {
+  const lines = text.split('\n'), cur = text.slice(0, pos).split('\n').length - 1;
+  let open = null, start = -1;
+  for (let k = 0; k < cur; k++) {
+    if (open === null) { const m = lines[k].match(FENCE_OPEN); if (m) { open = m[1]; start = k; } }
+    else if (FENCE_CLOSE.test(lines[k])) open = null;
+  }
+  if (open === null || FENCE_CLOSE.test(lines[cur])) return null;
+  let end = lines.length;
+  for (let k = start + 1; k < lines.length; k++) if (FENCE_CLOSE.test(lines[k])) { end = k; break; }
+  return { lang: Hl.resolve(open) || (open ? null : Hl.detect(lines.slice(start + 1, end).join('\n'))) };
+}
+// Insert text the way typing does, so Ctrl+Z still undoes it (falls back to setRangeText where that isn't supported).
+function edInsert(ta, str, from = ta.selectionStart, to = ta.selectionEnd) {
+  ta.focus(); ta.setSelectionRange(from, to);
+  let done = false;
+  try { done = !!document.execCommand && document.execCommand(str ? 'insertText' : 'delete', false, str); } catch (e) { done = false; }
+  if (!done) { ta.setRangeText(str, from, to, 'end'); ta.dispatchEvent(new Event('input', { bubbles: true })); }
+}
+// The selected lines (whole lines) as [start, end] offsets.
+function lineRange(v, s, en) {
+  const ls = v.lastIndexOf('\n', s - 1) + 1;
+  if (en > s && v[en - 1] === '\n') en--;
+  let le = v.indexOf('\n', en); if (le < 0) le = v.length;
+  return [ls, le];
+}
+function shiftLines(ta, dir) {
+  const v = ta.value, s = ta.selectionStart, en = ta.selectionEnd, [ls, le] = lineRange(v, s, en);
+  const block = v.slice(ls, le).split('\n').map(l => dir > 0 ? '    ' + l : l.replace(/^(?: {1,4}|\t)/, '')).join('\n');
+  edInsert(ta, block, ls, le);
+  if (s === en) { const p = Math.max(ls, s + block.length - (le - ls)); ta.setSelectionRange(p, p); }
+  else ta.setSelectionRange(ls, ls + block.length);
+}
+function toggleComment(ta, lang) {
+  const c = Hl.comment(lang); if (!c) return;
+  const [open, close] = c, rx = x => x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const v = ta.value, [ls, le] = lineRange(v, ta.selectionStart, ta.selectionEnd), lines = v.slice(ls, le).split('\n');
+  const re = close ? new RegExp('^(\\s*)' + rx(open) + ' ?(.*?) ?' + rx(close) + '\\s*$') : new RegExp('^(\\s*)' + rx(open) + ' ?');
+  const filled = lines.filter(l => l.trim());
+  const commented = filled.length > 0 && filled.every(l => re.test(l));
+  const ind = filled.length ? Math.min(...filled.map(l => l.match(/^\s*/)[0].length)) : 0;
+  const out = lines.map(l => !l.trim() ? l : commented ? l.replace(re, close ? '$1$2' : '$1')
+    : l.slice(0, ind) + open + ' ' + l.slice(ind) + (close ? ' ' + close : '')).join('\n');
+  edInsert(ta, out, ls, le);
+  ta.setSelectionRange(ls, ls + out.length);
+}
+const PAIRS = { '(': ')', '[': ']', '{': '}', '"': '"', "'": "'", '`': '`' };
+// Indentation, Tab/Shift+Tab and Ctrl+/ work everywhere in the editor; brackets and quotes only pair up inside code.
+function attachCodeKeys(ta, ctxAt) {
+  ta.addEventListener('keydown', e => {
+    if (e.isComposing || e.defaultPrevented) return;
+    const v = ta.value, s = ta.selectionStart, en = ta.selectionEnd;
+    if (e.key === 'Tab' && !e.ctrlKey && !e.altKey && !e.metaKey) {
+      e.preventDefault();
+      if (s === en && !e.shiftKey) edInsert(ta, '    '); else shiftLines(ta, e.shiftKey ? -1 : 1);
+      return;
+    }
+    const ctx = ctxAt(v, s);
+    if ((e.ctrlKey || e.metaKey) && (e.key === '/' || e.code === 'Slash')) { if (ctx) { e.preventDefault(); toggleComment(ta, ctx.lang); } return; }
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    if (e.key === 'Enter' && !e.shiftKey) {
+      const ls = v.lastIndexOf('\n', s - 1) + 1, ind = v.slice(ls, s).match(/^[ \t]*/)[0], prev = v[s - 1], next = v[en];
+      const opens = !!ctx && !!prev && ('{[('.includes(prev) || (prev === ':' && ctx.lang === 'python'));
+      if (opens && s === en && PAIRS[prev] === next) {
+        e.preventDefault(); edInsert(ta, '\n' + ind + '    \n' + ind);
+        const p = s + 1 + ind.length + 4; ta.setSelectionRange(p, p); return;
+      }
+      if (ind || opens) { e.preventDefault(); edInsert(ta, '\n' + ind + (opens ? '    ' : '')); }
+      return;
+    }
+    if (!ctx) return;
+    if (e.key in PAIRS) {
+      const close = PAIRS[e.key], quote = '"\'`'.includes(e.key);
+      if (s !== en) { e.preventDefault(); const sel = v.slice(s, en); edInsert(ta, e.key + sel + close); ta.setSelectionRange(s + 1, s + 1 + sel.length); return; }
+      if (quote && v[s] === e.key) { e.preventDefault(); ta.setSelectionRange(s + 1, s + 1); return; }
+      if (quote && /[\w\\]/.test(v[s - 1] || '')) return;     // apostrophe in a word, or an escaped quote
+      if (/\w/.test(v[s] || '')) return;                      // typing just before a word: don't pair
+      e.preventDefault(); edInsert(ta, e.key + close); ta.setSelectionRange(s + 1, s + 1); return;
+    }
+    if (')]}'.includes(e.key) && s === en && v[s] === e.key) { e.preventDefault(); ta.setSelectionRange(s + 1, s + 1); return; }
+    if (e.key === 'Backspace' && s === en && s > 0 && PAIRS[v[s - 1]] && PAIRS[v[s - 1]] === v[s]) { e.preventDefault(); edInsert(ta, '', s - 1, s + 1); }
+  });
+}
+attachCodeKeys(noteText, fenceAt);
+
+// ---------------------------------------------------------------- code in notes: the "Infoga kod" dialog
+const codeLangOf = v => { const c = $('codeLang').value; return c === 'text' ? null : (c || Hl.detect(v)); };
+const codeOverlay = overlay($('codeText'), $('codeHl'), v => { const id = codeLangOf(v); return id ? Hl.html(v, id) : esc(v); });
+attachCodeKeys($('codeText'), v => ({ lang: codeLangOf(v) }));
+let codeSel = null;
+function fillCodeLangs() {
+  const sel = $('codeLang'), cur = sel.value;
+  sel.innerHTML = `<option value="">${esc(t('autoDetect'))}</option>` + Hl.list().map(l => `<option value="${l.id}">${esc(l.name)}</option>`).join('') + `<option value="text">${esc(t('plainText'))}</option>`;
+  sel.value = cur;
+}
+function updateCodeGuess() {
+  const v = $('codeText').value, g = $('codeGuess');
+  if ($('codeLang').value || !v.trim()) { g.textContent = ''; return; }
+  const id = Hl.detect(v);
+  g.textContent = id ? t('looksLike', Hl.name(id)) : t('cantTell');
+}
+function openCodeDlg() {
+  if (currentTab() !== 'notes') showTab('notes');
+  if (noteView !== 'edit') setNoteView('edit');
+  codeSel = [noteText.selectionStart, noteText.selectionEnd];
+  fillCodeLangs();
+  $('codeLang').value = S.settings.lastCodeLang || '';
+  $('codeText').value = noteText.value.slice(codeSel[0], codeSel[1]);   // selected text becomes the code
+  $('codeDlg').hidden = false;
+  codeOverlay.paint(); updateCodeGuess();
+  setTimeout(() => $('codeText').focus(), 0);
+}
+function closeCodeDlg() { $('codeDlg').hidden = true; noteText.focus(); }
+$('codeLang').addEventListener('change', () => { S.settings.lastCodeLang = $('codeLang').value; codeOverlay.schedule(); updateCodeGuess(); });
+$('codeText').addEventListener('input', updateCodeGuess);
+$('codeText').addEventListener('keydown', e => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); $('codeForm').requestSubmit(); } });
+$('codeDlg').addEventListener('mousedown', e => { if (e.target === $('codeDlg')) closeCodeDlg(); });
+$('codeForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const code = $('codeText').value.replace(/\s+$/, '');
+  if (!code.trim()) { $('codeText').focus(); toast(t('codeEmpty')); return; }
+  const lang = codeLangOf(code) || '';
+  closeCodeDlg();
+  const v = noteText.value, [a, b] = codeSel || [v.length, v.length];
+  const before = a > 0 && v[a - 1] !== '\n' ? '\n' : '', after = b < v.length && v[b] !== '\n' ? '\n' : '';
+  const block = before + '```' + lang + '\n' + code + '\n```' + after;
+  edInsert(noteText, block, a, b);
+  noteText.setSelectionRange(a + block.length, a + block.length);
 });
 $('noteList').addEventListener('click', e => {
   const li = e.target.closest('li[data-id]'); if (!li) return;
@@ -2503,6 +3127,8 @@ document.addEventListener('click', e => {
     case 'ask-notif': askNotif(); break;
     case 'hide-banner': S.settings.bannerHidden = true; save(); updateNotifUi(); break;
     case 'al-preview': previewSound(b.dataset.for); break;
+    case 'code-insert': openCodeDlg(); break;
+    case 'close-code': closeCodeDlg(); break;
     case 'pip-toggle': togglePip(); break;
     case 'test-alert': fire(newReminder({ id: 'test-' + uid(), title: t('testTitle'), notes: t('testNotes'), tags: ['test'] }), Date.now()); break;
     case 'close-editor': closeEditor(); break;
@@ -2694,7 +3320,7 @@ $('importFile').addEventListener('change', async e => {
 });
 $('setSound').addEventListener('change', e => { S.settings.sound = e.target.checked; save(); if (e.target.checked) { const a = alertCfg(); playSound(a.sound, a.volume); } });
 $('setIcs').addEventListener('change', e => { S.settings.icsOnSave = e.target.checked; save(); });
-$('setMono').addEventListener('change', e => { S.settings.mono = e.target.checked; save(); noteText.classList.toggle('mono', S.settings.mono); });
+$('setMono').addEventListener('change', e => { S.settings.mono = e.target.checked; save(); noteText.classList.toggle('mono', S.settings.mono); $('noteHl').classList.toggle('mono', S.settings.mono); noteOverlay.paint(); });
 $('setUtc').addEventListener('change', e => { S.settings.utcClock = e.target.checked; save(); });
 
 // ---------------------------------------------------------------- keyboard
@@ -2702,6 +3328,7 @@ const typing = el => el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' 
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
     if (!popEl.hidden) closePop();
+    else if (!$('codeDlg').hidden) closeCodeDlg();
     else if (!$('keysDlg').hidden) $('keysDlg').hidden = true;
     else if (!$('editor').hidden) closeEditor();
     return;
@@ -2709,7 +3336,7 @@ document.addEventListener('keydown', e => {
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); closeEditor(); showTab('reminders'); quickInput.focus(); quickInput.select(); return; }
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'e' && currentTab() === 'notes') { e.preventDefault(); setNoteView(noteView === 'edit' ? 'preview' : 'edit'); return; }
   if (e.ctrlKey || e.metaKey || e.altKey || typing(document.activeElement) || !$('editor').hidden || !$('keysDlg').hidden
-      || !$('setupDlg').hidden || !$('lockDlg').hidden || !$('startupDlg').hidden || !isActiveWindow) return;
+      || !$('setupDlg').hidden || !$('lockDlg').hidden || !$('startupDlg').hidden || !$('codeDlg').hidden || !isActiveWindow) return;
   if (e.key === '?') { $('keysDlg').hidden = false; return; }
   if (e.key === '1') return showTab('reminders');
   if (e.key === '2') return showTab('notes');
@@ -2761,6 +3388,7 @@ function renderAll() {
   $('setMono').checked = S.settings.mono;
   $('setUtc').checked = S.settings.utcClock;
   noteText.classList.toggle('mono', S.settings.mono);
+  $('noteHl').classList.toggle('mono', S.settings.mono);
   applyLang();
   applyTheme();
   renderAlertSettings();
