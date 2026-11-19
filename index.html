@@ -213,7 +213,11 @@ kbd { font-size: 11.5px; line-height: 1; padding: 2px 5px; border: 1px solid var
 
 /* notes */
 .notes { display: grid; grid-template-columns: 290px minmax(0, 1fr); gap: 14px; min-height: 540px; }
-.app:has(.note-body.split:not([hidden])) { max-width: 1500px; }
+.app:has(#view-notes:not([hidden]) .notes.side-hidden) { max-width: 1400px; }
+.app:has(#view-notes:not([hidden]) .note-body.split) { max-width: 1500px; }
+.notes.side-hidden { grid-template-columns: minmax(0, 1fr); }
+.notes.side-hidden .note-side { display: none; }
+#sideBtn { font-size: 15px; min-width: 34px; }
 .note-side { display: flex; flex-direction: column; gap: 8px; min-height: 0; }
 .note-side .note-list { flex: 1 1 auto; }
 .note-side .search { width: 100%; margin: 0; }
@@ -504,6 +508,8 @@ details.adv[open] { display: grid; gap: 8px; }
         <div class="note-head-sentinel" id="noteHeadSentinel" aria-hidden="true"></div>
         <div class="note-head" id="noteHead">
         <div class="note-bar">
+          <button class="btn sm ghost" type="button" data-act="toggle-side" id="sideBtn" aria-pressed="true">⟨</button>
+          <button class="btn sm ghost" type="button" data-act="new-note" id="sideNewBtn" hidden>＋</button>
           <span class="status" id="noteStatus"></span>
           <div class="seg" role="group" aria-label="Anteckningsvy" data-i18n-aria="noteViewAria">
             <button type="button" data-view="edit" aria-pressed="true" data-i18n="edit">Redigera</button>
@@ -755,6 +761,7 @@ details.adv[open] { display: grid; gap: 8px; }
       <kbd>Ctrl E</kbd><span data-i18n="k11">Anteckningar: växla mellan redigering och förhandsvisning</span>
       <kbd>Ctrl B / I</kbd><span data-i18n="k15">Anteckningar: fetstil / kursiv</span>
       <kbd>Ctrl F</kbd><span data-i18n="k16">Anteckningar: sök i anteckningen</span>
+      <kbd>Ctrl Shift L</kbd><span data-i18n="k18">Anteckningar: visa eller dölj listan med anteckningar</span>
       <kbd>Ctrl Shift M</kbd><span data-i18n="k17">Anteckningar: gör alla kodförslag till kod</span>
       <kbd>Ctrl /</kbd><span data-i18n="k13">Anteckningar: kommentera eller avkommentera kodrader</span>
       <kbd>Shift Tab</kbd><span data-i18n="k14">Anteckningar: dra in (Tab) eller ut (Shift Tab) markerade rader</span>
@@ -1713,7 +1720,8 @@ const T = {
     trashH: 'Trash', trashP: 'Deleted notes stay here for 30 days, then they’re removed for good.', trashEmptyAll: 'Empty the trash',
     histH: 'Earlier versions', histP: 'Ping saves a version when you start changing a note, at most every five minutes. The latest 30 are kept.', histRestore: 'Restore this version',
     linkH: 'Insert link', linkText: 'Text to show', linkUrl: 'Web address',
-    k15: 'Notes: bold / italic', k16: 'Notes: find in the note', k17: 'Notes: turn all code suggestions into code',
+    k15: 'Notes: bold / italic', k16: 'Notes: find in the note', k17: 'Notes: turn all code suggestions into code', k18: 'Notes: show or hide the list of notes',
+    sideHide: 'Hide the list of notes (Ctrl+Shift+L)', sideShow: 'Show the list of notes (Ctrl+Shift+L)',
     sugMarkAll: 'Mark all', sugShow: 'Show which', sugBarTitle: 'Words you have marked as code before, or that look like code. Click an underlined word to choose.',
     codeDlgH: 'Insert code', codeLang: 'Language', codeText: 'Code', codePh: 'Paste or type your code here', codeInsertBtn: 'Insert', codeInsert: 'Insert code',
     k13: 'Notes: comment or uncomment code lines', k14: 'Notes: indent (Tab) or unindent (Shift Tab) selected lines',
@@ -1922,7 +1930,8 @@ const T = {
     sugKnown: 'markerat förut', sugGuess: 'ser ut som kod', sugDone: n => n === 1 ? 'Gjorde 1 ord till kod' : `Gjorde ${n} ord till kod`,
     sugKnownTitle: 'Du har markerat det här som kod förut. Klicka för att välja.', sugGuessTitle: 'Det här ser ut som kod. Klicka för att välja.',
     imgAlt: 'Skärmbild', imgTooBig: 'Bilden är för stor, även efter förminskning (högst 1,5 MB)', imgFailed: 'Kunde inte läsa bilden', imgUnavailable: 'Bilder kan inte sparas i den här webbläsaren',
-    dailyLog: 'Dagslogg',
+    dailyLog: 'Dagslogg', newNote: 'Ny anteckning',
+    sideHide: 'Dölj listan med anteckningar (Ctrl+Shift+L)', sideShow: 'Visa listan med anteckningar (Ctrl+Shift+L)',
     autoDetect: 'Upptäck automatiskt', plainText: 'Vanlig text', guessed: 'gissat', changeLang: 'Byt språk',
     wrapTitle: 'Radbrytning', showAllLines: n => `Visa alla ${n} rader`, showLess: 'Visa mindre',
     looksLike: n => `Ser ut som ${n}.`, cantTell: 'Kunde inte avgöra språket. Välj det ovan om du vill ha färger.', codeEmpty: 'Klistra in eller skriv kod först',
@@ -3794,6 +3803,20 @@ const queueCaretCheck = () => { if (!caretQueued) { caretQueued = true; requestA
 noteText.addEventListener('input', queueCaretCheck);
 noteText.addEventListener('keyup', e => { if (/^(Arrow|Page|Home|End|Enter|Backspace|Delete)/.test(e.key)) queueCaretCheck(); });
 
+
+// ---------------------------------------------------------------- notes: hide the list of notes for more room
+const sideOpen = () => { try { return localStorage.getItem('ping.notesSide') !== '0'; } catch (e) { return true; } };
+function setSide(open) {
+  $('view-notes').querySelector('.notes').classList.toggle('side-hidden', !open);
+  try { localStorage.setItem('ping.notesSide', open ? '1' : '0'); } catch (e) { }
+  const b = $('sideBtn');
+  b.textContent = open ? '⟨' : '☰';
+  b.title = t(open ? 'sideHide' : 'sideShow'); b.setAttribute('aria-label', b.title); b.setAttribute('aria-pressed', String(open));
+  $('sideNewBtn').hidden = open;
+  $('sideNewBtn').title = t('newNote'); $('sideNewBtn').setAttribute('aria-label', t('newNote'));
+  if (typeof syncHeadHeight === 'function') syncHeadHeight();
+}
+
 // ---------------------------------------------------------------- notes: pictures
 // Pictures are shrunk, stored in the browser's database (the main data in localStorage has a ~5 MB limit)
 // and referenced from the note as ![Skärmbild](ping-img:ID). They travel in the save file and in backups.
@@ -4000,6 +4023,7 @@ document.addEventListener('click', e => {
     case 'new-note-menu': newNoteMenu(b); break;
     case 'close-link': closeLinkDlg(); break;
     case 'find-open': openFind(); break;
+    case 'toggle-side': setSide(!sideOpen()); break;
     case 'sug-all': markAllSugs(); break;
     case 'sug-show': sugShowMenu(b); break;
     case 'find-next': findStep(1); break;
@@ -4196,6 +4220,7 @@ document.addEventListener('keydown', e => {
     return;
   }
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); closeEditor(); showTab('reminders'); quickInput.focus(); quickInput.select(); return; }
+  if ((e.ctrlKey || e.metaKey) && e.shiftKey && !e.altKey && e.key.toLowerCase() === 'l' && currentTab() === 'notes' && $('editor').hidden) { e.preventDefault(); setSide(!sideOpen()); return; }
   if ((e.ctrlKey || e.metaKey) && e.shiftKey && !e.altKey && e.key.toLowerCase() === 'm' && currentTab() === 'notes' && $('editor').hidden) { e.preventDefault(); markAllSugs(); return; }
   if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key.toLowerCase() === 'f' && currentTab() === 'notes' && $('editor').hidden && $('codeDlg').hidden) { e.preventDefault(); openFind(); return; }
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'e' && currentTab() === 'notes') { e.preventDefault(); setNoteView(noteView === 'edit' ? 'preview' : 'edit'); return; }
@@ -4256,6 +4281,7 @@ function renderAll() {
   $('noteFind').classList.toggle('mono', S.settings.mono);
   applyLang();
   applyTheme();
+  setSide(sideOpen());
   renderAlertSettings();
   updatePipUi();
   renderReminders(); renderNotes(); updateTitle(); updateNotifUi(); updateBackupBanner();
