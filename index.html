@@ -276,6 +276,12 @@ kbd { font-size: 11.5px; line-height: 1; padding: 2px 5px; border: 1px solid var
 .ed-wrap > .ed-in:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
 .ed-hl .md-h, .ed-hl .md-tag { color: var(--accent); }
 .ed-hl .md-img { color: var(--muted); }
+.sug-known { text-decoration: underline dotted var(--accent); text-decoration-thickness: 2px; text-underline-offset: 3px; }
+.sug-guess { text-decoration: underline dotted color-mix(in srgb, var(--muted) 75%, transparent); text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+.md .sug { cursor: pointer; border-radius: 3px; }
+.md .sug:hover { background: var(--accent-soft); }
+.sug-bar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; font-size: 13px; padding: 4px 6px 4px 12px; background: var(--accent-soft); color: var(--ink); border-radius: 8px; }
+.sug-bar .lbl { margin-right: auto; }
 .ed-wrap.code-ed > .ed-in { min-height: 240px; }
 .md { min-height: 500px; padding: 6px 22px 18px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); overflow-wrap: anywhere; min-width: 0; }
 .md h1, .md h2, .md h3, .md h4 { font-family: var(--font-display); line-height: 1.25; margin: 1.1em 0 .4em; text-wrap: balance; }
@@ -529,6 +535,11 @@ details.adv[open] { display: grid; gap: 8px; }
           <button class="btn sm ghost" type="button" data-act="find-next" title="Nästa (Enter)" aria-label="Nästa (Enter)" data-i18n-title="findNext" data-i18n-aria="findNext">↓</button>
           <button class="btn sm ghost" type="button" data-act="find-close" title="Stäng (Esc)" aria-label="Stäng (Esc)" data-i18n-title="findClose" data-i18n-aria="findClose">✕</button>
         </div>
+        <div class="sug-bar" id="sugBar" hidden title="Ord som du har markerat som kod förut, eller som ser ut som kod. Klicka på ett understruket ord för att välja." data-i18n-title="sugBarTitle">
+          <span class="lbl" id="sugText"></span>
+          <button class="btn sm" type="button" data-act="sug-all" title="Ctrl+Shift+M" data-i18n="sugMarkAll">Markera alla</button>
+          <button class="btn sm ghost" type="button" data-act="sug-show" data-i18n="sugShow">Visa vilka</button>
+        </div>
         <div class="note-body" id="noteBody">
           <div class="ed-wrap" id="noteWrap"><pre class="ed-find" id="noteFind" aria-hidden="true"></pre><pre class="ed-hl" id="noteHl" aria-hidden="true"></pre><textarea id="noteText" class="ed-in" spellcheck="false" placeholder="# Rubrik&#10;&#10;Skriv vad som helst. Markdown fungerar: **fetstil**, `kod`, ```sql-block```, - [ ] uppgifter, | tabeller |" aria-label="Anteckningstext" data-i18n-ph="notePh" data-i18n-aria="noteAria"></textarea></div>
           <div class="md" id="notePreview" hidden></div>
@@ -736,6 +747,7 @@ details.adv[open] { display: grid; gap: 8px; }
       <kbd>Ctrl E</kbd><span data-i18n="k11">Anteckningar: växla mellan redigering och förhandsvisning</span>
       <kbd>Ctrl B / I</kbd><span data-i18n="k15">Anteckningar: fetstil / kursiv</span>
       <kbd>Ctrl F</kbd><span data-i18n="k16">Anteckningar: sök i anteckningen</span>
+      <kbd>Ctrl Shift M</kbd><span data-i18n="k17">Anteckningar: gör alla kodförslag till kod</span>
       <kbd>Ctrl /</kbd><span data-i18n="k13">Anteckningar: kommentera eller avkommentera kodrader</span>
       <kbd>Shift Tab</kbd><span data-i18n="k14">Anteckningar: dra in (Tab) eller ut (Shift Tab) markerade rader</span>
       <kbd>Esc</kbd><span data-i18n="k12">Stäng dialoger</span>
@@ -1528,6 +1540,83 @@ const Hl = (() => {
 })();
 /*HL-END*/
 
+/*SUG-START*/
+// ---------------------------------------------------------------- "looks like code" suggestions in notes
+// Finds words in ordinary note text that are probably code: words you have put in `backticks` somewhere in your
+// notes before ("known"), and words that look like code ("guess": calls, snake_case, camelCase, dotted names, paths).
+// Ping only suggests; nothing changes until you confirm. Plain words are matched carefully so prose doesn't light up:
+// marking `count(*)` only matches count(...) again, and marking `SELECT` only matches SELECT in the same case.
+const Sug = (() => {
+  const TOKEN = /(?<![\w`$.\/\\@#~:-])(?:[A-Za-z]:\\[^\s`'"()<>]*[^\s`'"()<>.,;:!?]|~?\/[\w.-]+(?:\/[\w.-]*)+|[A-Za-z_$][\w$]*(?:(?:\.|::)[A-Za-z_$][\w$]*)*(?:\([^()\n]{0,40}\))?)(?![\w`])/g;
+  const MASKS = [/`[^`\n]*`?/g, /!?\[[^\]\n]*\]\([^)\n]*\)/g, /\b(?:https?|ftp):\/\/\S+|\bwww\.\S+/gi, /[\w.+-]+@[\w-]+(?:\.[\w-]+)+/g,
+    /(^|\s)#[\p{L}_][\p{L}\p{N}_\-/]*/gu, /\*\*[^*\n]+\*\*|__[^_\n]+__/g, /(?<![*\w])\*[^*\s][^*\n]*\*/g, /(?<!\w)_[^_\s][^_\n]*_(?!\w)/g, /~~[^~\n]+~~/g];
+  const FENCE_OPEN_RE = /^\s*```\s*[\w+#.-]*\s*$/, FENCE_CLOSE_RE = /^\s*```\s*$/;
+  const DENY = new Set('iphone ipad ipod imac ios macos watchos tvos ipados icloud ebay itunes'.split(' '));
+  const TLD = /\.(?:com|se|org|net|io|nu|dk|no|fi|eu|gov|edu|info|biz|co|uk|de|app|dev)$/i;
+  const info = tok => { const base = tok.replace(/\([^()]*\)$/, ''); return { base, call: base !== tok, plain: /^[A-Za-z]+$/.test(base), lower: base.toLowerCase() }; };
+  const keyOf = b => b.plain ? b.base : b.lower;
+
+  function guess(tok, b) {
+    if (b.call) return b.base.length >= 2 && /^[A-Za-z_$][\w$.]*$/.test(b.base);
+    if (/^[A-Za-z]:\\/.test(tok) || /^~?\//.test(tok)) return true;                                     // paths
+    if (/^_*[A-Za-z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)+_*$/.test(tok)) return true;                            // snake_case
+    if (/^[a-z][a-z0-9]+[A-Z][A-Za-z0-9]*$/.test(tok) && !DENY.has(b.lower)) return true;                 // camelCase
+    if (/\.|::/.test(tok)) { const seg = tok.split(/\.|::/); return seg.some(s => s.length >= 3) && !TLD.test(tok); }   // df.groupBy, dbo.Orders
+    return false;
+  }
+  function known(b, v) {
+    if (!b.plain) return v.loose.has(b.lower);
+    return b.call ? v.calls.has(b.lower) : v.exact.has(b.base);
+  }
+  // Words between backticks in a note (not in ``` blocks), sorted into the three ways they can match later.
+  function learn(text) {
+    const out = { loose: [], calls: [], exact: [] };
+    let inFence = false;
+    for (const line of String(text || '').split('\n')) {
+      if (inFence) { if (FENCE_CLOSE_RE.test(line)) inFence = false; continue; }
+      if (FENCE_OPEN_RE.test(line)) { inFence = true; continue; }
+      for (const m of line.matchAll(/`([^`\n]+)`/g)) {
+        const c = m[1].trim();
+        if (c.length < 2 || c.length > 60 || !/[A-Za-z]/.test(c) || !/^[\w$.:\\\/~-]+(?:\([^()]*\))?$/.test(c)) continue;
+        const b = info(c);
+        if (!b.plain) out.loose.push(b.lower); else if (b.call) out.calls.push(b.lower); else out.exact.push(b.base);
+      }
+    }
+    return out;
+  }
+  // Suggestions in one piece of text; masks = skip Markdown formatting (code, links, tags, bold, italic…).
+  function scan(line, vocab, masks) {
+    const ranges = [];
+    if (masks) for (const re of MASKS) for (const m of line.matchAll(re)) ranges.push([m.index, m.index + m[0].length]);
+    const out = [];
+    for (const m of line.matchAll(TOKEN)) {
+      const tok = m[0].replace(/[.,;:!?]+$/, ''), s = m.index, e = s + tok.length;
+      if (!tok || ranges.some(([a, z]) => s < z && e > a)) continue;
+      const b = info(tok), kind = known(b, vocab) ? 'known' : guess(tok, b) ? 'guess' : null;
+      if (kind) out.push({ from: s, to: e, word: tok, key: keyOf(b), kind });
+    }
+    return out;
+  }
+  // All suggestions in a note, with positions in the whole text. Skips ``` blocks, headings and table rulers.
+  function suggest(text, vocab) {
+    const out = [];
+    if (!text || text.length > 120000) return out;     // very long notes: skip, so typing never lags
+    let pos = 0, inFence = false;
+    text.split('\n').forEach((line, li) => {
+      if (inFence) { if (FENCE_CLOSE_RE.test(line)) inFence = false; }
+      else if (FENCE_OPEN_RE.test(line)) inFence = true;
+      else if (!/^#{1,6}\s/.test(line) && !/^\s*\|?\s*:?-{2,}/.test(line)) {
+        for (const h of scan(line, vocab, true)) out.push(Object.assign(h, { line: li, start: pos + h.from, end: pos + h.to }));
+      }
+      pos += line.length + 1;
+    });
+    return out;
+  }
+  const emptyVocab = () => ({ loose: new Set(), calls: new Set(), exact: new Set() });
+  return { learn, suggest, scan, emptyVocab };
+})();
+/*SUG-END*/
+
 // ---------------------------------------------------------------- state
 // Storage keys keep their original names so existing data carries over.
 const KEY = 'reminder-by-me.v1';
@@ -1616,7 +1705,8 @@ const T = {
     trashH: 'Trash', trashP: 'Deleted notes stay here for 30 days, then they’re removed for good.', trashEmptyAll: 'Empty the trash',
     histH: 'Earlier versions', histP: 'Ping saves a version when you start changing a note, at most every five minutes. The latest 30 are kept.', histRestore: 'Restore this version',
     linkH: 'Insert link', linkText: 'Text to show', linkUrl: 'Web address',
-    k15: 'Notes: bold / italic', k16: 'Notes: find in the note',
+    k15: 'Notes: bold / italic', k16: 'Notes: find in the note', k17: 'Notes: turn all code suggestions into code',
+    sugMarkAll: 'Mark all', sugShow: 'Show which', sugBarTitle: 'Words you have marked as code before, or that look like code. Click an underlined word to choose.',
     codeDlgH: 'Insert code', codeLang: 'Language', codeText: 'Code', codePh: 'Paste or type your code here', codeInsertBtn: 'Insert', codeInsert: 'Insert code',
     k13: 'Notes: comment or uncomment code lines', k14: 'Notes: indent (Tab) or unindent (Shift Tab) selected lines',
     alSecSound: 'Sound', alSoundHint: 'The sound also plays when Ping is in the background or minimised, as long as Ping is open.',
@@ -1716,6 +1806,9 @@ const T = {
     shareRich: 'Copy as formatted text (Teams, Outlook)', shareMd: 'Copy as plain text (Markdown)', sharePrint: 'Print / save as PDF', shareDownload: 'Download as a file (.md)',
     copiedRich: 'Copied with formatting. Paste it into Teams or Outlook.', noteDownloaded: 'Note downloaded',
     findCount: (i, n) => `${i} of ${n}`, findNone: 'No matches',
+    sugCount: n => n === 1 ? '1 word looks like code' : `${n} words look like code`, sugThis: 'Make it code', sugAllWord: (w, n) => `All “${w}” in this note (${n})`,
+    sugKnown: 'marked before', sugGuess: 'looks like code', sugDone: n => n === 1 ? 'Made 1 word into code' : `Made ${n} words into code`,
+    sugKnownTitle: 'You have marked this as code before. Click to choose.', sugGuessTitle: 'This looks like code. Click to choose.',
     imgAlt: 'Screenshot', imgTooBig: 'The picture is too big, even after shrinking (max 1.5 MB)', imgFailed: 'Couldn’t read the picture', imgUnavailable: 'Pictures can’t be saved in this browser',
     autoDetect: 'Detect automatically', plainText: 'Plain text', guessed: 'guessed', changeLang: 'Change language',
     wrapTitle: 'Wrap long lines', showAllLines: n => `Show all ${n} lines`, showLess: 'Show less',
@@ -1817,6 +1910,9 @@ const T = {
     shareRich: 'Kopiera som formaterad text (Teams, Outlook)', shareMd: 'Kopiera som vanlig text (Markdown)', sharePrint: 'Skriv ut / spara som PDF', shareDownload: 'Ladda ner som fil (.md)',
     copiedRich: 'Kopierat med formatering. Klistra in i Teams eller Outlook.', noteDownloaded: 'Anteckningen har laddats ner',
     findCount: (i, n) => `${i} av ${n}`, findNone: 'Inga träffar',
+    sugCount: n => n === 1 ? '1 ord ser ut som kod' : `${n} ord ser ut som kod`, sugThis: 'Gör till kod', sugAllWord: (w, n) => `Alla ”${w}” i anteckningen (${n})`,
+    sugKnown: 'markerat förut', sugGuess: 'ser ut som kod', sugDone: n => n === 1 ? 'Gjorde 1 ord till kod' : `Gjorde ${n} ord till kod`,
+    sugKnownTitle: 'Du har markerat det här som kod förut. Klicka för att välja.', sugGuessTitle: 'Det här ser ut som kod. Klicka för att välja.',
     imgAlt: 'Skärmbild', imgTooBig: 'Bilden är för stor, även efter förminskning (högst 1,5 MB)', imgFailed: 'Kunde inte läsa bilden', imgUnavailable: 'Bilder kan inte sparas i den här webbläsaren',
     dailyLog: 'Dagslogg',
     autoDetect: 'Upptäck automatiskt', plainText: 'Vanlig text', guessed: 'gissat', changeLang: 'Byt språk',
@@ -2343,7 +2439,7 @@ function snoozeOptions() {
   o.push([t('snMonday'), at(toMon, 9)]);
   return o;
 }
-function openPop(anchor, items) {
+function openPop(anchor, items, opts = {}) {
   const pop = popEl;
   if (pop.ownerDocument !== anchor.ownerDocument) anchor.ownerDocument.body.appendChild(pop);   // open the menu in the window that was clicked
   const view = pop.ownerDocument.defaultView;
@@ -2353,7 +2449,8 @@ function openPop(anchor, items) {
   const r = anchor.getBoundingClientRect(), pw = pop.offsetWidth, ph = pop.offsetHeight;
   pop.style.left = Math.max(8, Math.min(r.left, view.innerWidth - pw - 8)) + 'px';
   pop.style.top = (r.bottom + ph + 8 > view.innerHeight ? Math.max(8, r.top - ph - 4) : r.bottom + 4) + 'px';
-  pop.querySelector('button').focus();
+  pop.dataset.soft = opts.noFocus ? '1' : '';   // a "soft" menu leaves the cursor in the editor and closes when you keep typing
+  if (!opts.noFocus) pop.querySelector('button').focus();
 }
 const closePop = () => { popEl.hidden = true; };
 document.addEventListener('mousedown', e => { if (!popEl.hidden && !popEl.contains(e.target)) closePop(); });
@@ -2969,7 +3066,7 @@ function setNoteView(v) {
   if (v !== 'preview') { noteOverlay.paint(); noteText.focus(); }
   else closeFind();
 }
-function paintPreview() { $('notePreview').innerHTML = renderMarkdown(noteText.value); }
+function paintPreview() { $('notePreview').innerHTML = renderMarkdown(noteText.value); markPreviewSugs($('notePreview')); refreshSugs(noteText.value); updateSugBar(); }
 document.querySelector('.seg [data-view]').parentElement.addEventListener('click', e => { const b = e.target.closest('[data-view]'); if (b) setNoteView(b.dataset.view); });
 $('notePreview').addEventListener('click', e => {
   const cb = e.target.closest('input[type=checkbox][data-line]');
@@ -2980,6 +3077,8 @@ $('notePreview').addEventListener('click', e => {
     paintPreview(); renderNotes();
     return;
   }
+  const sgEl = e.target.closest('.sug');
+  if (sgEl) { previewSugMenu(sgEl); return; }
   const rl = e.target.closest('[data-remind-line]');
   if (rl) { remindFromLine(+rl.dataset.remindLine); return; }
   const tg = e.target.closest('[data-ntag-click]');
@@ -3031,15 +3130,25 @@ noteText.addEventListener('input', () => {
 // ---------------------------------------------------------------- code in notes: colours while typing
 const FENCE_OPEN = /^\s*```\s*([\w+#.-]*)\s*$/, FENCE_CLOSE = /^\s*```\s*$/;
 // The note's text as coloured HTML: code blocks coloured by language, ``` lines and headings tinted, the rest plain.
-const proseHl = line => /^#{1,6}\s/.test(line) ? `<span class="md-h">${esc(line)}</span>`
-  : esc(line).replace(/!\[[^\]]*\]\(ping-img:[\w-]+\)/g, m => `<span class="md-img">${m}</span>`)
-             .replace(/(^|\s)(#[\p{L}_][\p{L}\p{N}_\-/]*)/gu, '$1<span class="md-tag">$2</span>');
+// One line of ordinary note text for the editor layer: heading tint, picture lines, #tags and code suggestions.
+function proseHl(line, sugs) {
+  if (/^#{1,6}\s/.test(line)) return `<span class="md-h">${esc(line)}</span>`;
+  const marks = [];
+  for (const m of line.matchAll(/!\[[^\]]*\]\(ping-img:[\w-]+\)/g)) marks.push([m.index, m.index + m[0].length, 'class="md-img"']);
+  for (const m of line.matchAll(/(^|\s)(#[\p{L}_][\p{L}\p{N}_\-/]*)/gu)) { const a = m.index + m[1].length; marks.push([a, a + m[2].length, 'class="md-tag"']); }
+  for (const sg of sugs || []) marks.push([sg.from, sg.to, `class="sug sug-${sg.kind}" data-s="${sg.i}"`]);
+  marks.sort((x, y) => x[0] - y[0]);
+  let html = '', last = 0;
+  for (const [a, b, attr] of marks) { if (a < last) continue; html += esc(line.slice(last, a)) + `<span ${attr}>${esc(line.slice(a, b))}</span>`; last = b; }
+  return html + esc(line.slice(last));
+}
 function noteHlHtml(text) {
-  const lines = text.split('\n'), out = [];
+  const lines = text.split('\n'), out = [], byLine = new Map();
+  refreshSugs(text).forEach(sg => { if (!byLine.has(sg.line)) byLine.set(sg.line, []); byLine.get(sg.line).push(sg); });
   let k = 0;
   while (k < lines.length) {
     const m = lines[k].match(FENCE_OPEN);
-    if (!m) { out.push(proseHl(lines[k])); k++; continue; }
+    if (!m) { out.push(proseHl(lines[k], byLine.get(k))); k++; continue; }
     let html = `<span class="tk-meta">${esc(lines[k])}</span>`;
     const body = []; k++;
     while (k < lines.length && !FENCE_CLOSE.test(lines[k])) body.push(lines[k++]);
@@ -3065,7 +3174,7 @@ function overlay(ta, pre, render, after) {
   addEventListener('resize', schedule);
   return { paint, schedule };
 }
-const noteOverlay = overlay(noteText, $('noteHl'), noteHlHtml, () => renderFind());
+const noteOverlay = overlay(noteText, $('noteHl'), noteHlHtml, () => { renderFind(); updateSugBar(); });
 
 // ---------------------------------------------------------------- code in notes: typing helpers
 // Is the cursor inside a ``` block? Then which language (written on the fence, or guessed from the block).
@@ -3563,6 +3672,91 @@ $('findInput').addEventListener('keydown', e => {
   else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); closeFind(true); }
 });
 
+
+// ---------------------------------------------------------------- notes: "looks like code" suggestions
+// Learned words come from `code` in all notes; each note's words are cached until that note changes.
+const vocabCache = new Map();
+function codeVocab() {
+  const v = Sug.emptyVocab();
+  for (const n of S.notes) {
+    if (n.trashed) continue;
+    const text = n.text || '';
+    let c = vocabCache.get(n.id);
+    if (!c || c.text !== text) { c = { text, l: Sug.learn(text) }; vocabCache.set(n.id, c); }
+    c.l.loose.forEach(x => v.loose.add(x)); c.l.calls.forEach(x => v.calls.add(x)); c.l.exact.forEach(x => v.exact.add(x));
+  }
+  return v;
+}
+let noteSugs = [];
+function refreshSugs(text) {
+  noteSugs = curNote || text ? Sug.suggest(text, codeVocab()) : [];
+  noteSugs.forEach((sg, i) => { sg.i = i; });
+  return noteSugs;
+}
+function updateSugBar() {
+  const n = noteSugs.length;
+  $('sugBar').hidden = !n;
+  $('sugText').textContent = n ? t('sugCount', n) : '';
+}
+// Wrap the words in backticks, last first so earlier positions stay valid; keeps the cursor where it was.
+function applyMarks(list) {
+  const v = noteText.value;
+  list = list.filter(sg => sg && v.slice(sg.start, sg.end) === sg.word);   // skip anything that changed meanwhile
+  if (!list.length) return;
+  let out = v;
+  [...list].sort((a, b) => b.start - a.start).forEach(sg => { out = out.slice(0, sg.start) + '`' + sg.word + '`' + out.slice(sg.end); });
+  const caret = noteText.selectionStart, shift = list.reduce((sum, sg) => sum + (sg.end <= caret ? 2 : sg.start < caret ? 1 : 0), 0);
+  const y = scrollY;
+  if (noteView === 'preview') { noteText.value = out; noteText.dispatchEvent(new Event('input', { bubbles: true })); paintPreview(); }
+  else { edInsert(noteText, out, 0, v.length); noteText.setSelectionRange(caret + shift, caret + shift); }
+  if (scrollY !== y) scrollTo(scrollX, y);
+  toast(t('sugDone', list.length));
+}
+function markAllSugs() { if (!curNote) return; applyMarks(refreshSugs(noteText.value)); }
+function sugMenu(anchor, sg, one, soft) {
+  const same = noteSugs.filter(x => x.key === sg.key);
+  const items = [[t('sugThis'), one]];
+  if (same.length > 1) items.push([t('sugAllWord', sg.word, same.length), () => applyMarks(noteSugs.filter(x => x.key === sg.key))]);
+  openPop(anchor, items, { noFocus: soft });
+}
+function previewSugMenu(el) {
+  const key = el.dataset.key, shown = [...$('notePreview').querySelectorAll('.sug')].filter(x => x.dataset.key === key), k = shown.indexOf(el);
+  const same = noteSugs.filter(x => x.key === key);
+  if (!same.length) return;
+  // the n-th underlined word on screen is the n-th in the text; if they ever disagree, mark them all
+  sugMenu(el, same[0], () => applyMarks(same.length === shown.length ? [same[k]] : same), false);
+}
+function sugShowMenu(anchor) {
+  const groups = new Map();
+  noteSugs.forEach(sg => { const g = groups.get(sg.key) || { word: sg.word, kind: sg.kind, n: 0 }; g.n++; if (sg.kind === 'known') g.kind = 'known'; groups.set(sg.key, g); });
+  openPop(anchor, [...groups].map(([key, g]) => [`${g.word} (${g.n}) · ${t(g.kind === 'known' ? 'sugKnown' : 'sugGuess')}`, () => applyMarks(noteSugs.filter(x => x.key === key))]));
+}
+// Underline suggestions in Förhandsvisa, leaving code, links, bold/italic, headings and #tags alone.
+function markPreviewSugs(root) {
+  const vocab = codeVocab(), skip = 'code, pre, a, strong, b, em, i, del, s, h1, h2, h3, h4, h5, h6, .ntag, button, .sug, .nimg-missing';
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, { acceptNode: n => n.parentElement && n.parentElement.closest(skip) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT });
+  const nodes = []; while (walker.nextNode()) nodes.push(walker.currentNode);
+  for (const node of nodes) {
+    const hits = Sug.scan(node.data, vocab, false);
+    if (!hits.length) continue;
+    const frag = document.createDocumentFragment(); let last = 0;
+    for (const h of hits) {
+      frag.append(node.data.slice(last, h.from));
+      const sp = document.createElement('span');
+      sp.className = 'sug sug-' + h.kind; sp.dataset.key = h.key; sp.title = t(h.kind === 'known' ? 'sugKnownTitle' : 'sugGuessTitle'); sp.textContent = h.word;
+      frag.append(sp); last = h.to;
+    }
+    frag.append(node.data.slice(last)); node.replaceWith(frag);
+  }
+}
+noteText.addEventListener('click', () => {
+  if (noteText.selectionStart !== noteText.selectionEnd) return;
+  const p = noteText.selectionStart, sg = noteSugs.find(x => p >= x.start && p <= x.end);
+  const el = sg && $('noteHl').querySelector(`[data-s="${sg.i}"]`);
+  if (el) sugMenu(el, sg, () => applyMarks([sg]), true);
+});
+['keydown', 'input'].forEach(ev => noteText.addEventListener(ev, () => { if (!popEl.hidden && popEl.dataset.soft) closePop(); }));
+
 // ---------------------------------------------------------------- notes: pictures
 // Pictures are shrunk, stored in the browser's database (the main data in localStorage has a ~5 MB limit)
 // and referenced from the note as ![Skärmbild](ping-img:ID). They travel in the save file and in backups.
@@ -3727,7 +3921,8 @@ function previewSound(selId) {
 $('langSeg').addEventListener('click', e => {
   const b = e.target.closest('[data-lang-set]'); if (!b || b.dataset.langSet === lang()) return;
   S.settings.lang = b.dataset.langSet; save();
-  renderAll(); updateQuickPreview(); updateFileUi(); renderSnapshots(); updateNoteStatus();
+  renderAll(); updateQuickPreview(); updateFileUi(); renderSnapshots(); updateNoteStatus(); updateSugBar();
+  if (noteView !== 'edit') paintPreview();
 });
 $('paletteSet').addEventListener('click', e => { const b = e.target.closest('[data-palette-set]'); if (!b) return; S.settings.palette = b.dataset.paletteSet; save(); applyTheme(); });
 
@@ -3767,6 +3962,8 @@ document.addEventListener('click', e => {
     case 'new-note-menu': newNoteMenu(b); break;
     case 'close-link': closeLinkDlg(); break;
     case 'find-open': openFind(); break;
+    case 'sug-all': markAllSugs(); break;
+    case 'sug-show': sugShowMenu(b); break;
     case 'find-next': findStep(1); break;
     case 'find-prev': findStep(-1); break;
     case 'find-close': closeFind(true); break;
@@ -3961,6 +4158,7 @@ document.addEventListener('keydown', e => {
     return;
   }
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); closeEditor(); showTab('reminders'); quickInput.focus(); quickInput.select(); return; }
+  if ((e.ctrlKey || e.metaKey) && e.shiftKey && !e.altKey && e.key.toLowerCase() === 'm' && currentTab() === 'notes' && $('editor').hidden) { e.preventDefault(); markAllSugs(); return; }
   if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key.toLowerCase() === 'f' && currentTab() === 'notes' && $('editor').hidden && $('codeDlg').hidden) { e.preventDefault(); openFind(); return; }
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'e' && currentTab() === 'notes') { e.preventDefault(); setNoteView(noteView === 'edit' ? 'preview' : 'edit'); return; }
   if (e.ctrlKey || e.metaKey || e.altKey || typing(document.activeElement) || !$('editor').hidden || !$('keysDlg').hidden
