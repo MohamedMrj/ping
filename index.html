@@ -227,15 +227,17 @@ kbd { font-size: 11.5px; line-height: 1; padding: 2px 5px; border: 1px solid var
 /* note editor: a transparent textarea over a coloured copy of the same text. Both use identical font, size,
    padding, border and wrapping, and colours never change letter widths, so every character lines up. */
 .ed-wrap { position: relative; }
-.ed-hl, .ed-in { margin: 0; padding: 14px 16px; border: 1px solid var(--line); border-radius: 12px; font: 15px/1.6 var(--font); tab-size: 4; white-space: pre-wrap; overflow-wrap: break-word; word-break: normal; letter-spacing: normal; text-align: left; }
-.ed-hl.mono, .ed-in.mono { font-family: var(--mono); font-size: 13.5px; }
-.ed-hl { position: absolute; inset: 0; overflow: hidden; pointer-events: none; color: var(--ink); background: var(--surface); border-color: transparent; }
-.ed-in { position: relative; display: block; width: 100%; min-height: 500px; resize: none; overflow: hidden; background: transparent; color: transparent; caret-color: var(--ink); }
-.ed-in::placeholder { color: var(--muted); }
-.ed-in::selection { background: color-mix(in srgb, var(--accent) 28%, transparent); color: transparent; }
-.ed-in:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+/* ".ed-wrap >" keeps these stronger than general field styles (e.g. ".field textarea" in dialogs), which would
+   otherwise paint the textarea's background over the coloured layer and shift its padding. */
+.ed-wrap > .ed-hl, .ed-wrap > .ed-in { margin: 0; padding: 14px 16px; border: 1px solid var(--line); border-radius: 12px; font: 15px/1.6 var(--font); tab-size: 4; white-space: pre-wrap; overflow-wrap: break-word; word-break: normal; letter-spacing: normal; text-align: left; }
+.ed-wrap > .ed-hl.mono, .ed-wrap > .ed-in.mono { font-family: var(--mono); font-size: 13.5px; }
+.ed-wrap > .ed-hl { position: absolute; inset: 0; overflow: hidden; pointer-events: none; color: var(--ink); background: var(--surface); border-color: transparent; }
+.ed-wrap > .ed-in { position: relative; display: block; width: 100%; min-height: 500px; resize: none; overflow: hidden; background: transparent; color: transparent; caret-color: var(--ink); }
+.ed-wrap > .ed-in::placeholder { color: var(--muted); }
+.ed-wrap > .ed-in::selection { background: color-mix(in srgb, var(--accent) 28%, transparent); color: transparent; }
+.ed-wrap > .ed-in:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
 .ed-hl .md-h { color: var(--accent); }
-.code-ed .ed-in { min-height: 240px; }
+.ed-wrap.code-ed > .ed-in { min-height: 240px; }
 .md { min-height: 500px; padding: 6px 22px 18px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); overflow-wrap: anywhere; min-width: 0; }
 .md h1, .md h2, .md h3, .md h4 { font-family: var(--font-display); line-height: 1.25; margin: 1.1em 0 .4em; text-wrap: balance; }
 .md h1 { font-size: 22px; } .md h2 { font-size: 18px; } .md h3 { font-size: 15.5px; } .md h4 { font-size: 14.5px; }
