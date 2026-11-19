@@ -277,6 +277,7 @@ html { scroll-padding-top: var(--note-head-h, 0px); }
 .ed-wrap > .ed-hl.mono, .ed-wrap > .ed-find.mono, .ed-wrap > .ed-in.mono { font-family: var(--mono); font-size: 13.5px; }
 .ed-wrap > .ed-hl, .ed-wrap > .ed-find { position: absolute; inset: 0; overflow: hidden; pointer-events: none; color: var(--ink); background: transparent; border-color: transparent; }
 .ed-wrap > .ed-find { color: transparent; }
+.ed-measure { visibility: hidden; }
 .ed-find mark { color: transparent; background: color-mix(in srgb, var(--warn) 30%, transparent); border-radius: 2px; }
 .ed-find mark.cur { background: color-mix(in srgb, var(--warn) 65%, transparent); }
 .ed-wrap > .ed-in { position: relative; display: block; width: 100%; min-height: 500px; resize: none; overflow: hidden; background: transparent; color: transparent; caret-color: var(--ink); }
@@ -457,8 +458,10 @@ details.adv[open] { display: grid; gap: 8px; }
     <button class="btn ghost sm" type="button" data-act="backup-later" data-i18n="later">Påminn mig i morgon</button>
   </div>
   <div class="banner" id="fileBanner" hidden>
-    <p data-i18n="bannerFile"><strong>Ping behöver ett klick för att fortsätta spara i din fil.</strong> Webbläsaren frågar om lov igen efter en omstart. Det är en säkerhetsfunktion, inte ett fel. Välj gärna ”Tillåt vid varje besök” så slipper du frågan. Inget har försvunnit, allt finns kvar i webbläsaren under tiden.</p>
-    <button class="btn primary sm" type="button" data-act="file-reconnect" data-i18n="reconnect">Återanslut</button>
+    <p id="fileBannerText"></p>
+    <button class="btn primary sm" type="button" data-act="file-reconnect" id="fileBannerReconnect" data-i18n="reconnect">Återanslut</button>
+    <button class="btn primary sm" type="button" data-act="file-open" id="fileBannerOpen" data-i18n="fileOpenAgain">Välj filen igen…</button>
+    <button class="btn sm" type="button" data-act="file-create" id="fileBannerCreate" data-i18n="fileCreateNew">Skapa en ny sparfil…</button>
   </div>
 
   <!-- REMINDERS -->
@@ -555,7 +558,7 @@ details.adv[open] { display: grid; gap: 8px; }
         </div>
         </div>
         <div class="note-body" id="noteBody">
-          <div class="ed-wrap" id="noteWrap"><pre class="ed-find" id="noteFind" aria-hidden="true"></pre><pre class="ed-hl" id="noteHl" aria-hidden="true"></pre><textarea id="noteText" class="ed-in" spellcheck="false" placeholder="# Rubrik&#10;&#10;Skriv vad som helst. Markdown fungerar: **fetstil**, `kod`, ```sql-block```, - [ ] uppgifter, | tabeller |" aria-label="Anteckningstext" data-i18n-ph="notePh" data-i18n-aria="noteAria"></textarea></div>
+          <div class="ed-wrap" id="noteWrap"><pre class="ed-find" id="noteFind" aria-hidden="true"></pre><pre class="ed-find ed-measure" id="noteMeasure" aria-hidden="true"></pre><pre class="ed-hl" id="noteHl" aria-hidden="true"></pre><textarea id="noteText" class="ed-in" spellcheck="false" placeholder="# Rubrik&#10;&#10;Skriv vad som helst. Markdown fungerar: **fetstil**, `kod`, ```sql-block```, - [ ] uppgifter, | tabeller |" aria-label="Anteckningstext" data-i18n-ph="notePh" data-i18n-aria="noteAria"></textarea></div>
           <div class="md" id="notePreview" hidden></div>
         </div>
       </div>
@@ -608,8 +611,8 @@ details.adv[open] { display: grid; gap: 8px; }
         <div class="field"><span data-i18n="alColor">Färg</span><div class="swatches" id="alColor" role="group" aria-label="Färg" data-i18n-aria="alColor"></div></div>
 
         <h4 data-i18n="alSecWin">När Ping ligger bakom andra fönster</h4>
-        <p data-i18n="alSecWinP">Då visar Windows en avisering i skärmens hörn. Hur den ser ut bestämmer Windows, men ikonen får påminnelsens färg.</p>
-        <label class="check"><input type="checkbox" id="alSticky" data-al> <span data-i18n="alSticky">Windows-aviseringen ligger kvar tills jag stänger den</span></label>
+        <p data-i18n="alSecWinP">Då visar datorn en avisering i skärmens hörn. Hur den ser ut bestämmer Windows eller macOS, men ikonen får påminnelsens färg.</p>
+        <label class="check"><input type="checkbox" id="alSticky" data-al> <span data-i18n="alSticky">Aviseringen i skärmens hörn ligger kvar tills jag stänger den</span></label>
         <label class="check"><input type="checkbox" id="alFlash" data-al> <span data-i18n="alFlash">Blinka fliken när en påminnelse väntar och Ping ligger i bakgrunden</span></label>
 
         <h4 data-i18n="alSecPip">Håll Ping ovanpå andra fönster</h4>
@@ -782,6 +785,17 @@ details.adv[open] { display: grid; gap: 8px; }
   </div>
 </div>
 
+<!-- restore from a backup file -->
+<div class="scrim" id="restoreDlg" hidden>
+  <div class="modal" role="dialog" aria-labelledby="restoreTitle">
+    <h2 id="restoreTitle" data-i18n="restoreH">Återställ från säkerhetskopia</h2>
+    <p id="restoreInfo"></p>
+    <label class="check"><input type="radio" name="restoreMode" value="add" checked> <span><strong data-i18n="restoreAdd">Lägg till det som saknas</strong><br><span class="hint" data-i18n="restoreAddP">Allt du har nu behålls. Påminnelser och anteckningar från säkerhetskopian som inte finns här läggs till.</span></span></label>
+    <label class="check"><input type="radio" name="restoreMode" value="replace"> <span><strong data-i18n="restoreReplace">Ersätt allt med säkerhetskopian</strong><br><span class="hint" data-i18n="restoreReplaceP">Ping blir som när säkerhetskopian gjordes. Det du har nu ersätts, men du kan ångra direkt efteråt.</span></span></label>
+    <div class="modal-foot"><span class="spacer"></span><button class="btn" type="button" data-act="close-restore" data-i18n="cancel">Avbryt</button><button class="btn primary" type="button" data-act="restore-go" data-i18n="restoreGo">Återställ</button></div>
+  </div>
+</div>
+
 <!-- deleted notes -->
 <div class="scrim" id="trashDlg" hidden>
   <div class="modal" role="dialog" aria-labelledby="trashTitle">
@@ -837,13 +851,13 @@ details.adv[open] { display: grid; gap: 8px; }
       <p class="step" data-i18n="step1">Steg 1 av 2</p>
       <h2 id="setupTitle1" data-i18n="setupT1">Spara dina påminnelser säkert</h2>
       <p data-i18n="setupP1">Ping har ingen server och inget konto. Allt du skriver sparas bara här på din dator, i webbläsaren. Det betyder att det kan försvinna om webbläsarens data rensas eller om du byter dator.</p>
-      <p data-i18n="setupP2">Därför sparar Ping också en kopia i en fil som du själv väljer. Välj mappen <strong>Dokument</strong>. Den ligger på kommunens server, säkerhetskopieras och finns kvar även om du byter dator.</p>
+      <p data-i18n="setupP2">Därför sparar Ping också en kopia i en fil som du själv väljer, till exempel i mappen <strong>Dokument</strong>. Lägg den gärna i en mapp som säkerhetskopieras eller synkas, som OneDrive, iCloud Drive, Google Drive eller Dropbox. Då finns den kvar även om datorn går sönder, och du kan använda Ping på flera datorer.</p>
       <details>
         <summary data-i18n="setupWhy">Varför frågar webbläsaren om lov?</summary>
         <ul>
           <li data-i18n="setupLi1">En webbsida får aldrig röra filer på din dator utan att du själv godkänner det. Därför visar webbläsaren en ruta där du väljer plats och godkänner.</li>
           <li data-i18n="setupLi2">Ping får bara läsa och skriva <strong>den enda fil du väljer</strong> (Ping-data.json). Inga andra filer eller mappar.</li>
-          <li data-i18n="setupLi3">Ingenting skickas till internet. Inte till GitHub, inte till kommunen och inte till den som byggt appen. Filen stannar i din egen mapp.</li>
+          <li data-i18n="setupLi3">Ingenting skickas till någon server, och inte till den som byggt appen. Filen stannar i din egen mapp.</li>
           <li data-i18n="setupLi4">Filen är vanlig text som du kan öppna och läsa själv, och du kan sluta använda den när du vill under Inställningar.</li>
         </ul>
       </details>
@@ -1683,11 +1697,11 @@ const T = {
     sx6: 'Cron schedule (minute hour day month weekday)', sx8c: '!!! or p1', sx8: 'Priority: ! low, !! medium, !!! high', close: 'Close',
     step1: 'Step 1 of 2', setupT1: 'Keep your reminders safe',
     setupP1: 'Ping has no server and no account. Everything you write is saved only here on your computer, in the browser. That means it can disappear if the browser’s data is cleared or you switch computers.',
-    setupP2: 'That’s why Ping also keeps a copy in a file you choose. Choose the <strong>Documents</strong> folder. It lives on the municipality’s server, is backed up, and stays with you even if you switch computers.',
+    setupP2: 'That’s why Ping also keeps a copy in a file you choose, for example in your <strong>Documents</strong> folder. Ideally put it in a folder that is backed up or synced, like OneDrive, iCloud Drive, Google Drive or Dropbox. Then it survives even if the computer breaks, and you can use Ping on several computers.',
     setupWhy: 'Why does the browser ask for permission?',
     setupLi1: 'A web page may never touch files on your computer unless you approve it. That’s why the browser shows a box where you choose a place and approve.',
     setupLi2: 'Ping may only read and write <strong>the one file you choose</strong> (Ping-data.json). No other files or folders.',
-    setupLi3: 'Nothing is sent to the internet. Not to GitHub, not to the municipality and not to whoever built the app. The file stays in your own folder.',
+    setupLi3: 'Nothing is sent to any server, and nothing to whoever built the app. The file stays in your own folder.',
     setupLi4: 'The file is plain text you can open and read yourself, and you can stop using it whenever you like under Settings.',
     setupCreate: 'Choose a place and save', setupOpen: 'I already have a save file',
     setupHint: 'Want the same reminders and notes on several computers or in several browsers? Put the file in a folder that syncs, such as OneDrive. Then choose “I already have a save file” in the other browsers and open the same Ping-data.json. Changes carry over automatically.',
@@ -1709,7 +1723,7 @@ const T = {
     alertP: 'Choose how a reminder sounds and looks when it’s time. To make one particular reminder sound or look different, choose that when you edit it.',
     alSound: 'Sound', alSoundHigh: 'Sound for high priority', alVolume: 'Volume', alLoop: 'How long the sound plays',
     alLoopEvery: 'Play again every', alLoopMax: 'Stop after at most', alPosition: 'Where the box appears', alSize: 'Size of the box',
-    alAutoHide: 'The box disappears', alColor: 'Colour', alSticky: 'The Windows notification stays until I close it',
+    alAutoHide: 'The box disappears', alColor: 'Colour', alSticky: 'The notification in the corner of the screen stays until I close it',
     alFlash: 'Flash the tab while a reminder is waiting and Ping is in the background', testAlertShow: 'Show a test reminder',
     listen: '▶ Listen', listenTitle: 'Listen',
     viewSplit: 'Side by side', noteHist: 'History', share: 'Share ▾', newNoteMenu: 'Templates and other kinds of notes', toolsAria: 'Formatting',
@@ -1723,11 +1737,14 @@ const T = {
     k15: 'Notes: bold / italic', k16: 'Notes: find in the note', k17: 'Notes: turn all code suggestions into code', k18: 'Notes: show or hide the list of notes',
     sideHide: 'Hide the list of notes (Ctrl+Shift+L)', sideShow: 'Show the list of notes (Ctrl+Shift+L)',
     sugMarkAll: 'Mark all', sugShow: 'Show which', sugBarTitle: 'Words you have marked as code before, or that look like code. Click an underlined word to choose.',
+    restoreH: 'Restore from backup', restoreAdd: 'Add what’s missing', restoreAddP: 'Everything you have now is kept. Reminders and notes from the backup that aren’t here are added.',
+    restoreReplace: 'Replace everything with the backup', restoreReplaceP: 'Ping goes back to how it was when the backup was made. What you have now is replaced, but you can undo it right after.', restoreGo: 'Restore',
+    fileOpenAgain: 'Choose the file again…', fileCreateNew: 'Create a new save file…',
     codeDlgH: 'Insert code', codeLang: 'Language', codeText: 'Code', codePh: 'Paste or type your code here', codeInsertBtn: 'Insert', codeInsert: 'Insert code',
     k13: 'Notes: comment or uncomment code lines', k14: 'Notes: indent (Tab) or unindent (Shift Tab) selected lines',
     alSecSound: 'Sound', alSoundHint: 'The sound also plays when Ping is in the background or minimised, as long as Ping is open.',
     alSecBox: 'The box in the Ping window', alSecBoxP: 'Shows when Ping is in front, or on top of every other window if you use “Keep Ping on top” below.',
-    alSecWin: 'When Ping is behind other windows', alSecWinP: 'Then Windows shows a notification in the corner of the screen. Windows decides how it looks, but the icon gets the reminder’s colour.',
+    alSecWin: 'When Ping is behind other windows', alSecWinP: 'Then your computer shows a notification in the corner of the screen. Windows or macOS decides how it looks, but the icon gets the reminder’s colour.',
     alSecPip: 'Keep Ping on top of other windows',
     alSecPipP: 'Opens a small Ping window that floats on top of everything else you work in. Reminders appear there exactly as you chose here, along with what’s coming up next. The browser only lets you open it yourself, so click the button after starting the browser.',
     // dynamic
@@ -1777,17 +1794,17 @@ const T = {
     icsCron: 'Downloaded the next run only (Outlook can’t read cron). Open it and click Save & Close',
     icsDone: 'Calendar file downloaded. Open it and click Save & Close in Outlook', csvDone: 'CSV downloaded',
     notifOn: 'Notifications on', notifBlocked: 'Notifications blocked', notifInWindow: 'In-window alerts only', notifTurnOn: 'Turn on notifications',
-    stGranted: 'Windows notifications are on. Reminders also appear as an alert in this window.',
+    stGranted: 'Notifications are on. Reminders also appear as an alert in this window.',
     stDenied: b => `${b} is blocking notifications for this page. Click the icon left of the address, set Notifications to Allow, then reload. Until then you get in-window alerts and a sound.`,
     stUnsupported: 'This browser can’t show notifications for this page, so reminders appear as an alert inside this window, with a sound.',
     stDefault: 'Allow notifications so reminders reach you even when this window is behind others.',
-    stFailed: e => `The last notification failed: ${e}. Check Windows Settings → System → Notifications, and that “Do not disturb” is off.`,
+    stFailed: e => `The last notification failed: ${e}. Check your computer’s notification settings for this browser, and that “Do not disturb” / Focus is off.`,
     stRunning: (b, local) => ` (Running in ${b}${local ? ' from a local file' : ''}. Each browser keeps its own copy of your reminders, so always open Ping the same way.)`,
     thisBrowser: 'this browser', notifUnavailable: 'Notifications are not available here; in-window alerts will be used',
-    notifTesting: 'Test sent. Nothing in the corner of the screen? Press Win+N and check that “Do not disturb” is off', testNotifTitle: 'Ping notifications work', testNotifBody: 'Reminders will appear like this.',
+    notifTesting: 'Test sent. Nothing in the corner of the screen? Check that “Do not disturb” / Focus is off (Windows: press Win+N; Mac: Control Centre)', testNotifTitle: 'Ping notifications work', testNotifBody: 'Reminders will appear like this.',
     testNotifFailed: e => 'The test notification failed: ' + e,
     notKeptLocal: (b, a) => `${b} answered “${a}”, so it didn’t keep your choice. Browsers often refuse to save notification permission for pages opened as a local file. Until that’s solved you still get the alert in this window and a sound.`,
-    notKept: (b, a) => `${b} answered “${a}”. Check that notifications are allowed for this site and that Windows notifications are on for ${b}.`,
+    notKept: (b, a) => `${b} answered “${a}”. Check that notifications are allowed for this site, and that your computer allows notifications from ${b}.`,
     notifNotOn: 'Notifications were not turned on. See Settings for details',
     highPrio: 'High priority · ', dismissTitle: 'Dismiss (keeps it in the list)', dismiss: 'Dismiss',
     titleCount: n => n + ' reminder' + (n === 1 ? '' : 's'),
@@ -1826,6 +1843,15 @@ const T = {
     sugKnown: 'marked before', sugGuess: 'looks like code', sugDone: n => n === 1 ? 'Made 1 word into code' : `Made ${n} words into code`,
     sugKnownTitle: 'You have marked this as code before. Click to choose.', sugGuessTitle: 'This looks like code. Click to choose.',
     imgAlt: 'Screenshot', imgTooBig: 'The picture is too big, even after shrinking (max 1.5 MB)', imgFailed: 'Couldn’t read the picture', imgUnavailable: 'Pictures can’t be saved in this browser',
+    restoreInfo: (w, r, n, i) => `The backup is from ${w} and contains ${r} reminders and ${n} notes${i ? `, plus ${i} pictures` : ''}.`, restoredAll: 'Everything was replaced with the backup',
+    bannerFile: '<strong>Ping needs a click to keep saving to your file.</strong> The browser asks for permission again after a restart. That’s a security feature, not an error. Choose “Allow on every visit” to skip the question. Nothing is lost; everything stays in the browser meanwhile.',
+    bannerFileGone: '<strong>Ping can’t find your save file.</strong> It may have been moved, renamed or deleted. Nothing is lost: everything is still here in the browser. Choose the file again, or create a new one.',
+    fileErr_gone: n => `The save file “${n}” is no longer where it was. It may have been moved, renamed or deleted. Choose it again or create a new one. Everything is still here in the browser.`,
+    fileErr_unreadable: n => `The save file “${n}” couldn’t be read just now, perhaps because it is being synced. Ping tries again by itself and won’t overwrite it.`,
+    fileErr_busy: n => `The save file “${n}” is being used by another program right now. Ping tries again by itself.`,
+    fileErr_full: n => `There is no room on the disk for the save file “${n}”. Free up some space; Ping tries again by itself.`,
+    chipFileGone: 'Save file missing', chipFileRetry: 'Save file: trying again',
+    storageFull: 'the browser’s storage is full. Download a backup now, then delete old notes or pictures you no longer need.', savedAgain: 'Saving works again',
     autoDetect: 'Detect automatically', plainText: 'Plain text', guessed: 'guessed', changeLang: 'Change language',
     wrapTitle: 'Wrap long lines', showAllLines: n => `Show all ${n} lines`, showLess: 'Show less',
     looksLike: n => `Looks like ${n}.`, cantTell: 'Couldn’t tell the language. Choose it above to get colours.', codeEmpty: 'Paste or type some code first',
@@ -1880,17 +1906,17 @@ const T = {
     icsCron: 'Laddade bara ner nästa körning (Outlook kan inte läsa cron). Öppna filen och klicka på Spara och stäng',
     icsDone: 'Kalenderfilen har laddats ner. Öppna den och klicka på Spara och stäng i Outlook', csvDone: 'CSV-filen har laddats ner',
     notifOn: 'Aviseringar på', notifBlocked: 'Aviseringar blockerade', notifInWindow: 'Bara aviseringar i fönstret', notifTurnOn: 'Slå på aviseringar',
-    stGranted: 'Windows-aviseringar är på. Påminnelser visas också som en ruta i det här fönstret.',
+    stGranted: 'Aviseringar är på. Påminnelser visas också som en ruta i det här fönstret.',
     stDenied: b => `${b} blockerar aviseringar för den här sidan. Klicka på ikonen till vänster om adressen, ställ in Aviseringar på Tillåt och ladda om sidan. Tills dess får du en ruta i fönstret och ett ljud.`,
     stUnsupported: 'Den här webbläsaren kan inte visa aviseringar för den här sidan, så påminnelser visas som en ruta i fönstret, med ett ljud.',
     stDefault: 'Tillåt aviseringar så att påminnelser når dig även när fönstret ligger bakom andra.',
-    stFailed: e => `Den senaste aviseringen misslyckades: ${e}. Kontrollera Inställningar i Windows → System → Meddelanden och att ”Stör ej” är avstängt.`,
+    stFailed: e => `Den senaste aviseringen misslyckades: ${e}. Kontrollera datorns inställningar för aviseringar från webbläsaren och att ”Stör ej” / fokusläge är avstängt.`,
     stRunning: (b, local) => ` (Körs i ${b}${local ? ' från en lokal fil' : ''}. Varje webbläsare har sin egen kopia av dina påminnelser, så öppna alltid Ping på samma sätt.)`,
     thisBrowser: 'den här webbläsaren', notifUnavailable: 'Aviseringar finns inte här; rutor i fönstret används i stället',
-    notifTesting: 'Testet skickat. Syns inget i skärmens hörn? Tryck Win+N och kontrollera att ”Stör ej” är avstängt', testNotifTitle: 'Pings aviseringar fungerar', testNotifBody: 'Påminnelser kommer att se ut så här.',
+    notifTesting: 'Testet skickat. Syns inget i skärmens hörn? Kontrollera att ”Stör ej” / fokusläge är avstängt (Windows: tryck Win+N, Mac: Kontrollcenter)', testNotifTitle: 'Pings aviseringar fungerar', testNotifBody: 'Påminnelser kommer att se ut så här.',
     testNotifFailed: e => 'Testaviseringen misslyckades: ' + e,
     notKeptLocal: (b, a) => `${b} svarade ”${a}”, så valet sparades inte. Webbläsare vägrar ofta spara aviseringstillstånd för sidor som öppnats som en lokal fil. Tills det är löst får du ändå en ruta i fönstret och ett ljud.`,
-    notKept: (b, a) => `${b} svarade ”${a}”. Kontrollera att aviseringar är tillåtna för den här webbplatsen och att Windows-aviseringar är på för ${b}.`,
+    notKept: (b, a) => `${b} svarade ”${a}”. Kontrollera att aviseringar är tillåtna för den här webbplatsen och att datorn tillåter aviseringar från ${b}.`,
     notifNotOn: 'Aviseringar slogs inte på. Se Inställningar för detaljer',
     highPrio: 'Hög prioritet · ', dismissTitle: 'Stäng (finns kvar i listan)', dismiss: 'Stäng',
     titleCount: n => n + (n === 1 ? ' påminnelse' : ' påminnelser'),
@@ -1932,6 +1958,15 @@ const T = {
     imgAlt: 'Skärmbild', imgTooBig: 'Bilden är för stor, även efter förminskning (högst 1,5 MB)', imgFailed: 'Kunde inte läsa bilden', imgUnavailable: 'Bilder kan inte sparas i den här webbläsaren',
     dailyLog: 'Dagslogg', newNote: 'Ny anteckning',
     sideHide: 'Dölj listan med anteckningar (Ctrl+Shift+L)', sideShow: 'Visa listan med anteckningar (Ctrl+Shift+L)',
+    restoreInfo: (w, r, n, i) => `Säkerhetskopian är från ${w} och innehåller ${r} påminnelser och ${n} anteckningar${i ? ` och ${i} bilder` : ''}.`, restoredAll: 'Allt ersattes med säkerhetskopian',
+    bannerFile: '<strong>Ping behöver ett klick för att fortsätta spara i din fil.</strong> Webbläsaren frågar om lov igen efter en omstart. Det är en säkerhetsfunktion, inte ett fel. Välj gärna ”Tillåt vid varje besök” så slipper du frågan. Inget har försvunnit, allt finns kvar i webbläsaren under tiden.',
+    bannerFileGone: '<strong>Ping hittar inte din sparfil.</strong> Den har kanske flyttats, döpts om eller tagits bort. Inget har försvunnit: allt finns kvar här i webbläsaren. Välj filen igen eller skapa en ny.',
+    fileErr_gone: n => `Sparfilen ”${n}” finns inte längre där den låg. Den har kanske flyttats, döpts om eller tagits bort. Välj den igen eller skapa en ny. Allt finns kvar här i webbläsaren.`,
+    fileErr_unreadable: n => `Sparfilen ”${n}” gick inte att läsa just nu, kanske för att den håller på att synkas. Ping försöker igen av sig själv och skriver inte över den.`,
+    fileErr_busy: n => `Sparfilen ”${n}” används av ett annat program just nu. Ping försöker igen av sig själv.`,
+    fileErr_full: n => `Det finns inte plats på disken för sparfilen ”${n}”. Frigör utrymme; Ping försöker igen av sig själv.`,
+    chipFileGone: 'Sparfilen saknas', chipFileRetry: 'Sparfilen: försöker igen',
+    storageFull: 'webbläsarens lagring är full. Ladda ner en säkerhetskopia nu och ta sedan bort gamla anteckningar eller bilder du inte behöver.', savedAgain: 'Det går att spara igen',
     autoDetect: 'Upptäck automatiskt', plainText: 'Vanlig text', guessed: 'gissat', changeLang: 'Byt språk',
     wrapTitle: 'Radbrytning', showAllLines: n => `Visa alla ${n} rader`, showLess: 'Visa mindre',
     looksLike: n => `Ser ut som ${n}.`, cantTell: 'Kunde inte avgöra språket. Välj det ovan om du vill ha färger.', codeEmpty: 'Klistra in eller skriv kod först',
@@ -2043,6 +2078,20 @@ function normalize(j) {
   j.settings.alert = Object.assign({}, ALERT_DEFAULTS, j.settings.alert || {});
   return j;
 }
+const isQuota = e => !!e && (e.name === 'QuotaExceededError' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED' || e.code === 22);
+// Browser storage holds about 5 MB. When it is full, older note versions are thinned out to make room, and saving tries again.
+function trimHistories() {
+  let trimmed = false;
+  for (const n of S.notes) if (Array.isArray(n.history) && n.history.length > 2) { n.history.splice(0, Math.ceil(n.history.length / 2)); trimmed = true; }
+  return trimmed;
+}
+function writeLocal() {
+  for (let attempt = 0; attempt < 4; attempt++) {
+    try { localStorage.setItem(KEY, JSON.stringify(S)); return null; }
+    catch (e) { if (!isQuota(e) || !trimHistories()) return e; }
+  }
+  try { localStorage.setItem(KEY, JSON.stringify(S)); return null; } catch (e) { return e; }
+}
 function load() { try { return normalize(JSON.parse(localStorage.getItem(KEY))); } catch (e) { return normalize(null); } }
 let S = load();
 let base = makeBase(S);                  // what S looked like at the last save or load (see stampChanges)
@@ -2053,8 +2102,9 @@ function save() {
   if (!isActiveWindow) return;
   stampChanges(S, base);
   S.savedAt = Date.now();
-  try { localStorage.setItem(KEY, JSON.stringify(S)); lastSavedAt = S.savedAt; lastSaveError = ''; }
-  catch (e) { lastSaveError = e.message; toast(t('saveFailed', e.message)); }
+  const err = writeLocal();
+  if (!err) { if (lastSaveError) toast(t('savedAgain')); lastSavedAt = S.savedAt; lastSaveError = ''; }
+  else { const msg = isQuota(err) ? t('storageFull') : err.message; if (msg !== lastSaveError) toast(t('saveFailed', msg)); lastSaveError = msg; }
   scheduleFileSave();
   updateSaveChip();
   snapshotDaily();
@@ -2068,7 +2118,11 @@ function updateSaveChip() {
   if (lastSaveError) { chip.classList.add('bad'); txt.textContent = t('chipNotSaved'); chip.title = t('chipNotSavedTitle', lastSaveError); }
   else if (fileHandle && fileState === 'ok') { chip.classList.add('on'); txt.textContent = t('chipSaved') + tm; chip.title = t('chipSavedFileTitle', fileHandle.name); }
   else if (fileHandle && fileState === 'needs-permission') { chip.classList.add('off'); txt.textContent = t('chipNeedsClick'); chip.title = t('chipNeedsClickTitle'); }
-  else if (fileHandle && fileState === 'error') { chip.classList.add('bad'); txt.textContent = t('chipFileErr'); chip.title = fileError; }
+  else if (fileHandle && fileState === 'error') {
+    const retry = fileErrKind === 'busy' || fileErrKind === 'unreadable';
+    chip.classList.add(retry ? 'off' : 'bad');
+    txt.textContent = t(fileErrKind === 'gone' ? 'chipFileGone' : retry ? 'chipFileRetry' : 'chipFileErr'); chip.title = fileErrText();
+  }
   else { chip.classList.add('off'); txt.textContent = t('chipBrowserOnly') + tm; chip.title = fileApi ? t('chipBrowserOnlyFile') : t('chipBrowserOnlyBackup'); }
 }
 
@@ -2076,12 +2130,13 @@ function updateSaveChip() {
 let snapDay = null;
 async function snapshotDaily() {
   const day = new Date().toISOString().slice(0, 10);
-  if (snapDay === day || (!S.reminders.length && !S.notes.length)) return;
-  snapDay = day;
+  if (snapDay === day) return;
+  const hasData = S.reminders.length || S.notes.length;
+  if (hasData) snapDay = day;            // until there is something to copy, keep checking on later saves
   try {
-    if (!(await kv.get('snap-' + day))) await kv.set('snap-' + day, JSON.stringify(S));
+    if (hasData && !(await kv.get('snap-' + day))) await kv.set('snap-' + day, JSON.stringify(S));
     const snaps = (await kv.keys()).map(String).filter(k => k.startsWith('snap-')).sort();
-    for (const k of snaps.slice(0, Math.max(0, snaps.length - 14))) await kv.del(k);
+    for (const k of snaps.slice(0, Math.max(0, snaps.length - 14))) await kv.del(k);   // keep the last 14 days
   } catch (e) { snapDay = null; }
 }
 async function renderSnapshots() {
@@ -2092,7 +2147,7 @@ async function renderSnapshots() {
   const opts = [];
   for (const k of keys) {
     let label = k.slice(5);
-    try { const d = JSON.parse(await kv.get(k)); label += t('snapLabel', d.reminders.length, d.notes.length); } catch (e) { }
+    try { const d = JSON.parse(await kv.get(k)); label += t('snapLabel', d.reminders.length, d.notes.filter(n => !n.trashed && !n.template).length); } catch (e) { }
     opts.push(`<option value="${esc(k)}">${esc(label)}</option>`);
   }
   sel.innerHTML = opts.join(''); sel.disabled = false;
@@ -2106,7 +2161,7 @@ async function restoreSnapshot() {
   const k = $('snapSelect').value; if (!k) return;
   const txt = await kv.get(k); if (!txt) return;
   if (!confirm(t('confirmSnap', k.slice(5)))) return;
-  undoable(t('restoredSnap', k.slice(5)), () => { S = normalize(JSON.parse(txt)); curNote = null; save(); renderAll(); });
+  undoable(t('restoredSnap', k.slice(5)), () => { const keep = S.settings; S = normalize(JSON.parse(txt)); S.settings = keep; curNote = null; save(); renderAll(); });
 }
 
 // Undo for destructive actions: remember the whole state, offer "Undo" for a few seconds.
@@ -2126,7 +2181,16 @@ const uid = () => (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString
 // ---------------------------------------------------------------- save file on disk (optional mirror)
 const fileApi = 'showSaveFilePicker' in window && 'indexedDB' in window;
 const FILE_TYPES = [{ description: 'Ping data', accept: { 'application/json': ['.json'] } }];
-let fileHandle = null, fileState = 'none', fileError = '', fileSavedAt = null, fileTimer = null;
+let fileHandle = null, fileState = 'none', fileError = '', fileErrKind = 'other', fileSavedAt = null, fileTimer = null;
+// Turn a browser error into something a person can act on. Lost permission is not an error: it only needs a click.
+function setFileError(e) {
+  const n = e && e.name;
+  if (n === 'NotAllowedError' || n === 'SecurityError') { fileState = 'needs-permission'; return; }
+  fileState = 'error'; fileError = (e && e.message) || String(e);
+  fileErrKind = n === 'NotFoundError' ? 'gone' : n === 'SyntaxError' ? 'unreadable'
+    : (n === 'NoModificationAllowedError' || n === 'InvalidStateError' || n === 'NotReadableError') ? 'busy'
+    : n === 'QuotaExceededError' ? 'full' : 'other';
+}
 const kv = (() => {
   let dbp;
   const open = () => dbp ||= new Promise((res, rej) => {
@@ -2171,7 +2235,7 @@ async function syncFile() {
       await w.write(JSON.stringify(withImages(S, images), null, 2)); await w.close();
     }
     fileState = 'ok'; fileSavedAt = Date.now();
-  } catch (e) { fileState = 'error'; fileError = e.message; }
+  } catch (e) { setFileError(e); }
   finally {
     syncBusy = false; updateFileUi();
     if (syncAgain) { syncAgain = false; scheduleFileSave(); }
@@ -2224,7 +2288,7 @@ async function fileReconnect() {
       fileState = 'ok';
       await syncFile();
     }
-  } catch (e) { fileState = 'error'; fileError = e.message; }
+  } catch (e) { setFileError(e); }
   updateFileUi();
 }
 async function fileStop() {
@@ -2241,21 +2305,26 @@ async function initFile() {
         fileState = 'ok';
         await syncFile();
       } else fileState = 'needs-permission';
-    } catch (e) { fileState = 'error'; fileError = e.message; }
+    } catch (e) { setFileError(e); }
   }
   updateFileUi();
 }
+const fileErrText = () => fileErrKind === 'other' ? t('fileErr', fileHandle.name, fileError) : t('fileErr_' + fileErrKind, fileHandle.name);
 function updateFileUi() {
   $('fileCard').hidden = !fileApi;
   const has = !!fileHandle;
   $('fileStopBtn').hidden = !has;
   $('fileReconnectBtn').hidden = !(has && fileState === 'needs-permission');
-  $('fileBanner').hidden = !(has && fileState === 'needs-permission');
+  const gone = has && fileState === 'error' && fileErrKind === 'gone', needs = has && fileState === 'needs-permission';
+  $('fileBanner').hidden = !(needs || gone);
+  $('fileBannerText').innerHTML = gone ? t('bannerFileGone') : t('bannerFile');
+  $('fileBannerReconnect').hidden = !needs;
+  $('fileBannerOpen').hidden = $('fileBannerCreate').hidden = !gone;
   const st = $('fileStatus');
   if (!has) st.textContent = t('fileNone');
   else if (fileState === 'ok') st.textContent = t('fileOk', fileHandle.name, fileSavedAt ? fmtTime(new Date(fileSavedAt)) : '');
   else if (fileState === 'needs-permission') st.textContent = t('fileNeeds', fileHandle.name);
-  else st.textContent = t('fileErr', fileHandle.name, fileError);
+  else st.textContent = fileErrText();
   updateSaveChip();
   updateBackupBanner();
 }
@@ -2374,7 +2443,7 @@ function codeBlockHtml(raw, given, fenceLine) {
   const rows = use ? Hl.lines(raw, use) : raw.split('\n').map(esc);
   const label = use ? Hl.name(use) + (guessed ? ' · ' + t('guessed') : '') : (given || t('plainText'));
   const long = rows.length > 20;
-  return `<div class="code${long ? ' collapsed' : ''}" data-fence="${fenceLine}">`
+  return `<div class="code${long ? ' collapsed' : ''}" data-fence="${fenceLine}" data-sl="${fenceLine}">`
     + `<div class="code-bar"><button class="code-lang" type="button" data-lang-pick title="${esc(t('changeLang'))}">${esc(label)} ▾</button><span class="spacer"></span>`
     + `<button class="btn ghost" type="button" data-wrap aria-pressed="false" title="${esc(t('wrapTitle'))}" aria-label="${esc(t('wrapTitle'))}">↵</button>`
     + `<button class="btn ghost" type="button" data-copy>${esc(t('copy'))}</button></div>`
@@ -2384,8 +2453,8 @@ function codeBlockHtml(raw, given, fenceLine) {
 }
 function renderMarkdown(src) {
   const lines = String(src).replace(/\r\n/g, '\n').split('\n');
-  const out = []; let i = 0, list = null, para = [];
-  const flushPara = () => { if (para.length) { out.push('<p>' + para.map(inlineMd).join('<br>') + '</p>'); para = []; } };
+  const out = []; let i = 0, list = null, para = [], paraStart = 0;
+  const flushPara = () => { if (para.length) { out.push(`<p data-sl="${paraStart}">` + para.map(inlineMd).join('<br>') + '</p>'); para = []; } };
   const closeList = () => { if (list) { out.push(`</${list}>`); list = null; } };
   while (i < lines.length) {
     const line = lines[i];
@@ -2401,24 +2470,24 @@ function renderMarkdown(src) {
     if (/^\s*\|.*\|\s*$/.test(line) && i + 1 < lines.length && /^\s*\|?\s*:?-{2,}/.test(lines[i + 1])) {
       flushPara(); closeList();
       const cells = l => l.trim().replace(/^\||\|$/g, '').split('|').map(c => c.trim());
-      const head = cells(line); i += 2; const rows = [];
+      const head = cells(line), tl = i; i += 2; const rows = [];
       while (i < lines.length && /^\s*\|.*\|\s*$/.test(lines[i])) rows.push(cells(lines[i++]));
-      out.push(`<div class="tbl"><table><thead><tr>${head.map(c => `<th>${inlineMd(c)}</th>`).join('')}</tr></thead><tbody>${rows.map(r => `<tr>${r.map(c => `<td>${inlineMd(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`);
+      out.push(`<div class="tbl" data-sl="${tl}"><table><thead><tr>${head.map(c => `<th>${inlineMd(c)}</th>`).join('')}</tr></thead><tbody>${rows.map(r => `<tr>${r.map(c => `<td>${inlineMd(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`);
       continue;
     }
-    if ((m = line.match(/^(#{1,4})\s+(.*)$/))) { flushPara(); closeList(); out.push(`<h${m[1].length}>${inlineMd(m[2])}</h${m[1].length}>`); i++; continue; }
-    if (/^\s*(-{3,}|\*{3,})\s*$/.test(line)) { flushPara(); closeList(); out.push('<hr>'); i++; continue; }
-    if ((m = line.match(/^>\s?(.*)$/))) { flushPara(); closeList(); out.push(`<blockquote>${inlineMd(m[1])}</blockquote>`); i++; continue; }
+    if ((m = line.match(/^(#{1,4})\s+(.*)$/))) { flushPara(); closeList(); out.push(`<h${m[1].length} data-sl="${i}">${inlineMd(m[2])}</h${m[1].length}>`); i++; continue; }
+    if (/^\s*(-{3,}|\*{3,})\s*$/.test(line)) { flushPara(); closeList(); out.push(`<hr data-sl="${i}">`); i++; continue; }
+    if ((m = line.match(/^>\s?(.*)$/))) { flushPara(); closeList(); out.push(`<blockquote data-sl="${i}">${inlineMd(m[1])}</blockquote>`); i++; continue; }
     if ((m = line.match(/^\s*[-*+]\s+\[([ xX])\]\s+(.*)$/))) {
       flushPara(); if (list !== 'ul') { closeList(); out.push('<ul>'); list = 'ul'; }
       const on = m[1] !== ' ';
-      out.push(`<li class="task${on ? ' checked' : ''}"><input type="checkbox" data-line="${i}"${on ? ' checked' : ''}><span>${inlineMd(m[2])}</span><button class="task-remind" type="button" data-remind-line="${i}" title="${esc(t('remindLine'))}" aria-label="${esc(t('remindLine'))}">⏰</button></li>`);
+      out.push(`<li class="task${on ? ' checked' : ''}" data-sl="${i}"><input type="checkbox" data-line="${i}"${on ? ' checked' : ''}><span>${inlineMd(m[2])}</span><button class="task-remind" type="button" data-remind-line="${i}" title="${esc(t('remindLine'))}" aria-label="${esc(t('remindLine'))}">⏰</button></li>`);
       i++; continue;
     }
-    if ((m = line.match(/^\s*[-*+]\s+(.*)$/))) { flushPara(); if (list !== 'ul') { closeList(); out.push('<ul>'); list = 'ul'; } out.push(`<li>${inlineMd(m[1])}</li>`); i++; continue; }
-    if ((m = line.match(/^\s*\d+[.)]\s+(.*)$/))) { flushPara(); if (list !== 'ol') { closeList(); out.push('<ol>'); list = 'ol'; } out.push(`<li>${inlineMd(m[1])}</li>`); i++; continue; }
+    if ((m = line.match(/^\s*[-*+]\s+(.*)$/))) { flushPara(); if (list !== 'ul') { closeList(); out.push('<ul>'); list = 'ul'; } out.push(`<li data-sl="${i}">${inlineMd(m[1])}</li>`); i++; continue; }
+    if ((m = line.match(/^\s*\d+[.)]\s+(.*)$/))) { flushPara(); if (list !== 'ol') { closeList(); out.push('<ol>'); list = 'ol'; } out.push(`<li data-sl="${i}">${inlineMd(m[1])}</li>`); i++; continue; }
     if (!line.trim()) { flushPara(); closeList(); i++; continue; }
-    closeList(); para.push(line); i++;
+    closeList(); if (!para.length) paraStart = i; para.push(line); i++;
   }
   flushPara(); closeList();
   return out.join('\n') || `<p style="color:var(--muted)">${esc(t('nothingToPreview'))}</p>`;
@@ -3083,7 +3152,11 @@ function setNoteView(v) {
   if (v !== 'preview') { noteOverlay.paint(); noteText.focus(); }
   else closeFind();
 }
-function paintPreview() { $('notePreview').innerHTML = renderMarkdown(noteText.value); markPreviewSugs($('notePreview')); refreshSugs(noteText.value); updateSugBar(); }
+function paintPreview() {
+  $('notePreview').innerHTML = renderMarkdown(noteText.value); markPreviewSugs($('notePreview')); refreshSugs(noteText.value); updateSugBar();
+  syncMap = null;
+  if (noteView === 'split') requestAnimationFrame(() => syncScroll('editor'));   // while typing, the preview follows the editor
+}
 document.querySelector('.seg [data-view]').parentElement.addEventListener('click', e => { const b = e.target.closest('[data-view]'); if (b) setNoteView(b.dataset.view); });
 $('notePreview').addEventListener('click', e => {
   const cb = e.target.closest('input[type=checkbox][data-line]');
@@ -3191,7 +3264,7 @@ function overlay(ta, pre, render, after) {
   addEventListener('resize', schedule);
   return { paint, schedule };
 }
-const noteOverlay = overlay(noteText, $('noteHl'), noteHlHtml, () => { renderFind(); updateSugBar(); });
+const noteOverlay = overlay(noteText, $('noteHl'), noteHlHtml, () => { renderFind(); updateSugBar(); syncMap = null; });
 
 // ---------------------------------------------------------------- code in notes: typing helpers
 // Is the cursor inside a ``` block? Then which language (written on the fence, or guessed from the block).
@@ -3615,7 +3688,7 @@ function exportHtml(text) {
   box.querySelectorAll('blockquote').forEach(x => x.setAttribute('style', `border-left:3px solid ${LIGHT.line};padding-left:10px;color:${LIGHT.muted};margin:6px 0`));
   box.querySelectorAll('.ntag').forEach(x => { x.setAttribute('style', `color:${LIGHT.accent}`); x.removeAttribute('class'); x.removeAttribute('data-ntag-click'); });
   box.querySelectorAll('img').forEach(x => x.setAttribute('style', 'max-width:100%'));
-  box.querySelectorAll('[class], [data-line], [data-fence]').forEach(x => { x.removeAttribute('class'); x.removeAttribute('data-line'); x.removeAttribute('data-fence'); });
+  box.querySelectorAll('[class], [data-line], [data-fence], [data-sl]').forEach(x => { x.removeAttribute('class'); x.removeAttribute('data-line'); x.removeAttribute('data-fence'); x.removeAttribute('data-sl'); });
   return box.innerHTML;
 }
 function shareMenu(anchor) {
@@ -3817,6 +3890,63 @@ function setSide(open) {
   if (typeof syncHeadHeight === 'function') syncHeadHeight();
 }
 
+
+// ---------------------------------------------------------------- notes: side by side scrolls together
+// Each block in the preview knows the note line it came from (data-sl). The same lines are measured in an invisible
+// copy of the editor text, giving pairs of matching positions. Scrolling either side moves the other so the matching
+// spot lines up just under the pinned header; between two blocks the position is interpolated, so it stays smooth.
+let syncMap = null;
+function isSplitWide() { return noteView === 'split' && !$('notePreview').hidden && getComputedStyle($('notePreview')).position === 'sticky'; }
+function buildSyncMap() {
+  const prev = $('notePreview'), meas = $('noteMeasure'), byLine = new Map();
+  prev.querySelectorAll('[data-sl]').forEach(el => { const l = +el.dataset.sl; if (!byLine.has(l)) byLine.set(l, el); });
+  meas.innerHTML = noteText.value.split('\n').map((row, i) => (byLine.has(i) ? `<span data-l="${i}"></span>` : '') + esc(row)).join('\n');
+  const origin = prev.getBoundingClientRect().top - prev.scrollTop, map = [{ e: 0, p: 0 }];
+  meas.querySelectorAll('span[data-l]').forEach(sp => {
+    const last = map[map.length - 1], e = sp.offsetTop, pp = byLine.get(+sp.dataset.l).getBoundingClientRect().top - origin;
+    if (e >= last.e && pp >= last.p) map.push({ e, p: pp });       // keep both sides in order
+  });
+  const end = { e: noteText.offsetHeight, p: prev.scrollHeight }, last = map[map.length - 1];
+  if (end.e >= last.e && end.p >= last.p) map.push(end);
+  meas.textContent = '';
+  syncMap = map;
+}
+// Position x on side `from` ('e' editor, 'p' preview) → matching position on the other side.
+function mapPos(x, from, to) {
+  const m = syncMap;
+  if (!m || m.length < 2) return null;
+  let k = 0;
+  while (k < m.length - 2 && m[k + 1][from] <= x) k++;
+  const a = m[k], b = m[k + 1], f = b[from] > a[from] ? (x - a[from]) / (b[from] - a[from]) : 0;
+  return a[to] + Math.max(0, Math.min(1, f)) * (b[to] - a[to]);
+}
+function syncScroll(lead) {
+  if (!isSplitWide()) return;
+  if (!syncMap) buildSyncMap();
+  const prev = $('notePreview'), ref = headH() + 12;   // the line just under the pinned header
+  const edTop = $('noteWrap').getBoundingClientRect().top, pvTop = prev.getBoundingClientRect().top;
+  if (lead === 'editor') {
+    const p = mapPos(ref - edTop, 'e', 'p');
+    if (p != null) prev.scrollTop = Math.max(0, p - Math.max(0, ref - pvTop));
+  } else {
+    const e = mapPos(prev.scrollTop + Math.max(0, ref - pvTop), 'p', 'e');
+    if (e != null) scrollBy(0, e - (ref - edTop));
+  }
+}
+// Whichever side you scroll leads; the other side's own scroll events are ignored for a moment so they don't echo back.
+let scrollLead = null, scrollLeadUntil = 0, scrollQueued = null;
+function onSideScroll(who) {
+  const now = performance.now();
+  if (scrollLead && scrollLead !== who && now < scrollLeadUntil) return;
+  scrollLead = who; scrollLeadUntil = now + 150;
+  if (!scrollQueued) requestAnimationFrame(() => { const w = scrollQueued; scrollQueued = null; syncScroll(w); });
+  scrollQueued = who;
+}
+addEventListener('scroll', () => { if (noteView === 'split') onSideScroll('editor'); }, { passive: true });
+$('notePreview').addEventListener('scroll', () => { if (noteView === 'split') onSideScroll('preview'); }, { passive: true });
+$('notePreview').addEventListener('load', () => { syncMap = null; }, true);       // pictures change the preview's height
+addEventListener('resize', () => { syncMap = null; });
+
 // ---------------------------------------------------------------- notes: pictures
 // Pictures are shrunk, stored in the browser's database (the main data in localStorage has a ~5 MB limit)
 // and referenced from the note as ![Skärmbild](ping-img:ID). They travel in the save file and in backups.
@@ -3836,8 +3966,9 @@ function referencedImages() {
   for (const n of S.notes) { scan(n.text); (n.history || []).forEach(h => scan(h.text)); }
   return ids;
 }
-async function pruneImages() {      // pictures no note (or version) uses any more, after two days
+async function pruneImages() {      // pictures no note, version or daily copy uses any more, after two days
   const used = referencedImages(), cut = Date.now() - 2 * 86400000;
+  try { for (const k of (await kv.keys()).map(String).filter(k => k.startsWith('snap-'))) for (const m of String(await kv.get(k)).matchAll(/ping-img:([\w-]+)/g)) used.add(m[1]); } catch (e) { return; }
   for (const id of [...imgIds]) {
     if (used.has(id) || parseInt(id.split('-')[0], 36) > cut) continue;
     imgIds.delete(id); imgCache.delete(id);
@@ -4023,6 +4154,8 @@ document.addEventListener('click', e => {
     case 'new-note-menu': newNoteMenu(b); break;
     case 'close-link': closeLinkDlg(); break;
     case 'find-open': openFind(); break;
+    case 'restore-go': doRestore(); break;
+    case 'close-restore': pendingRestore = null; $('restoreDlg').hidden = true; break;
     case 'toggle-side': setSide(!sideOpen()); break;
     case 'sug-all': markAllSugs(); break;
     case 'sug-show': sugShowMenu(b); break;
@@ -4187,22 +4320,48 @@ function maybeOnboard() {
   if (isActiveWindow && fileInitDone && !S.settings.onboarded && $('setupDlg').hidden) openSetup(1);
 }
 $('keysDlg').addEventListener('mousedown', e => { if (e.target === $('keysDlg')) $('keysDlg').hidden = true; });
+let pendingRestore = null;
 $('importFile').addEventListener('change', async e => {
   const f = e.target.files[0]; e.target.value = '';
   if (!f) return;
-  try {
-    const raw = JSON.parse(await f.text()), data = normalize(raw);
-    if (raw.images) await pullImages(raw.images);
-    let added = 0;
-    for (const r of data.reminders) if (!find(r.id)) { S.reminders.push(r); added++; }
-    for (const n of data.notes) if (!S.notes.some(x => x.id === n.id)) { S.notes.push(n); added++; }
-    save(); changed(); renderNotes();
-    toast(added ? t('restored', added) : t('nothingNew'));
-  } catch (err) { toast(t('notBackup')); }
+  let raw;
+  try { raw = JSON.parse(await f.text()); } catch (err) { toast(t('notBackup')); return; }
+  if (!raw || typeof raw !== 'object' || !(Array.isArray(raw.reminders) || Array.isArray(raw.notes))) { toast(t('notBackup')); return; }
+  pendingRestore = raw;
+  const nr = (raw.reminders || []).length, nn = (raw.notes || []).filter(n => n && !n.trashed && !n.template).length, ni = Object.keys(raw.images || {}).length;
+  const when = raw.savedAt ? fmtWhen(new Date(raw.savedAt)) : f.name;
+  $('restoreInfo').textContent = t('restoreInfo', when, nr, nn, ni);
+  document.querySelector('input[name=restoreMode][value=add]').checked = true;
+  $('restoreDlg').hidden = false;
 });
+async function doRestore() {
+  const raw = pendingRestore; pendingRestore = null;
+  $('restoreDlg').hidden = true;
+  if (!raw) return;
+  const replace = document.querySelector('input[name=restoreMode]:checked').value === 'replace';
+  const data = normalize(JSON.parse(JSON.stringify(raw)));
+  delete data.images;
+  if (raw.images) await pullImages(raw.images);
+  if (replace) {
+    const keep = S.settings, ns = Object.assign({}, keep);
+    if (raw.settings) for (const k of SHARED_SETTINGS) if (raw.settings[k] !== undefined) ns[k] = raw.settings[k];
+    undoable(t('restoredAll'), () => {
+      data.settings = normalize({ settings: ns }).settings;
+      S = data; curNote = null; save(); renderAll();
+      if (currentTab() === 'notes') loadNote(sortedNotes()[0] || null);
+    });
+    return;
+  }
+  let added = 0;
+  for (const r of data.reminders) if (!find(r.id)) { S.reminders.push(r); added++; }
+  for (const n of data.notes) if (!S.notes.some(x => x.id === n.id)) { S.notes.push(n); added++; }
+  save(); changed(); renderNotes();
+  toast(added ? t('restored', added) : t('nothingNew'));
+}
+
 $('setSound').addEventListener('change', e => { S.settings.sound = e.target.checked; save(); if (e.target.checked) { const a = alertCfg(); playSound(a.sound, a.volume); } });
 $('setIcs').addEventListener('change', e => { S.settings.icsOnSave = e.target.checked; save(); });
-$('setMono').addEventListener('change', e => { S.settings.mono = e.target.checked; save(); noteText.classList.toggle('mono', S.settings.mono); $('noteHl').classList.toggle('mono', S.settings.mono); $('noteFind').classList.toggle('mono', S.settings.mono); noteOverlay.paint(); });
+$('setMono').addEventListener('change', e => { S.settings.mono = e.target.checked; save(); noteText.classList.toggle('mono', S.settings.mono); $('noteHl').classList.toggle('mono', S.settings.mono); $('noteFind').classList.toggle('mono', S.settings.mono); $('noteMeasure').classList.toggle('mono', S.settings.mono); noteOverlay.paint(); });
 $('setUtc').addEventListener('change', e => { S.settings.utcClock = e.target.checked; save(); });
 
 // ---------------------------------------------------------------- keyboard
@@ -4212,6 +4371,7 @@ document.addEventListener('keydown', e => {
     if (!popEl.hidden) closePop();
     else if (!$('codeDlg').hidden) closeCodeDlg();
     else if (!$('linkDlg').hidden) closeLinkDlg();
+    else if (!$('restoreDlg').hidden) { pendingRestore = null; $('restoreDlg').hidden = true; }
     else if (!$('histDlg').hidden) $('histDlg').hidden = true;
     else if (!$('trashDlg').hidden) $('trashDlg').hidden = true;
     else if (!$('findBar').hidden) closeFind(false);
@@ -4225,7 +4385,7 @@ document.addEventListener('keydown', e => {
   if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key.toLowerCase() === 'f' && currentTab() === 'notes' && $('editor').hidden && $('codeDlg').hidden) { e.preventDefault(); openFind(); return; }
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'e' && currentTab() === 'notes') { e.preventDefault(); setNoteView(noteView === 'edit' ? 'preview' : 'edit'); return; }
   if (e.ctrlKey || e.metaKey || e.altKey || typing(document.activeElement) || !$('editor').hidden || !$('keysDlg').hidden
-      || !$('setupDlg').hidden || !$('lockDlg').hidden || !$('startupDlg').hidden || !$('codeDlg').hidden || !$('linkDlg').hidden || !$('histDlg').hidden || !$('trashDlg').hidden || !isActiveWindow) return;
+      || !$('setupDlg').hidden || !$('lockDlg').hidden || !$('startupDlg').hidden || !$('codeDlg').hidden || !$('linkDlg').hidden || !$('histDlg').hidden || !$('trashDlg').hidden || !$('restoreDlg').hidden || !isActiveWindow) return;
   if (e.key === '?') { $('keysDlg').hidden = false; return; }
   if (e.key === '1') return showTab('reminders');
   if (e.key === '2') return showTab('notes');
@@ -4259,7 +4419,7 @@ function saveNow() {
   if (curNote && !curNote.text.trim()) { S.notes = S.notes.filter(n => n !== curNote); curNote = null; }
   stampChanges(S, base);
   S.savedAt = Date.now();
-  try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { }
+  writeLocal();
   if (fileHandle && fileState === 'ok') syncFile();
 }
 addEventListener('pagehide', saveNow);
@@ -4279,6 +4439,7 @@ function renderAll() {
   noteText.classList.toggle('mono', S.settings.mono);
   $('noteHl').classList.toggle('mono', S.settings.mono);
   $('noteFind').classList.toggle('mono', S.settings.mono);
+  $('noteMeasure').classList.toggle('mono', S.settings.mono);
   applyLang();
   applyTheme();
   setSide(sideOpen());
@@ -4295,6 +4456,7 @@ if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
 // ---------------------------------------------------------------- start
 $('saveChip').addEventListener('click', () => {
   if (fileHandle && fileState === 'needs-permission') fileReconnect();
+  else if (fileHandle && fileState === 'error') showTab('settings');
   else if (!fileHandle && fileApi) openSetup(1, true);
   else showTab('settings');
 });
