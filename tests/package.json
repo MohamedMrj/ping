@@ -1,0 +1,14 @@
+{
+  "name": "ping-tests",
+  "private": true,
+  "description": "Tests for Ping. They only read index.html; nothing here is needed to run the app.",
+  "type": "module",
+  "scripts": {
+    "test": "node --test --test-concurrency=1 *.test.mjs *.test.cjs",
+    "test:unit": "node --test sync.test.mjs parser.test.mjs hl.test.cjs sug.test.cjs",
+    "test:app": "node --test app.test.mjs"
+  },
+  "devDependencies": {
+    "playwright-core": "^1.56.0"
+  }
+}

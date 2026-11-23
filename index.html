@@ -418,6 +418,10 @@ details.adv[open] { display: grid; gap: 8px; }
 .hint { margin: 0; font-size: 13px; color: var(--muted); }
 .steps li { line-height: 1.6; }
 #lockDlg, #setupDlg { z-index: 90; }
+a.btn { color: var(--ink); text-decoration: none; }
+.setup .modal-scroll { max-height: min(78vh, 760px); overflow: auto; display: grid; gap: 12px; padding-right: 4px; }
+.drive-steps li::marker { font-weight: 700; color: var(--accent); }
+.drive-steps a { color: var(--accent); }
 
 @media (max-width: 720px) {
   .notes { grid-template-columns: minmax(0, 1fr); }
@@ -453,7 +457,7 @@ details.adv[open] { display: grid; gap: 8px; }
     <button class="btn ghost sm" type="button" data-act="hide-banner" data-i18n="notNow">Inte nu</button>
   </div>
   <div class="banner" id="backupBanner" hidden>
-    <p data-i18n="bannerBackup"><strong>Dags att spara en säkerhetskopia.</strong> Dina påminnelser och anteckningar finns bara i den här webbläsaren. Ladda ner en kopia och lägg den i Dokument, så kan du alltid få tillbaka allt med ”Återställ från säkerhetskopia” under Inställningar.</p>
+    <p data-i18n="bannerBackup"><strong>Dags att spara en säkerhetskopia.</strong> Dina påminnelser och anteckningar finns bara i den här webbläsaren. Ladda ner en kopia och lägg den i mappen Ping i Google Drive eller OneDrive, så kan du alltid få tillbaka allt med ”Återställ från säkerhetskopia” under Inställningar.</p>
     <button class="btn primary sm" type="button" data-act="export" data-i18n="backupNow">Ladda ner säkerhetskopia</button>
     <button class="btn ghost sm" type="button" data-act="backup-later" data-i18n="later">Påminn mig i morgon</button>
   </div>
@@ -669,7 +673,9 @@ details.adv[open] { display: grid; gap: 8px; }
           <button class="btn" type="button" data-act="snap-restore" data-i18n="snapRestore">Återställ den här kopian</button>
         </div>
         <p id="persistStatus"></p>
-        <div class="row"><button class="btn ghost" type="button" data-act="setup-open-wizard" data-i18n="rerunSetup">Kör sparguiden igen</button></div>
+        <div class="row">
+          <button class="btn" type="button" data-act="setup-open-wizard" data-i18n="driveGuideBtn">Guide: spara i Google Drive eller OneDrive så att inget försvinner</button>
+        </div>
       </div>
       <div class="card">
         <h3 data-i18n="startupH">Öppna Ping när webbläsaren startar</h3>
@@ -846,12 +852,60 @@ details.adv[open] { display: grid; gap: 8px; }
 
 <!-- first-run setup: explains why the browser asks for permission -->
 <div class="scrim" id="setupDlg" hidden>
-  <div class="modal setup" role="dialog" aria-labelledby="setupTitle1">
-    <div id="setupStep1" class="setup-step">
-      <p class="step" data-i18n="step1">Steg 1 av 2</p>
+  <div class="modal setup" role="dialog" aria-labelledby="setupTitle0">
+    <!-- step 1: a synced folder (Google Drive) so the save file survives a broken or new computer -->
+    <div id="setupStep0" class="setup-step modal-scroll">
+      <p class="step" data-i18n="step0">Steg 1 av 3</p>
+      <h2 id="setupTitle0" data-i18n="driveT">Se till att du aldrig förlorar något</h2>
+      <p data-i18n="driveP1">Ping sparar allt i webbläsaren på den här datorn. Går datorn sönder, byter du dator eller rensas webbläsaren kan allt försvinna. Skyddet är enkelt: låt Ping spara en kopia i en mapp som synkas till molnet, som <strong>Google Drive</strong> eller <strong>OneDrive</strong>. Då finns dina påminnelser och anteckningar kvar även om datorn går sönder, och samma fil finns på alla dina datorer. Båda är gratis.</p>
+      <div class="row"><span data-i18n="cloudPick">Välj den tjänst du vill använda:</span>
+        <div class="seg" id="cloudSeg" role="group" aria-label="Molntjänst" data-i18n-aria="cloudPickAria">
+          <button type="button" data-act="cloud-pick" data-cloud-set="gdrive" aria-pressed="true">Google Drive</button>
+          <button type="button" data-act="cloud-pick" data-cloud-set="onedrive" aria-pressed="false">OneDrive</button>
+        </div>
+      </div>
+      <div data-cloud="gdrive" class="setup-step">
+        <ol class="steps drive-steps">
+          <li data-i18n="driveS1"><strong>Ladda ner Google Drive för datorn.</strong> Det finns för Windows och Mac: <a href="https://www.google.com/drive/download/" target="_blank" rel="noopener">google.com/drive/download</a></li>
+          <li data-i18n="driveS2"><strong>Installera och logga in.</strong> Öppna filen du laddade ner och följ stegen. Logga in med ditt Google-konto. Har du inget kan du skapa ett gratis på <a href="https://accounts.google.com/signup" target="_blank" rel="noopener">accounts.google.com</a>.</li>
+          <li data-i18n="driveS3"><strong>Hitta Google Drive på datorn.</strong> Windows: öppna Utforskaren, klicka på <strong>Google Drive</strong> i vänsterspalten och sedan på <strong>Min enhet</strong>. Mac: öppna Finder, klicka på <strong>Google Drive</strong> under Platser och sedan på <strong>Min enhet</strong>.</li>
+          <li data-i18n="driveS4"><strong>Skapa en mapp som heter Ping.</strong> Högerklicka i <strong>Min enhet</strong> och välj <strong>Nytt → Mapp</strong> (Mac: <strong>Ny mapp</strong>). Skriv Ping och tryck Enter.</li>
+          <li data-i18n="driveS5"><strong>Gör mappen tillgänglig offline.</strong> Högerklicka på mappen Ping och välj <strong>Offlineåtkomst → Tillgänglig offline</strong>. Då kan Ping spara även utan internet, och Google Drive laddar upp ändringarna när du är uppkopplad igen.</li>
+        </ol>
+        <details>
+          <summary data-i18n="driveMoreT">Vill du använda Ping på fler datorer?</summary>
+          <p data-i18n="driveMoreP">Installera Google Drive på den datorn också och logga in med samma Google-konto. Öppna Ping där, välj ”Jag har redan en sparfil” och välj <strong>Min enhet → Ping → Ping-data.json</strong>. Sedan förs ändringar över automatiskt mellan datorerna.</p>
+        </details>
+        <div><a class="btn" href="https://www.google.com/drive/download/" target="_blank" rel="noopener" data-i18n="driveDownload">Ladda ner Google Drive</a></div>
+      </div>
+      <div data-cloud="onedrive" class="setup-step" hidden>
+        <ol class="steps drive-steps">
+          <li data-i18n="odS1"><strong>Kolla om du redan har OneDrive.</strong> Windows 10 och 11 har det inbyggt: leta efter molnikonen längst ner till höger, vid klockan, eller efter <strong>OneDrive</strong> i Utforskarens vänsterspalt. På Mac laddar du ner det från <a href="https://www.microsoft.com/microsoft-365/onedrive/download" target="_blank" rel="noopener">microsoft.com/onedrive</a> eller App Store.</li>
+          <li data-i18n="odS2"><strong>Logga in.</strong> Öppna OneDrive (Windows: Start-menyn → OneDrive) och logga in med ditt Microsoft-konto. Har du inget kan du skapa ett gratis på <a href="https://signup.live.com" target="_blank" rel="noopener">signup.live.com</a>. Följ stegen tills OneDrive säger att det är klart.</li>
+          <li data-i18n="odS3"><strong>Hitta OneDrive på datorn.</strong> Windows: öppna Utforskaren och klicka på <strong>OneDrive</strong> i vänsterspalten (den kan heta till exempel ”OneDrive – Personligt”). Mac: öppna Finder och klicka på <strong>OneDrive</strong> under Platser.</li>
+          <li data-i18n="odS4"><strong>Skapa en mapp som heter Ping.</strong> Högerklicka i OneDrive-mappen och välj <strong>Nytt → Mapp</strong> (Mac: <strong>Ny mapp</strong>). Skriv Ping och tryck Enter.</li>
+          <li data-i18n="odS5"><strong>Behåll mappen på datorn.</strong> Högerklicka på mappen Ping och välj <strong>Behåll alltid på den här enheten</strong>. Då kan Ping spara även utan internet, och OneDrive laddar upp ändringarna när du är uppkopplad igen.</li>
+        </ol>
+        <details>
+          <summary data-i18n="driveMoreT">Vill du använda Ping på fler datorer?</summary>
+          <p data-i18n="odMoreP">Logga in i OneDrive på den datorn också, med samma Microsoft-konto. Öppna Ping där, välj ”Jag har redan en sparfil” och välj <strong>OneDrive → Ping → Ping-data.json</strong>. Sedan förs ändringar över automatiskt mellan datorerna.</p>
+        </details>
+        <div><a class="btn" href="https://www.microsoft.com/microsoft-365/onedrive/download" target="_blank" rel="noopener" data-i18n="odDownload">Ladda ner OneDrive</a></div>
+      </div>
+      <p data-i18n="driveP2">I nästa steg sparar du Pings fil i mappen <strong>Ping</strong> som du just skapade. Sedan sköter allt sig självt: varje ändring sparas i filen och molntjänsten tar hand om resten.</p>
+      <details>
+        <summary data-i18n="driveOtherT">Använder du hellre iCloud Drive eller Dropbox?</summary>
+        <p data-i18n="driveOtherP">Det fungerar på samma sätt. Skapa en mapp som heter Ping i den mapp som synkas och välj den i nästa steg. Det viktiga är att filen ligger i en mapp som synkas till molnet, inte bara på datorn.</p>
+      </details>
+      <div class="row">
+        <button class="btn primary" type="button" data-act="setup-drive-next" data-i18n="driveNext">Nästa: välj var filen sparas</button>
+      </div>
+    </div>
+    <div id="setupStep1" class="setup-step" hidden>
+      <p class="step" data-i18n="step1">Steg 2 av 3</p>
       <h2 id="setupTitle1" data-i18n="setupT1">Spara dina påminnelser säkert</h2>
       <p data-i18n="setupP1">Ping har ingen server och inget konto. Allt du skriver sparas bara här på din dator, i webbläsaren. Det betyder att det kan försvinna om webbläsarens data rensas eller om du byter dator.</p>
-      <p data-i18n="setupP2">Därför sparar Ping också en kopia i en fil som du själv väljer, till exempel i mappen <strong>Dokument</strong>. Lägg den gärna i en mapp som säkerhetskopieras eller synkas, som OneDrive, iCloud Drive, Google Drive eller Dropbox. Då finns den kvar även om datorn går sönder, och du kan använda Ping på flera datorer.</p>
+      <p data-i18n="setupP2">Därför sparar Ping också en kopia i en fil som du själv väljer. Klicka på <strong>Välj plats och spara</strong> och välj mappen <strong>Ping</strong> som du skapade i Google Drive (<strong>Min enhet → Ping</strong>) eller OneDrive (<strong>OneDrive → Ping</strong>), eller en annan mapp som synkas, som iCloud Drive eller Dropbox. Då finns allt kvar även om datorn går sönder, och du kan använda Ping på flera datorer.</p>
       <details>
         <summary data-i18n="setupWhy">Varför frågar webbläsaren om lov?</summary>
         <ul>
@@ -866,7 +920,7 @@ details.adv[open] { display: grid; gap: 8px; }
           <button class="btn primary" type="button" data-act="setup-create" data-i18n="setupCreate">Välj plats och spara</button>
           <button class="btn" type="button" data-act="setup-open" data-i18n="setupOpen">Jag har redan en sparfil</button>
         </div>
-        <p class="hint" data-i18n="setupHint">Vill du ha samma påminnelser och anteckningar på flera datorer eller i flera webbläsare? Lägg filen i en mapp som synkas, till exempel OneDrive. Välj sedan ”Jag har redan en sparfil” i de andra webbläsarna och öppna samma Ping-data.json. Ändringar förs över automatiskt.</p>
+        <p class="hint" data-i18n="setupHint">Vill du ha samma påminnelser och anteckningar på flera datorer eller i flera webbläsare? Lägg filen i en mapp som synkas, till exempel Google Drive. Välj sedan ”Jag har redan en sparfil” i de andra webbläsarna och öppna samma Ping-data.json. Ändringar förs över automatiskt.</p>
         <div><button class="btn ghost sm" type="button" data-act="setup-skip" data-i18n="setupSkip">Hoppa över (rekommenderas inte)</button></div>
       </div>
       <div id="setupFileNo" class="setup-step" hidden>
@@ -876,11 +930,12 @@ details.adv[open] { display: grid; gap: 8px; }
           <button class="btn primary" type="button" data-act="export" data-i18n="export">Ladda ner säkerhetskopia (JSON)</button>
           <button class="btn" type="button" data-act="setup-skip" data-i18n="next">Nästa</button>
         </div>
+        <p class="hint" data-i18n="setupNoFileDrive">När säkerhetskopian har laddats ner: flytta den från mappen Hämtade filer till mappen <strong>Ping</strong> i Google Drive eller OneDrive. Då finns den kvar i molnet även om datorn går sönder.</p>
       </div>
     </div>
     <div id="setupStep2" class="setup-step" hidden>
-      <p class="step" data-i18n="step2">Steg 2 av 2</p>
-      <h2 data-i18n="setupT2">Få en avisering när det är dags</h2>
+      <p class="step" data-i18n="step2">Steg 3 av 3</p>
+      <h2 id="setupTitle2" data-i18n="setupT2">Få en avisering när det är dags</h2>
       <p data-i18n="setupP3">Tillåt aviseringar så att dina påminnelser syns i hörnet av skärmen, även när Ping ligger bakom andra fönster.</p>
       <ul>
         <li data-i18n="setupLi5">Ping använder aviseringar bara för påminnelser som du själv har skapat. Ingen reklam, inga nyheter.</li>
@@ -957,7 +1012,7 @@ const Cron = (() => {
     const val = v => { v = v.toLowerCase(); if (names && v in names) return names[v]; if (!/^\d+$/.test(v)) throw new Error(T.notValid(v, F)); return +v; };
     for (const part of txt.split(',')) {
       const [range, stepTxt] = part.split('/');
-      const step = stepTxt === undefined ? 1 : +stepTxt;
+      const step = stepTxt === undefined ? 1 : /^\d+$/.test(stepTxt) ? +stepTxt : NaN;
       if (!(step >= 1)) throw new Error(T.badStep(stepTxt, F));
       let a, b;
       if (range === '*') { a = lo; b = hi; }
@@ -976,14 +1031,14 @@ const Cron = (() => {
   }
   function next(c, afterMs) {
     if (typeof c === 'string') c = parse(c);
-    const d = new Date(afterMs); d.setSeconds(0, 0); d.setMinutes(d.getMinutes() + 1);
+    const d = new Date(afterMs); d.setSeconds(0, 0); d.setTime(d.getTime() + 60000);
     for (let i = 0; i < 200000; i++) {
       if (!c.mon.has(d.getMonth() + 1)) { d.setMonth(d.getMonth() + 1, 1); d.setHours(0, 0, 0, 0); continue; }
       const domOk = c.dom.has(d.getDate()), dowOk = c.dow.has(d.getDay());
       const dayOk = c.domAny && c.dowAny ? true : c.domAny ? dowOk : c.dowAny ? domOk : (domOk || dowOk);
       if (!dayOk) { d.setDate(d.getDate() + 1); d.setHours(0, 0, 0, 0); continue; }
       if (!c.hour.has(d.getHours())) { d.setHours(d.getHours() + 1, 0, 0, 0); continue; }
-      if (!c.min.has(d.getMinutes())) { d.setMinutes(d.getMinutes() + 1, 0, 0); continue; }
+      if (!c.min.has(d.getMinutes())) { d.setTime(d.getTime() + 60000); continue; }
       return d.getTime();
     }
     return null;
@@ -999,7 +1054,7 @@ const QuickParser = (() => {
 
   const DAY = 'monday|tuesday|wednesday|thursday|friday|saturday|sunday|måndag|tisdag|onsdag|torsdag|fredag|lördag|söndag|mon|tue|tues|wed|thu|thur|thurs|fri';
   const MON = 'january|february|march|april|may|june|july|august|september|october|november|december|januari|februari|mars|maj|juni|juli|augusti|oktober|jan|feb|mar|apr|jun|jul|aug|sept|sep|oct|okt|nov|dec';
-  const SUF = String.raw`(?:\s+(?:at\s+|kl\.?\s*|klockan\s+|@\s*)?(?<h>\d{1,2})(?:[:.](?<mi>\d{2}))?(?:\s*(?<ap>am|pm))?)?(?!\w)`;
+  const SUF = String.raw`(?:\s+(?:at\s+|kl\.?\s*|klockan\s+|@\s*)?(?<h>[01]?\d|2[0-3])(?:[:.](?<mi>[0-5]\d))?(?:\s*(?<ap>am|pm))?)?(?!\w)`;
 
   const cut = (s, m) => s.slice(0, m.index) + ' ' + s.slice(m.index + m[0].length);
   const dayIndex = w => {
@@ -1022,10 +1077,12 @@ const QuickParser = (() => {
   const mkDate = (y, mo, d, today, yearGiven) => {
     if (mo < 0 || mo > 11 || d < 1 || d > 31) return null;
     if (y < 100) y += 2000;
-    let dt = new Date(y, mo, d);
-    if (dt.getMonth() !== mo) return null;
-    if (!yearGiven && dt < today) dt = new Date(y + 1, mo, d);
-    return dt;
+    for (let k = 0; k < (yearGiven ? 1 : 9); k++) {
+      const dt = new Date(y + k, mo, d);
+      if (dt.getMonth() !== mo || (!yearGiven && dt < today)) continue;
+      return dt;
+    }
+    return null;
   };
   const addDays = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
   const CRON_TOK = String.raw`(?:[\d*][\d*,/\-]*|[a-z]{3}(?:[\-,][a-z]{3})*)`;
@@ -1035,7 +1092,7 @@ const QuickParser = (() => {
     if (!input || !input.trim()) return res;
     let s = ' ' + input + ' ';
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    let date = null, absolute = null, time = null, weekday = -1, evening = false, utc = false, m;
+    let nextWeek = false, relDay = false, date = null, absolute = null, time = null, weekday = -1, evening = false, utc = false, m;
 
     // tags and priority
     s = s.replace(new RegExp(String.raw`(?<=^|\s)#([\p{L}\p{N}_][\p{L}\p{N}_\-/.]*)`, 'gu'), (_, t) => {
@@ -1052,7 +1109,7 @@ const QuickParser = (() => {
     if (m) {
       const expr = (m[1] || m[2] || m[3] || m[4] || m[5]).trim();
       try { Cron.parse(expr); res.repeat = 'cron'; res.cron = expr; s = cut(s, m); }
-      catch (e) { res.error = e.message; }
+      catch (e) { if (!m[5] || /[\d*]/.test(expr)) res.error = e.message; }
     }
 
     // utc marker
@@ -1071,7 +1128,7 @@ const QuickParser = (() => {
 
     // repetition by calendar
     if (res.repeat === 'none') {
-      m = s.match(R(String.raw`\b(?:every|each|varje)\s+(?<d>${DAY})` + SUF));
+      m = s.match(R(String.raw`\b(?:every|each|varje)\s+(?<d>${DAY}|sat|sun)` + SUF));
       if (m) { res.repeat = 'weekly'; weekday = dayIndex(m.groups.d); time = sufTime(m); s = cut(s, m); }
       else {
         const pats = [
@@ -1091,11 +1148,10 @@ const QuickParser = (() => {
       m = s.match(R(String.raw`\b(?:in|om)\s+(\d+(?:[.,]\d+)?|an?|one|en|ett)\s*(minutes?|mins?|m|minuter|minut|hours?|hrs?|hr|h|timmar|timme|tim|t|days?|d|dagar|dag|weeks?|w|veckor|vecka|v|months?|månader|månad)\b`));
       if (m) {
         const n = num(m[1]), u = m[2].toLowerCase();
-        if (u.startsWith('mo') || u.startsWith('må')) { absolute = new Date(now); absolute.setMonth(absolute.getMonth() + Math.max(1, Math.round(n))); }
+        if (u.startsWith('mo') || u.startsWith('må')) { relDay = true; absolute = new Date(now); const d0 = absolute.getDate(); absolute.setDate(1); absolute.setMonth(absolute.getMonth() + Math.max(1, Math.round(n))); absolute.setDate(Math.min(d0, new Date(absolute.getFullYear(), absolute.getMonth() + 1, 0).getDate())); }
         else if (u[0] === 'm') absolute = new Date(now.getTime() + n * 60000);
         else if (u[0] === 'h' || u[0] === 't') absolute = new Date(now.getTime() + n * 3600000);
-        else if (u[0] === 'd') absolute = new Date(now.getTime() + n * 86400000);
-        else absolute = new Date(now.getTime() + n * 7 * 86400000);
+        else { const days = u[0] === 'd' ? n : n * 7; if (Number.isInteger(days)) { relDay = true; absolute = new Date(now); absolute.setDate(absolute.getDate() + days); } else absolute = new Date(now.getTime() + days * 86400000); }
         s = cut(s, m);
       }
     }
@@ -1116,8 +1172,8 @@ const QuickParser = (() => {
     m = s.match(R(String.raw`\b(?:today|idag|i\s+dag)` + SUF));
     if (m) { if (!date) date = today; time = time ?? sufTime(m); s = cut(s, m); }
     if (weekday < 0) {
-      m = s.match(R(String.raw`\b(?:on\s+|next\s+|this\s+|nästa\s+|på\s+)?(?<d>${DAY})` + SUF));
-      if (m) { weekday = dayIndex(m.groups.d); time = time ?? sufTime(m); s = cut(s, m); }
+      m = s.match(R(String.raw`\b(?<pre>on\s+|next\s+|this\s+|nästa\s+|på\s+)?(?<d>${DAY}|(?<=\b(?:on|next|this)\s+)(?:sat|sun))` + SUF));   // short sat/sun only after on/next/this: "enjoy the sun" stays text
+      if (m) { nextWeek = /^(?:next|nästa)/i.test(m.groups.pre || ''); weekday = dayIndex(m.groups.d); time = time ?? sufTime(m); s = cut(s, m); }
     }
 
     // explicit times
@@ -1146,11 +1202,13 @@ const QuickParser = (() => {
       if (m) { const yg = !!m[3]; date = mkDate(yg ? +m[3] : today.getFullYear(), monthIndex(m[1]), +m[2], today, yg); if (date) s = cut(s, m); }
     }
     if (!date) {
-      m = s.match(R(String.raw`\b(?:on\s+|den\s+)?(\d{1,2})[/.](\d{1,2})(?:[/.](\d{2,4}))?\b`));
-      if (m) { const yg = !!m[3]; date = mkDate(yg ? +m[3] : today.getFullYear(), +m[2] - 1, +m[1], today, yg); if (date) s = cut(s, m); }
+      for (const mm of s.matchAll(R(String.raw`\b(?:on\s+|den\s+)?(?<![\d/.])(\d{1,2})[/.](\d{1,2})(?:[/.](\d{2,4}))?\b(?![/.]\d)`, 'giu'))) {
+        const yg = !!mm[3]; date = mkDate(yg ? +mm[3] : today.getFullYear(), +mm[2] - 1, +mm[1], today, yg);
+        if (date) { s = cut(s, mm); break; }
+      }
     }
     if (time === null) {
-      m = s.match(R(String.raw`\b([01]?\d|2[0-3])\.([0-5]\d)\b`));
+      m = s.match(R(String.raw`(?<![\d/.])\b([01]?\d|2[0-3])\.([0-5]\d)\b(?![/.]\d)`));
       if (m) { time = mkTime(m[1], m[2], ''); s = cut(s, m); }
     }
 
@@ -1163,13 +1221,14 @@ const QuickParser = (() => {
       res.when = n ? new Date(n) : null;
       if (!n) res.error = ParserText.t.neverRuns;
     }
-    else if (absolute) { absolute.setSeconds(absolute.getSeconds(), 0); res.when = absolute; }
+    else if (absolute) { if (relDay && time !== null) absolute = at(absolute, time); else absolute.setSeconds(absolute.getSeconds(), 0); res.when = absolute; }
     else if (res.repeat === 'interval' && !date && time === null && weekday < 0 && !evening) {
       const w = new Date(now.getTime() + res.every * 60000); w.setSeconds(0, 0); res.when = w;
     }
     else if (date || time !== null || weekday >= 0 || evening || res.repeat !== 'none') {
-      let d = date || today;
-      if (!date && weekday >= 0) d = addDays(today, (weekday - today.getDay() + 7) % 7);
+      const base = utc && !date ? new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()) : today;
+      let d = date || base;
+      if (!date && weekday >= 0) d = addDays(base, (weekday - base.getDay() + 7) % 7 || (nextWeek ? 7 : 0));
       const t = time ?? (evening ? 19 * 60 : 9 * 60);
       let w = at(d, t);
       if (w <= now && !date) w = at(addDays(d, weekday >= 0 ? 7 : 1), t);
@@ -1279,13 +1338,13 @@ const Hl = (() => {
 
   const CSS_RULES = [WS, BC,
     [/@[\w-]+/y, 'kw'],
-    [/[^{};@\s][^{};]*(?=\{)/y, 'tag'],
-    [/--[\w-]+|[a-zA-Z-]+(?=\s*:(?!:))/y, 'prop'],
+    [/(?<=(?:^|[{};]|\*\/)\s*)[^{};@\s][^{};]*(?=\{)/y, 'tag'],
+    [/(?<![\w-])(?:--[\w-]+|[a-zA-Z-]+(?=\s*:(?!:)))/y, 'prop'],
     [/#[\da-fA-F]{3,8}\b/y, 'num'],
     DQ, SQ,
     [/-?(?:\d+\.?\d*|\.\d+)(?:px|em|rem|%|vh|vw|vmin|vmax|ch|ex|s|ms|deg|rad|turn|fr|dpi|dppx)?/y, 'num'],
     [/!important/y, 'kw'],
-    [/[\w-]+(?=\()/y, 'fn'],
+    [/(?<![\w-])[\w-]+(?=\()/y, 'fn'],
     [/[:;,>+~*()]/y, 'op']];
   def('css', 'CSS', ['scss', 'less'], CSS_RULES, ['/*', '*/']);
 
@@ -1369,14 +1428,14 @@ const Hl = (() => {
     [/[+*/%=<>!|&]+/y, 'op']], ['#']);
 
   def('json', 'JSON', ['jsonc', 'json5', 'geojson', 'ipynb'], [WS, LC('//'), BC,
-    [/"(?:[^"\\\n]|\\.)*"?(?=\s*:)/y, 'prop'], DQ,
+    [/"(?:[^"\\\n]|\\.)*"(?=\s*:)/y, 'prop'], DQ,
     [/-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?/y, 'num'],
     [/\b(?:true|false|null)\b/y, 'lit'],
     [/[{}\[\],:]/y, 'op']], ['//']);
 
   def('yaml', 'YAML', ['yml'], [WS, HASH,
     [/^---|^\.\.\./my, 'meta'],
-    [/(?:-\s+)?[\w"'][^:#\n]*?(?=:(?:\s|$))/y, m => {
+    [/(?<=^[ \t]*|[{,][ \t]*|-[ \t]+)(?:-\s+)?[\w"'][^:#\n]*?(?=:(?:\s|$))/my, m => {
       const d = m[0].match(/^(-\s+)?([\s\S]*)$/);
       return [...(d[1] ? [[d[1], 'op']] : []), [d[2], 'prop']];
     }],
@@ -1444,7 +1503,7 @@ const Hl = (() => {
     NUM, [/[A-Za-z_][\w.-]*/y, null], [/[&|;=\\]+/y, 'op']], ['#']);
 
   def('terraform', 'Terraform', ['tf', 'hcl', 'tfvars'], [WS, HASH, LC('//'), BC,
-    [/<<-?(\w+)[\s\S]*?^\s*\1\b/my, 'str'],
+    [/<<-?(\w+)[\s\S]*?(?:^[ \t]*\1\b|(?![\s\S]))/my, 'str'],
     DQ,
     [/[A-Za-z_][\w-]*(?=\s*=(?!=))/y, 'prop'],
     NUM,
@@ -1454,7 +1513,7 @@ const Hl = (() => {
   def('ini', 'INI / TOML', ['toml', 'cfg', 'conf', 'properties', 'editorconfig', 'gitconfig', 'env', 'dotenv'], [WS,
     [/[;#][^\n]*/y, 'com'],
     [/(?<=^[ \t]*)\[\[?[^\]\n]*\]?\]?/my, 'tag'],
-    [/(?<=^[ \t]*)[\w."'$-][\w."' $-]*?(?=\s*[=:])/my, 'prop'],
+    [/(?<=^[ \t]*)[\w."'$-](?:[\w."' $-]*[\w."'$-])?(?=[ \t]*[=:])/my, 'prop'],   // a key never ends in a space: keeps long space runs fast
     [/"""[\s\S]*?(?:"""|$)/y, 'str'], DQ, SQ,
     [/\b(?:true|false|yes|no|on|off)\b/iy, 'lit'],
     [/-?\d[\d_]*(?:\.\d+)?(?:[eE][+-]?\d+)?|\d{4}-\d\d-\d\d(?:[T ][\d:.]+Z?)?/y, 'num'],
@@ -1477,7 +1536,7 @@ const Hl = (() => {
     [/`[^`\n]+`/y, 'str'],
     [/\*\*[^*\n]+\*\*|__[^_\n]+__/y, 'type'],
     [/\*[^*\s][^*\n]*\*|_[^_\s][^_\n]*_/y, 'lit'],
-    [/!?\[[^\]\n]*\]\([^)\n]*\)/y, 'fn'],
+    [/!?\[[^\[\]\n]*\]\([^)\n]*\)/y, 'fn'],
     [/https?:\/\/[^\s)]+/y, 'fn'],
     [/[^\n`*_\[!h#>-]+|[\s\S]/y, null]], ['<!--', '-->']);
 
@@ -1500,7 +1559,7 @@ const Hl = (() => {
     [/[^\s$#"':=]+|\s+/y, null]], ['#']);
 
   def('regex', 'Regex', ['regexp', 're', 'pcre'], [
-    [/\\[dDwWsSbBnrtfv0]|\\[pP]\{[^}]*\}|\\u[\da-fA-F]{4}|\\x[\da-fA-F]{2}|\\./y, 'kw'],
+    [/\\[dDwWsSbBnrtfv0]|\\[pP]\{[^}]*\}|\\u[\da-fA-F]{4}|\\x[\da-fA-F]{2}|\\(?:[\uD800-\uDBFF][\uDC00-\uDFFF]|[\s\S])/y, 'kw'],
     [/\[(?:\\.|[^\]\\])*\]?/y, 'str'],
     [/\(\?(?:[:=!>]|<[=!]|<\w+>|P<\w+>)|[()]/y, 'op'],
     [/[*+?]\??|\{\d+(?:,\d*)?\}\??/y, 'num'],
@@ -1514,29 +1573,29 @@ const Hl = (() => {
     ['xml', [[/^\s*<\?xml/, 8], [/^\s*<[\w:.-]+[^>]*>[\s\S]*<\/[\w:.-]+>\s*$/, 3]]],
     ['php', [[/<\?php/, 10], [/\$\w+\s*=[^=]/, 1], [/->\w+\(/, 1], [/\becho\s/, 1]]],
     ['sql', [[/\b(?:select\s[\s\S]+?\sfrom|insert\s+into|update\s+\w+\s+set|delete\s+from|create\s+(?:or\s+replace\s+)?(?:table|view|procedure|function|index)|alter\s+table|drop\s+table|truncate\s+table)\b/i, 6], [/\b(?:where|join|group\s+by|order\s+by|having)\b/i, 1]]],
-    ['kql', [[/^\s*\w+\s*\n?\s*\|\s*(?:where|project|summarize|extend|take|order\s+by|sort\s+by|render|join|count|top|limit)\b/im, 8], [/\|\s*(?:where|project|summarize|extend|take|render)\b/, 3], [/\bago\(\d+[dhms]\)/, 3]]],
+    ['kql', [[/^[ \t]*\w+\s*\|\s*(?:where|project|summarize|extend|take|order\s+by|sort\s+by|render|join|count|top|limit)\b/im, 8], [/\|\s*(?:where|project|summarize|extend|take|render)\b/, 3], [/\bago\(\d+[dhms]\)/, 3]]],
     ['powershell', [[/\b(?:Get|Set|New|Remove|Add|Write|Import|Export|Invoke|Start|Stop|Test|Select|Where|ForEach|Out|Format|Convert(?:To|From))-[A-Z][A-Za-z]+/, 6], [/\$_\.|\$env:|\$PSScriptRoot/i, 4], [/\s-(?:eq|ne|gt|lt|ge|le|like|match|contains)\s/i, 3], [/\[(?:string|int|bool|datetime|array)\]\$/i, 3]]],
-    ['bash', [[/^#!.*\b(?:ba|z|k)?sh\b/m, 10], [/^\s*(?:echo|export|sudo|apt(?:-get)?|yum|cd|ls|grep|curl|wget|chmod|chown|mkdir|rm|cp|mv|git|docker|kubectl|npm|pip)\s/m, 3], [/\b(?:fi|done|esac|then)\b/, 3], [/\$\{?\w+\}?/, 1], [/&&|\|\|/, 1]]],
-    ['dockerfile', [[/^\s*FROM\s+[\w./:-]+/m, 6], [/^\s*(?:RUN|COPY|WORKDIR|ENTRYPOINT|CMD|EXPOSE|ENV|ARG)\s/m, 3]]],
+    ['bash', [[/^#!.*\b(?:ba|z|k)?sh\b/m, 10], [/^[ \t]*(?:echo|export|sudo|apt(?:-get)?|yum|cd|ls|grep|curl|wget|chmod|chown|mkdir|rm|cp|mv|git|docker|kubectl|npm|pip)\s/m, 3], [/\b(?:fi|done|esac|then)\b/, 3], [/\$\{?\w+\}?/, 1], [/&&|\|\|/, 1]]],
+    ['dockerfile', [[/^[ \t]*FROM\s+[\w./:-]+/m, 6], [/^[ \t]*(?:RUN|COPY|WORKDIR|ENTRYPOINT|CMD|EXPOSE|ENV|ARG)\s/m, 3]]],
     ['terraform', [[/\b(?:resource|data|module|provider|variable|output)\s+"[^"]+"(?:\s+"[^"]+")?\s*\{/, 8], [/\bterraform\s*\{/, 5]]],
-    ['nginx', [[/\b(?:server_name|proxy_pass|listen|location|root|try_files|upstream)\b[^;\n]*[;{]/, 6], [/<(?:VirtualHost|Directory|IfModule)\b/, 8], [/^\s*RewriteRule\b/m, 6]]],
+    ['nginx', [[/\b(?:server_name|proxy_pass|listen|location|root|try_files|upstream)\b[^;\n]*[;{]/, 6], [/<(?:VirtualHost|Directory|IfModule)\b/, 8], [/^[ \t]*RewriteRule\b/m, 6]]],
     ['makefile', [[/^[\w.-]+\s*:[^=\n]*\n\t/m, 6], [/\$\(\w+\)/, 2], [/^\.PHONY\s*:/m, 8]]],
     ['diff', [[/^(?:diff --git|---\s|\+\+\+\s|@@\s-\d)/m, 8], [/^[+-][^+-]/m, 1]]],
-    ['yaml', [[/^---\s*$/m, 3], [/^\s*[\w.-]+:\s+\S/m, 2], [/^\s*-\s+[\w.-]+:\s/m, 3], [/^\s*[\w.-]+:\s*$/m, 1]]],
-    ['ini', [[/^\s*\[[\w. "-]+\]\s*$/m, 4], [/^\s*[\w.-]+\s*=\s*\S/m, 2]]],
+    ['yaml', [[/^---\s*$/m, 3], [/^[ \t]*[\w.-]+:\s+\S/m, 2], [/^[ \t]*-\s+[\w.-]+:\s/m, 3], [/^[ \t]*[\w.-]+:\s*$/m, 1]]],
+    ['ini', [[/^[ \t]*\[[\w. "-]+\]\s*$/m, 4], [/^[ \t]*[\w.-]+\s*=\s*\S/m, 2]]],
     ['css', [[/(?:^|\})\s*[.#]?[\w-][\w\s.#:>,\[\]="-]*\{\s*[\w-]+\s*:[^;{}]+;/, 6], [/@media\b|@import\b|!important/, 3]]],
-    ['markdown', [[/^#{1,6}\s+\S/m, 3], [/^\s*[-*]\s+\S/m, 1], [/\[[^\]]+\]\([^)]+\)/, 2], [/\*\*[^*]+\*\*/, 1]]],
-    ['python', [[/^\s*def\s+\w+\s*\(.*\)\s*(?:->\s*[\w\[\], .]+)?:\s*$/m, 6], [/^\s*(?:import\s+[\w.]+|from\s+[\w.]+\s+import\b)/m, 4], [/\bprint\(/, 2], [/\bself\./, 3], [/^\s*(?:if|for|while|elif|else|try|except|with|class)\b.*:\s*$/m, 2], [/\b(?:None|True|False)\b/, 2], [/\bpd\.|\bnp\./, 3]]],
+    ['markdown', [[/^#{1,6}\s+\S/m, 3], [/^[ \t]*[-*]\s+\S/m, 1], [/\[[^\[\]]+\]\([^)]+\)/, 2], [/\*\*[^*]+\*\*/, 1]]],
+    ['python', [[/^[ \t]*def\s+\w+\s*\(.*\)\s*(?:->\s*[\w\[\], .]+)?:\s*$/m, 6], [/^[ \t]*(?:import\s+[\w.]+|from\s+[\w.]+\s+import\b)/m, 4], [/\bprint\(/, 2], [/\bself\./, 3], [/^[ \t]*(?:if|for|while|elif|else|try|except|with|class)\b.*:\s*$/m, 2], [/\b(?:None|True|False)\b/, 2], [/\bpd\.|\bnp\./, 3]]],
     ['r', [[/\w\s*<-\s*/, 5], [/\blibrary\(\w+\)/, 6], [/%>%|\|>/, 3], [/\bdata\.frame\(|ggplot\(|\bc\(/, 4]]],
     ['csharp', [[/\busing\s+System\b|\bnamespace\s+[\w.]+/, 6], [/\bpublic\s+(?:async\s+)?(?:static\s+)?(?:void|Task|string|int|class)\b/, 2], [/Console\.Write/, 6], [/\$"[^"]*\{/, 3], [/\bvar\s+\w+\s*=\s*new\b/, 3], [/\{\s*get;\s*set;\s*\}/, 6]]],
-    ['java', [[/\bpublic\s+static\s+void\s+main\s*\(\s*String/, 8], [/System\.out\.print/, 6], [/^\s*import\s+java\./m, 8], [/^\s*package\s+[\w.]+;/m, 5], [/@Override\b/, 4]]],
+    ['java', [[/\bpublic\s+static\s+void\s+main\s*\(\s*String/, 8], [/System\.out\.print/, 6], [/^[ \t]*import\s+java\./m, 8], [/^[ \t]*package\s+[\w.]+;/m, 5], [/@Override\b/, 4]]],
     ['kotlin', [[/\bfun\s+\w+\s*\(/, 5], [/\bval\s+\w+(?:\s*:\s*\w+)?\s*=/, 3], [/\bprintln\(/, 2], [/\bdata\s+class\b/, 5]]],
-    ['go', [[/^\s*package\s+\w+\s*$/m, 6], [/\bfunc\s+(?:\(\w+\s+\*?\w+\)\s*)?\w+\s*\(/, 4], [/\bfmt\.\w+\(/, 6], [/:=/, 2]]],
-    ['rust', [[/\bfn\s+\w+\s*(?:<[^>]*>)?\s*\(/, 4], [/\blet\s+mut\b/, 6], [/\w+!\(/, 2], [/\bimpl\b|\buse\s+std::/, 5], [/->\s*(?:Result|Option|Self|i32|u32|String)\b/, 3]]],
+    ['go', [[/^[ \t]*package\s+\w+\s*$/m, 6], [/\bfunc\s+(?:\(\w+\s+\*?\w+\)\s*)?\w+\s*\(/, 4], [/\bfmt\.\w+\(/, 6], [/:=/, 2]]],
+    ['rust', [[/\bfn\s+\w+\s*(?:<[^>]*>)?\s*\(/, 4], [/\blet\s+mut\b/, 6], [/\b\w+!\(/, 2], [/\bimpl\b|\buse\s+std::/, 5], [/->\s*(?:Result|Option|Self|i32|u32|String)\b/, 3]]],
     ['cpp', [[/#include\s*<(?:iostream|vector|string|map|memory|algorithm)>/, 8], [/\bstd::/, 5], [/\bcout\s*<</, 6], [/\btemplate\s*</, 5]]],
     ['c', [[/#include\s*<(?:stdio|stdlib|string|math)\.h>/, 8], [/\bprintf\s*\(/, 3], [/\bint\s+main\s*\(/, 3], [/\bmalloc\(/, 3]]],
     ['swift', [[/\bimport\s+(?:UIKit|SwiftUI|Foundation)\b/, 8], [/\bguard\s+let\b/, 6], [/\bfunc\s+\w+\s*\([^)]*\)\s*->/, 3], [/\blet\s+\w+\s*:\s*\w+\s*=/, 2], [/\bvar\s+body\s*:\s*some\s+View\b/, 8]]],
-    ['scala', [[/\bobject\s+\w+(?:\s+extends\s+\w+)?\s*\{/, 5], [/\bcase\s+class\b/, 6], [/\bdef\s+\w+\s*\([^)]*\)\s*:\s*\w+\s*=/, 5], [/^\s*import\s+scala\./m, 8]]],
+    ['scala', [[/\bobject\s+\w+(?:\s+extends\s+\w+)?\s*\{/, 5], [/\bcase\s+class\b/, 6], [/\bdef\s+\w+\s*\([^)]*\)\s*:\s*\w+\s*=/, 5], [/^[ \t]*import\s+scala\./m, 8]]],
     ['typescript', [[/:\s*(?:string|number|boolean|any|void|unknown)\b/, 4], [/\binterface\s+\w+\s*\{/, 4], [/\btype\s+\w+\s*=/, 3], [/\bas\s+const\b/, 4]]],
     ['javascript', [[/\b(?:const|let|var)\s+\w+\s*=/, 2], [/\bfunction\s*\w*\s*\(/, 2], [/=>/, 2], [/\bconsole\.log\(/, 4], [/\bdocument\.|\bwindow\./, 4], [/\brequire\(|\bimport\s+.+\s+from\s+['"]|\bexport\s+(?:default|const|function)\b/, 3]]],
     ['csv', c => { const ls = c.trim().split('\n'); if (ls.length < 2) return 0; for (const d of [',', ';', '\t']) { const n = ls[0].split(d).length; if (n >= 2 && ls.slice(0, 6).every(l => l.split(d).length === n) && !/[{}()=<>]/.test(c)) return 5; } return 0; }],
@@ -1576,8 +1635,8 @@ const Hl = (() => {
 // Ping only suggests; nothing changes until you confirm. Plain words are matched carefully so prose doesn't light up:
 // marking `count(*)` only matches count(...) again, and marking `SELECT` only matches SELECT in the same case.
 const Sug = (() => {
-  const TOKEN = /(?<![\w`$.\/\\@#~:-])(?:[A-Za-z]:\\[^\s`'"()<>]*[^\s`'"()<>.,;:!?]|~?\/[\w.-]+(?:\/[\w.-]*)+|[A-Za-z_$][\w$]*(?:(?:\.|::)[A-Za-z_$][\w$]*)*(?:\([^()\n]{0,40}\))?)(?![\w`])/g;
-  const MASKS = [/`[^`\n]*`?/g, /!?\[[^\]\n]*\]\([^)\n]*\)/g, /\b(?:https?|ftp):\/\/\S+|\bwww\.\S+/gi, /[\w.+-]+@[\w-]+(?:\.[\w-]+)+/g,
+  const TOKEN = /(?<![\w\p{L}\p{N}`$.\/\\@#~:-])(?:[A-Za-z]:\\[^\s`'"()<>]*[^\s`'"()<>.,;:!?]|~?\/[\w.-]+(?:\/[\w.-]*)+|[A-Za-z_$][\w$]*(?:(?:\.|::)[A-Za-z_$][\w$]*)*(?:\([^()\n]{0,40}\))?)(?![\w\p{L}\p{N}`])/gu;
+  const MASKS = [/`[^`\n]*`?/g, /!?\[[^\[\]\n]*\]\([^)\n]*\)/g, /\b(?:https?|ftp):\/\/\S+|\bwww\.\S+/gi, /(?<![\w.+-])[\w.+-]+@[\w-]+(?:\.[\w-]+)+/g,
     /(^|\s)#[\p{L}_][\p{L}\p{N}_\-/]*/gu, /\*\*[^*\n]+\*\*|__[^_\n]+__/g, /(?<![*\w])\*[^*\s][^*\n]*\*/g, /(?<!\w)_[^_\s][^_\n]*_(?!\w)/g, /~~[^~\n]+~~/g];
   const FENCE_OPEN_RE = /^\s*```\s*[\w+#.-]*\s*$/, FENCE_CLOSE_RE = /^\s*```\s*$/;
   const DENY = new Set('iphone ipad ipod imac ios macos watchos tvos ipados icloud ebay itunes'.split(' '));
@@ -1615,12 +1674,12 @@ const Sug = (() => {
   }
   // Suggestions in one piece of text; masks = skip Markdown formatting (code, links, tags, bold, italic…).
   function scan(line, vocab, masks) {
-    const ranges = [];
-    if (masks) for (const re of MASKS) for (const m of line.matchAll(re)) ranges.push([m.index, m.index + m[0].length]);
+    const masked = new Uint8Array(line.length);
+    if (masks) for (const re of MASKS) for (const m of line.matchAll(re)) masked.fill(1, m.index, m.index + m[0].length);
     const out = [];
     for (const m of line.matchAll(TOKEN)) {
       const tok = m[0].replace(/[.,;:!?]+$/, ''), s = m.index, e = s + tok.length;
-      if (!tok || ranges.some(([a, z]) => s < z && e > a)) continue;
+      if (!tok || masked.subarray(s, e).includes(1)) continue;
       const b = info(tok), kind = known(b, vocab) ? 'known' : guess(tok, b) ? 'guess' : null;
       if (kind) out.push({ from: s, to: e, word: tok, key: keyOf(b), kind });
     }
@@ -1679,7 +1738,7 @@ const T = {
     dataH: 'Your data', dataP: 'Everything saves automatically the moment you change it, and stays saved when you close the window. It is kept on this PC only. Reminders pop up only while Ping is open, so minimise it rather than closing it. Anything missed while it was closed appears when you open it again.',
     fileCreate: 'Create a save file…', fileOpen: 'Use an existing save file…', fileStop: 'Stop using the file',
     export: 'Download backup (JSON)', exportCsv: 'Export reminders (CSV)', import: 'Restore from backup…',
-    snapsLabel: 'Automatic daily copies (last 14 days)', snapsAria: 'Automatic copies', snapRestore: 'Restore this copy', rerunSetup: 'Run the save setup again',
+    snapsLabel: 'Automatic daily copies (last 14 days)', snapsAria: 'Automatic copies', snapRestore: 'Restore this copy', rerunSetup: 'Run the save setup again', driveGuideBtn: 'Guide: save in Google Drive or OneDrive so nothing is ever lost',
     startupH: 'Open Ping when the browser starts', startupP: 'Then Ping is always running, so you never miss a reminder. A web page isn’t allowed to change the browser’s startup settings itself, so this takes three quick steps; the button shows you how.',
     showMe: 'Show me how', what: 'What', whatPh: 'What do you want to be reminded about?', when: 'When',
     plus1h: '+1 hour', plus3h: '+3 hours', tonight19: 'Tonight 19:00', tomorrow9: 'Tomorrow 09:00', monday9: 'Monday 09:00',
@@ -1695,19 +1754,41 @@ const T = {
     sx2c: 'in 45 min', sx2: 'Relative: in 2h, in 3 days, in half an hour', sx3: 'Times in UTC are converted to your local time',
     sx4c: 'every 30 min', sx4: 'Intervals: every 2h, every hour', sx5c: 'every weekday at 9', sx5: 'Repeats: every day, every monday, every week, every month',
     sx6: 'Cron schedule (minute hour day month weekday)', sx8c: '!!! or p1', sx8: 'Priority: ! low, !! medium, !!! high', close: 'Close',
-    step1: 'Step 1 of 2', setupT1: 'Keep your reminders safe',
+    step0: 'Step 1 of 3', driveT: 'Make sure you never lose anything',
+    driveP1: 'Ping saves everything in the browser on this computer. If the computer breaks, you switch computers or the browser is cleared, it can all disappear. The fix is simple: let Ping keep a copy in a folder that syncs to the cloud, like <strong>Google Drive</strong> or <strong>OneDrive</strong>. Then your reminders and notes survive even if the computer breaks, and the same file is on all your computers. Both are free.',
+    cloudPick: 'Choose the service you want to use:', cloudPickAria: 'Cloud service',
+    odS1: '<strong>Check whether you already have OneDrive.</strong> Windows 10 and 11 have it built in: look for the cloud icon at the bottom right, by the clock, or for <strong>OneDrive</strong> in the left column of File Explorer. On a Mac, download it from <a href="https://www.microsoft.com/microsoft-365/onedrive/download" target="_blank" rel="noopener">microsoft.com/onedrive</a> or the App Store.',
+    odS2: '<strong>Sign in.</strong> Open OneDrive (Windows: Start menu → OneDrive) and sign in with your Microsoft account. If you don’t have one, you can create one for free at <a href="https://signup.live.com" target="_blank" rel="noopener">signup.live.com</a>. Follow the steps until OneDrive says it’s ready.',
+    odS3: '<strong>Find OneDrive on your computer.</strong> Windows: open File Explorer and click <strong>OneDrive</strong> in the left column (it may be called, for example, “OneDrive – Personal”). Mac: open Finder and click <strong>OneDrive</strong> under Locations.',
+    odS4: '<strong>Create a folder called Ping.</strong> Right-click inside the OneDrive folder and choose <strong>New → Folder</strong> (Mac: <strong>New Folder</strong>). Type Ping and press Enter.',
+    odS5: '<strong>Keep the folder on this computer.</strong> Right-click the Ping folder and choose <strong>Always keep on this device</strong>. Then Ping can save even without internet, and OneDrive uploads the changes when you’re back online.',
+    odMoreP: 'Sign in to OneDrive on that computer too, with the same Microsoft account. Open Ping there, choose “I already have a save file” and pick <strong>OneDrive → Ping → Ping-data.json</strong>. From then on, changes carry over between the computers automatically.',
+    odDownload: 'Download OneDrive',
+    driveS1: '<strong>Download Google Drive for desktop.</strong> It’s available for Windows and Mac: <a href="https://www.google.com/drive/download/" target="_blank" rel="noopener">google.com/drive/download</a>',
+    driveS2: '<strong>Install it and sign in.</strong> Open the file you downloaded and follow the steps. Sign in with your Google account. If you don’t have one, you can create one for free at <a href="https://accounts.google.com/signup" target="_blank" rel="noopener">accounts.google.com</a>.',
+    driveS3: '<strong>Find Google Drive on your computer.</strong> Windows: open File Explorer, click <strong>Google Drive</strong> in the left column, then <strong>My Drive</strong>. Mac: open Finder, click <strong>Google Drive</strong> under Locations, then <strong>My Drive</strong>.',
+    driveS4: '<strong>Create a folder called Ping.</strong> Right-click inside <strong>My Drive</strong> and choose <strong>New → Folder</strong> (Mac: <strong>New Folder</strong>). Type Ping and press Enter.',
+    driveS5: '<strong>Make the folder available offline.</strong> Right-click the Ping folder and choose <strong>Offline access → Available offline</strong>. Then Ping can save even without internet, and Google Drive uploads the changes when you’re back online.',
+    driveP2: 'In the next step you save Ping’s file in the <strong>Ping</strong> folder you just created. After that it all takes care of itself: every change is saved to the file and the cloud service does the rest.',
+    driveMoreT: 'Want to use Ping on more computers?',
+    driveMoreP: 'Install Google Drive on that computer too and sign in with the same Google account. Open Ping there, choose “I already have a save file” and pick <strong>My Drive → Ping → Ping-data.json</strong>. From then on, changes carry over between the computers automatically.',
+    driveOtherT: 'Prefer iCloud Drive or Dropbox?',
+    driveOtherP: 'It works the same way. Create a folder called Ping in the folder that syncs and choose it in the next step. What matters is that the file is in a folder that syncs to the cloud, not only on the computer.',
+    driveDownload: 'Download Google Drive', driveNext: 'Next: choose where the file is saved',
+    setupNoFileDrive: 'When the backup has downloaded, move it from your Downloads folder to the <strong>Ping</strong> folder in Google Drive or OneDrive. Then it’s safe in the cloud even if the computer breaks.',
+    step1: 'Step 2 of 3', setupT1: 'Keep your reminders safe',
     setupP1: 'Ping has no server and no account. Everything you write is saved only here on your computer, in the browser. That means it can disappear if the browser’s data is cleared or you switch computers.',
-    setupP2: 'That’s why Ping also keeps a copy in a file you choose, for example in your <strong>Documents</strong> folder. Ideally put it in a folder that is backed up or synced, like OneDrive, iCloud Drive, Google Drive or Dropbox. Then it survives even if the computer breaks, and you can use Ping on several computers.',
+    setupP2: 'That’s why Ping also keeps a copy in a file you choose. Click <strong>Choose a place and save</strong> and pick the <strong>Ping</strong> folder you created in Google Drive (<strong>My Drive → Ping</strong>) or OneDrive (<strong>OneDrive → Ping</strong>), or another folder that syncs, like iCloud Drive or Dropbox. Then everything survives even if the computer breaks, and you can use Ping on several computers.',
     setupWhy: 'Why does the browser ask for permission?',
     setupLi1: 'A web page may never touch files on your computer unless you approve it. That’s why the browser shows a box where you choose a place and approve.',
     setupLi2: 'Ping may only read and write <strong>the one file you choose</strong> (Ping-data.json). No other files or folders.',
     setupLi3: 'Nothing is sent to any server, and nothing to whoever built the app. The file stays in your own folder.',
     setupLi4: 'The file is plain text you can open and read yourself, and you can stop using it whenever you like under Settings.',
     setupCreate: 'Choose a place and save', setupOpen: 'I already have a save file',
-    setupHint: 'Want the same reminders and notes on several computers or in several browsers? Put the file in a folder that syncs, such as OneDrive. Then choose “I already have a save file” in the other browsers and open the same Ping-data.json. Changes carry over automatically.',
+    setupHint: 'Want the same reminders and notes on several computers or in several browsers? Put the file in a folder that syncs, such as Google Drive. Then choose “I already have a save file” in the other browsers and open the same Ping-data.json. Changes carry over automatically.',
     setupSkip: 'Skip (not recommended)', next: 'Next',
     setupNoFileBrave: 'Brave turns this off by default. You can turn it on: paste <code>brave://flags/#file-system-access-api</code> into the address bar, choose <strong>Enabled</strong> and restart Brave. Then run the save setup again.',
-    setupNotifOn: '✓ Notifications are already on in this browser.',step2: 'Step 2 of 2', setupT2: 'Get a notification when it’s time',
+    setupNotifOn: '✓ Notifications are already on in this browser.',step2: 'Step 3 of 3', setupT2: 'Get a notification when it’s time',
     setupP3: 'Allow notifications so your reminders show up in the corner of the screen, even when Ping is behind other windows.',
     setupLi5: 'Ping uses notifications only for reminders you created yourself. No ads, no news.',
     setupLi6: 'The notifications are created here on your computer. Nothing is sent over the internet.',
@@ -1752,13 +1833,13 @@ const T = {
     startupStepChrome: 'Under <strong>“On startup”</strong>: choose <strong>“Open a specific page or set of pages”</strong>, click <strong>“Add a new page”</strong> and paste Ping’s link.',
     startupStepFirefox: 'Under <strong>“Homepage and new windows”</strong>: choose <strong>“Custom URLs…”</strong> and paste Ping’s link.',
     startupStepOther: b => `Open ${b}’s settings and find where you choose what opens when it starts (often called “On startup” or “Homepage”). Add Ping’s link there.`,
-    setupNoFile: b => `${b} can’t let Ping keep a save file on your computer; only Chrome and Edge can. Everything is still saved in ${b}, and Ping will remind you once a week to download a backup.`,
-    bannerBackup: '<strong>Time to save a backup.</strong> Your reminders and notes only exist in this browser. Download a copy and put it in Documents, and you can always get everything back with “Restore from backup” under Settings.',
+    setupNoFile: b => `${b} can’t let Ping keep a save file on your computer; only Chrome and Edge can. Everything is still saved in ${b}, and Ping will remind you once a week to download a backup. Keep the backups in your Ping folder in Google Drive or OneDrive.`,
+    bannerBackup: '<strong>Time to save a backup.</strong> Your reminders and notes only exist in this browser. Download a copy and put it in your Ping folder in Google Drive or OneDrive, and you can always get everything back with “Restore from backup” under Settings.',
     backupNow: 'Download backup', later: 'Remind me tomorrow',
     saveFailed: e => 'Could not save: ' + e, chipNotSaved: 'Not saved!', chipNotSavedTitle: e => 'The browser refused to save: ' + e,
     chipSaved: 'Saved', chipSavedFileTitle: n => 'Saved in the browser and in your file ' + n,
     chipNeedsClick: 'Save file needs a click', chipNeedsClickTitle: 'Click to reconnect your save file', chipFileErr: 'Save file error',
-    chipBrowserOnly: 'Saved in browser only', chipBrowserOnlyFile: 'Click to also keep a save file in your Documents folder', chipBrowserOnlyBackup: 'Download a backup now and then under Settings',
+    chipBrowserOnly: 'Saved in browser only', chipBrowserOnlyFile: 'Click to also keep a save file in Google Drive or OneDrive, so nothing is lost if the computer breaks', chipBrowserOnlyBackup: 'Download a backup now and then under Settings',
     noSnaps: 'No copies yet (one is made each day you use Ping)', snapLabel: (r, n) => ` · ${r} reminders, ${n} notes`,
     persisted: '✓ The browser has promised not to clear Ping’s data on its own.',
     notPersisted: 'The browser may clear Ping’s data if the disk gets very full. A save file protects you against that.',
@@ -1766,7 +1847,7 @@ const T = {
     undo: 'Undo', undone: 'Undone', loadedFromFile: 'Picked up changes from the save file', notPingFile: 'That file is not a Ping save file',
     savingTo: n => 'Saving to ' + n, couldNotCreate: e => 'Could not create the file: ' + e, couldNotOpen: e => 'Could not open the file: ' + e,
     fileStopped: 'Stopped saving to the file. The file itself is kept',
-    fileNone: 'Extra safety: also keep a save file on your PC. It updates with every change and survives even if the browser’s data is cleared. Put it in a OneDrive folder and you can use the same reminders and notes on several computers and browsers: choose “Use an existing save file” in each of them.',
+    fileNone: 'Extra safety: also keep a save file on your PC. It updates with every change and survives even if the browser’s data is cleared. Put it in your Ping folder in Google Drive or OneDrive (or another folder that syncs to the cloud) and it survives even if the computer breaks. You can then use the same reminders and notes on several computers and browsers: choose “Use an existing save file” in each of them.',
     fileOk: (n, w) => `✓ Also saving to “${n}”${w ? ', last saved ' + w : ''}.`,
     fileNeeds: n => `Save file “${n}” needs one click to reconnect (the browser asks again after a restart).`,
     fileErr: (n, e) => `Couldn’t write to “${n}”: ${e}`,
@@ -1866,11 +1947,11 @@ const T = {
     startupStepChrome: 'Under <strong>”Vid start”</strong>: välj <strong>”Öppna en viss sida eller uppsättning sidor”</strong>, klicka <strong>”Lägg till en ny sida”</strong> och klistra in Pings länk.',
     startupStepFirefox: 'Under <strong>”Startsida och nya fönster”</strong>: välj <strong>”Anpassade webbadresser…”</strong> och klistra in Pings länk.',
     startupStepOther: b => `Öppna inställningarna i ${b} och leta upp var du väljer vad som öppnas vid start (heter ofta ”Vid start” eller ”Startsida”). Lägg till Pings länk där.`,
-    setupNoFile: b => `${b} kan inte låta Ping ha en sparfil på datorn; det kan bara Chrome och Edge. Allt sparas ändå i ${b}, och Ping påminner dig en gång i veckan om att ladda ner en säkerhetskopia.`,
+    setupNoFile: b => `${b} kan inte låta Ping ha en sparfil på datorn; det kan bara Chrome och Edge. Allt sparas ändå i ${b}, och Ping påminner dig en gång i veckan om att ladda ner en säkerhetskopia. Spara säkerhetskopiorna i mappen Ping i Google Drive eller OneDrive.`,
     saveFailed: e => 'Kunde inte spara: ' + e, chipNotSaved: 'Inte sparat!', chipNotSavedTitle: e => 'Webbläsaren vägrade spara: ' + e,
     chipSaved: 'Sparat', chipSavedFileTitle: n => 'Sparat i webbläsaren och i din fil ' + n,
     chipNeedsClick: 'Sparfilen behöver ett klick', chipNeedsClickTitle: 'Klicka för att återansluta din sparfil', chipFileErr: 'Fel i sparfilen',
-    chipBrowserOnly: 'Sparat bara i webbläsaren', chipBrowserOnlyFile: 'Klicka för att även ha en sparfil i mappen Dokument', chipBrowserOnlyBackup: 'Ladda ner en säkerhetskopia då och då under Inställningar',
+    chipBrowserOnly: 'Sparat bara i webbläsaren', chipBrowserOnlyFile: 'Klicka för att även ha en sparfil i Google Drive eller OneDrive, så att inget försvinner om datorn går sönder', chipBrowserOnlyBackup: 'Ladda ner en säkerhetskopia då och då under Inställningar',
     noSnaps: 'Inga kopior än (en skapas varje dag du använder Ping)', snapLabel: (r, n) => ` · ${r} påminnelser, ${n} anteckningar`,
     persisted: '✓ Webbläsaren har lovat att inte rensa Pings data på egen hand.',
     notPersisted: 'Webbläsaren kan rensa Pings data om disken blir väldigt full. En sparfil skyddar dig mot det.',
@@ -1878,7 +1959,7 @@ const T = {
     undo: 'Ångra', undone: 'Ångrat', loadedFromFile: 'Hämtade ändringar från sparfilen', notPingFile: 'Den filen är inte en sparfil från Ping',
     savingTo: n => 'Sparar till ' + n, couldNotCreate: e => 'Kunde inte skapa filen: ' + e, couldNotOpen: e => 'Kunde inte öppna filen: ' + e,
     fileStopped: 'Slutade spara till filen. Själva filen finns kvar',
-    fileNone: 'Extra säkerhet: ha också en sparfil på datorn. Den uppdateras vid varje ändring och finns kvar även om webbläsarens data rensas. Lägger du den i en OneDrive-mapp kan du använda samma påminnelser och anteckningar på flera datorer och i flera webbläsare: välj ”Använd en befintlig sparfil” i var och en.',
+    fileNone: 'Extra säkerhet: ha också en sparfil på datorn. Den uppdateras vid varje ändring och finns kvar även om webbläsarens data rensas. Lägg den i mappen Ping i Google Drive eller OneDrive (eller en annan mapp som synkas till molnet) så finns den kvar även om datorn går sönder. Då kan du också använda samma påminnelser och anteckningar på flera datorer och i flera webbläsare: välj ”Använd en befintlig sparfil” i var och en.',
     fileOk: (n, w) => `✓ Sparar också till ”${n}”${w ? ', senast sparad ' + w : ''}.`,
     fileNeeds: n => `Sparfilen ”${n}” behöver ett klick för att återanslutas (webbläsaren frågar igen efter en omstart).`,
     fileErr: (n, e) => `Kunde inte skriva till ”${n}”: ${e}`,
@@ -2017,14 +2098,18 @@ function mergeData(local, remote, now = Date.now()) {
   const deleted = Object.assign({}, local.deleted);
   for (const [id, ts] of Object.entries(remote.deleted || {})) if (!(deleted[id] >= ts)) deleted[id] = ts;
   for (const id in deleted) if (deleted[id] < now - TOMBSTONE_MS) delete deleted[id];
+  // Same stamp but different content (two devices saved in the same millisecond): both sides must pick the
+  // same winner, or they would overwrite each other's file forever. The larger JSON wins, on every device.
+  const newer = (y, x) => itemStamp(y) > itemStamp(x) || (itemStamp(y) === itemStamp(x) && JSON.stringify(y) > JSON.stringify(x));
   const combine = (a, b) => {
     const m = new Map();
     for (const x of a) m.set(x.id, x);
-    for (const y of b) { const x = m.get(y.id); if (!x || itemStamp(y) > itemStamp(x)) m.set(y.id, y); }
+    for (const y of b) { const x = m.get(y.id); if (!x || newer(y, x)) m.set(y.id, y); }
     return [...m.values()].filter(x => !(deleted[x.id] >= itemStamp(x)));
   };
-  const out = Object.assign({}, local, { reminders: combine(local.reminders, remote.reminders || []), notes: combine(local.notes, remote.notes || []), deleted });
-  if ((remote.settingsUpdated || 0) > (local.settingsUpdated || 0)) {
+  const out = Object.assign({}, local, { reminders: combine(local.reminders || [], remote.reminders || []), notes: combine(local.notes || [], remote.notes || []), deleted });
+  const rs = remote.settingsUpdated || 0, ls = local.settingsUpdated || 0;
+  if (rs > ls || (rs === ls && rs && JSON.stringify(sharedSettings(remote.settings)) > JSON.stringify(sharedSettings(local.settings)))) {
     out.settings = Object.assign({}, local.settings, sharedSettings(remote.settings));
     out.settingsUpdated = remote.settingsUpdated;
   }
@@ -2092,7 +2177,13 @@ function writeLocal() {
   }
   try { localStorage.setItem(KEY, JSON.stringify(S)); return null; } catch (e) { return e; }
 }
-function load() { try { return normalize(JSON.parse(localStorage.getItem(KEY))); } catch (e) { return normalize(null); } }
+// If the stored text can't be read, keep it aside (see keepUnreadable) instead of letting the next save overwrite it.
+let unreadableRaw = null;
+function load() {
+  let raw = null;
+  try { raw = localStorage.getItem(KEY); return normalize(JSON.parse(raw)); }
+  catch (e) { if (raw) unreadableRaw = raw; return normalize(null); }
+}
 let S = load();
 let base = makeBase(S);                  // what S looked like at the last save or load (see stampChanges)
 const rebase = () => { base = makeBase(S); };
@@ -2129,7 +2220,7 @@ function updateSaveChip() {
 // One automatic copy per day in the browser's own database, the last 14 days kept.
 let snapDay = null;
 async function snapshotDaily() {
-  const day = new Date().toISOString().slice(0, 10);
+  const day = isoDate(new Date());       // the local date, so the copy after midnight belongs to the new day
   if (snapDay === day) return;
   const hasData = S.reminders.length || S.notes.length;
   if (hasData) snapDay = day;            // until there is something to copy, keep checking on later saves
@@ -2204,6 +2295,13 @@ const kv = (() => {
   }));
   return { get: k => run('readonly', s => s.get(k)), set: (k, v) => run('readwrite', s => s.put(v, k)), del: k => run('readwrite', s => s.delete(k)), keys: () => run('readonly', s => s.getAllKeys()) };
 })();
+// Browser data that couldn't be read at start is copied into the database before the first save replaces it.
+function keepUnreadable() {
+  if (!unreadableRaw) return;
+  const raw = unreadableRaw; unreadableRaw = null;
+  kv.set('unreadable-' + Date.now(), raw).catch(() => { });
+}
+keepUnreadable();
 function scheduleFileSave() {
   if (!fileHandle || fileState === 'needs-permission') return;
   clearTimeout(fileTimer); fileTimer = setTimeout(syncFile, 600);
@@ -2385,6 +2483,17 @@ function nextAfter(r, fromMs, nowMs) {
   // next occurrence strictly after nowMs, following the schedule anchored at fromMs
   if (r.repeat === 'cron') { try { return Cron.next(r.cron, nowMs); } catch (e) { return null; } }
   if (r.repeat === 'interval') { const step = (r.every || 60) * 60000; return fromMs + (Math.floor((nowMs - fromMs) / step) + 1) * step; }
+  if (r.repeat === 'monthly' || r.repeat === 'yearly') {
+    // Keep the chosen day (r.monthDay): the 31st goes to the 30th or 28th in shorter months and back to the 31st after,
+    // instead of sliding into the next month and staying there.
+    const a = new Date(fromMs), want = r.monthDay || a.getDate(), step = r.repeat === 'monthly' ? 1 : 12;
+    for (let k = 1; k < 100000; k++) {
+      const m = a.getMonth() + k * step, y = a.getFullYear() + Math.floor(m / 12), mm = m % 12;
+      const d = new Date(y, mm, Math.min(want, new Date(y, mm + 1, 0).getDate()), a.getHours(), a.getMinutes(), a.getSeconds(), a.getMilliseconds());
+      if (d.getTime() > nowMs) return d.getTime();
+    }
+    return null;
+  }
   const d = new Date(fromMs);
   while (d.getTime() <= nowMs) {
     switch (r.repeat) {
@@ -2421,15 +2530,19 @@ function firstLink(text) {
 }
 function inlineMd(text) {
   const codes = [];
-  let s = String(text).replace(/`([^`]+)`/g, (_, c) => { codes.push(c); return `\u0000${codes.length - 1}\u0000`; });
+  let s = String(text).replace(/[\u0000-\u0003]/g, '').replace(/`([^`]+)`/g, (_, c) => { codes.push(c); return `\u0000${codes.length - 1}\u0000`; });
   const imgs = [];
   s = s.replace(/!\[([^\]]*)\]\((ping-img:[\w-]+|https?:\/\/[^)\s]+)\)/g, (_, a, u) => { imgs.push([a, u]); return `\u0002${imgs.length - 1}\u0002`; });
   const links = [];
   s = s.replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, (_, t, u) => { links.push([t, u]); return `\u0001${links.length - 1}\u0001`; });
-  s = linkify(s);
+  // Bare web addresses are set aside too, so _ * ~ # inside an address never turn into formatting inside the link.
+  const urls = [];
+  s = s.replace(URL_RE, u => { urls.push(u); return `\u0003${urls.length - 1}\u0003`; });
+  s = esc(s);
   s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>').replace(/(^|[^*\w])\*([^*\s][^*]*)\*/g, '$1<em>$2</em>')
        .replace(/(^|\W)_([^_\s][^_]*)_(?=\W|$)/g, '$1<em>$2</em>').replace(/~~([^~]+)~~/g, '<del>$1</del>');
   s = s.replace(/(^|\s)#([\p{L}_][\p{L}\p{N}_\-/]*)/gu, (_, sp, tg) => `${sp}<span class="ntag" data-ntag-click="${esc(tg.replace(/[-/]+$/, '').toLowerCase())}">#${tg}</span>`);
+  s = s.replace(/\u0003(\d+)\u0003/g, (_, i) => `<a href="${esc(urls[i])}" target="_blank" rel="noopener">${esc(urls[i])}</a>`);
   s = s.replace(/\u0001(\d+)\u0001/g, (_, i) => `<a href="${esc(links[i][1])}" target="_blank" rel="noopener">${esc(links[i][0])}</a>`);
   s = s.replace(/\u0002(\d+)\u0002/g, (_, i) => {
     const [alt, u] = imgs[i], src = u.startsWith('ping-img:') ? imgCache.get(u.slice(9)) : u;
@@ -2547,7 +2660,10 @@ function changed() { save(); renderReminders(); updateTitle(); }
 function complete(r) { if (r.repeat === 'none') { r.done = true; r.completedAt = Date.now(); tickNoteTask(r); } r.snoozeUntil = null; closeAlert(r.id); changed(); }
 function stopRepeating(r) { r.done = true; r.completedAt = Date.now(); r.snoozeUntil = null; closeAlert(r.id); changed(); }
 function reopen(r) { r.done = false; r.completedAt = null; r.fired = r.due <= Date.now(); changed(); }
-function snooze(r, until) { r.snoozeUntil = until; r.done = false; closeAlert(r.id); changed(); toast(t('snoozedUntil', fmtWhen(new Date(until)))); }
+function snooze(r, until) {
+  // Snoozing a one-off reminder before it went off moves it: it must not still pop up at the original time as well.
+  if (r.repeat === 'none' && !r.fired && until >= r.due) r.fired = true;
+  r.snoozeUntil = until; r.done = false; closeAlert(r.id); changed(); toast(t('snoozedUntil', fmtWhen(new Date(until)))); }
 function remove(r) { undoable(t('reminderDeleted'), () => { S.reminders = S.reminders.filter(x => x !== r); closeAlert(r.id); changed(); }); }
 function newReminder(fields) {
   return Object.assign({ id: uid(), title: '', notes: '', due: defaultDue(), repeat: 'none', every: null, cron: null, tags: [], priority: 0,
@@ -2834,6 +2950,7 @@ $('editForm').addEventListener('submit', e => {
     sound: $('edSound').value, loop: $('edLoop').value, color: swatchValue($('edColor')) });
   if (isNew) { r.fired = false; r.done = false; r.snoozeUntil = null; S.reminders.push(r); }
   else if (timing) { r.fired = false; r.snoozeUntil = null; r.done = false; r.completedAt = null; closeAlert(r.id); }
+  if (timing || isNew) r.monthDay = null;   // the day of the month is taken from the new time when it first repeats
   const ics = $('edIcs').checked;
   closeEditor(); changed();
   if (ics) downloadIcs(r);
@@ -2850,7 +2967,17 @@ $('editor').addEventListener('mousedown', e => { if (e.target === $('editor')) c
 function icsDate(ms) { const d = new Date(ms), p = n => String(n).padStart(2, '0'); return `${d.getFullYear()}${p(d.getMonth() + 1)}${p(d.getDate())}T${p(d.getHours())}${p(d.getMinutes())}00`; }
 function icsUtc(ms) { return new Date(ms).toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, ''); }
 function icsText(s) { return String(s).replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\r?\n/g, '\\n'); }
-function fold(line) { const out = []; while (line.length > 73) { out.push(line.slice(0, 73)); line = ' ' + line.slice(73); } out.push(line); return out.join('\r\n'); }
+// Calendar lines may be at most 75 bytes: fold by UTF-8 size, never splitting a letter, emoji or å/ä/ö in half.
+function fold(line) {
+  const out = []; let cur = '', bytes = 0;
+  for (const ch of line) {
+    const b = new TextEncoder().encode(ch).length;
+    if (bytes + b > 74) { out.push(cur); cur = ' '; bytes = 1; }
+    cur += ch; bytes += b;
+  }
+  out.push(cur);
+  return out.join('\r\n');
+}
 function downloadFile(name, content, type) {
   const blob = new Blob([content], { type });
   const a = document.createElement('a');
@@ -3095,6 +3222,7 @@ function check() {
     if (!r.fired && r.due <= now) {
       const occ = r.due;
       if (r.repeat !== 'none') {
+        if ((r.repeat === 'monthly' || r.repeat === 'yearly') && !r.monthDay) r.monthDay = new Date(r.due).getDate();
         const n = nextAfter(r, r.due, now);
         if (n == null) r.fired = true; else r.due = n;
       } else r.fired = true;
@@ -4174,7 +4302,9 @@ document.addEventListener('click', e => {
     case 'file-reconnect': fileReconnect(); break;
     case 'file-stop': fileStop(); break;
     case 'snap-restore': restoreSnapshot(); break;
-    case 'setup-open-wizard': openSetup(1, true); break;
+    case 'setup-open-wizard': openSetup(0, true); break;
+    case 'setup-drive-next': openSetup(1); break;
+    case 'cloud-pick': S.settings.cloud = b.dataset.cloudSet; save(); setCloud(); break;
     case 'setup-create': fileCreate().then(() => { if (fileHandle) openSetup(2); }); break;
     case 'setup-open': fileOpen().then(() => { if (fileHandle) openSetup(2); }); break;
     case 'setup-skip': openSetup(2); break;
@@ -4196,7 +4326,7 @@ function openSetup(step, force) {
   if (force) setupForced = true;
   const perm = canNotify() ? Notification.permission : 'unsupported';
   if (!setupForced) {
-    if (step === 1 && fileHandle) step = 2;
+    if (step <= 1 && fileHandle) step = 2;
     if (step === 2 && perm !== 'default') { finishSetup(); return; }
   }
   $('setupFileOk').hidden = !fileApi;
@@ -4208,14 +4338,25 @@ function openSetup(step, force) {
   $('setupNotifDone').hidden = ask;
   $('setupNotifState').hidden = ask;
   $('setupNotifState').textContent = perm === 'granted' ? t('setupNotifOn') : perm === 'denied' ? t('stDenied', browserName()) : ask ? '' : t('stUnsupported');
+  setCloud();
+  $('setupStep0').hidden = step !== 0;
   $('setupStep1').hidden = step !== 1;
   $('setupStep2').hidden = step !== 2;
+  $('setupDlg').querySelector('.modal').setAttribute('aria-labelledby', 'setupTitle' + step);
   $('setupDlg').hidden = false;
+  const first = $('setupStep' + step).querySelector('.btn.primary'); if (first) setTimeout(() => first.focus({ preventScroll: true }), 0);   // keep the step's title in view
+  $('setupStep' + step).scrollTop = 0;
+}
+// The guide shows Google Drive or OneDrive steps; the choice is remembered on this device.
+function setCloud() {
+  const c = S.settings.cloud === 'onedrive' ? 'onedrive' : 'gdrive';
+  document.querySelectorAll('[data-cloud-set]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.cloudSet === c)));
+  document.querySelectorAll('[data-cloud]').forEach(el => { el.hidden = el.dataset.cloud !== c; });
 }
 function finishSetup() {
   setupForced = false;
   $('setupDlg').hidden = true;
-  if (!S.settings.onboarded) { S.settings.onboarded = true; save(); }
+  if (!S.settings.onboarded || !S.settings.driveGuideSeen) { S.settings.onboarded = true; S.settings.driveGuideSeen = true; save(); }
 }
 
 // ---------------------------------------------------------------- open Ping when the browser starts
@@ -4312,12 +4453,15 @@ function setActiveWindow(on) {
   if (!on && was && noteTimer) saveNow();
   isActiveWindow = on;
   $('lockDlg').hidden = on;
-  if (on && !was) { S = load(); rebase(); curNote = null; renderAll(); check(); syncFile().then(maybeOnboard); }
+  if (on && !was) { S = load(); keepUnreadable(); rebase(); curNote = null; renderAll(); check(); syncFile().then(maybeOnboard); }
   if (!on) [...openAlerts.keys()].forEach(closeAlert);
 }
 let fileInitDone = false;
 function maybeOnboard() {
-  if (isActiveWindow && fileInitDone && !S.settings.onboarded && $('setupDlg').hidden) openSetup(1);
+  if (!isActiveWindow || !fileInitDone || !$('setupDlg').hidden) return;
+  if (!S.settings.onboarded) openSetup(0);
+  // People who set Ping up before the Google Drive guide existed and still have no save file see the guide once.
+  else if (fileApi && !fileHandle && !S.settings.driveGuideSeen) openSetup(0, true);
 }
 $('keysDlg').addEventListener('mousedown', e => { if (e.target === $('keysDlg')) $('keysDlg').hidden = true; });
 let pendingRestore = null;
@@ -4376,6 +4520,7 @@ document.addEventListener('keydown', e => {
     else if (!$('trashDlg').hidden) $('trashDlg').hidden = true;
     else if (!$('findBar').hidden) closeFind(false);
     else if (!$('keysDlg').hidden) $('keysDlg').hidden = true;
+    else if (!$('startupDlg').hidden) $('startupDlg').hidden = true;
     else if (!$('editor').hidden) closeEditor();
     return;
   }
@@ -4431,6 +4576,8 @@ document.addEventListener('visibilitychange', () => {
 // Pick up changes made on another computer: when Ping gets focus, and every 30 seconds while it is on screen.
 addEventListener('focus', () => syncFile());
 setInterval(() => { if (!document.hidden && fileHandle && fileState !== 'needs-permission') syncFile(); }, 30000);
+// Minimised, less often: reminders added on another computer still go off here.
+setInterval(() => { if (document.hidden && fileHandle && fileState !== 'needs-permission') syncFile(); }, 120000);
 function renderAll() {
   $('setSound').checked = S.settings.sound;
   $('setIcs').checked = S.settings.icsOnSave;
@@ -4457,7 +4604,7 @@ if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
 $('saveChip').addEventListener('click', () => {
   if (fileHandle && fileState === 'needs-permission') fileReconnect();
   else if (fileHandle && fileState === 'error') showTab('settings');
-  else if (!fileHandle && fileApi) openSetup(1, true);
+  else if (!fileHandle && fileApi) openSetup(0, true);
   else showTab('settings');
 });
 renderAll();

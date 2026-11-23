@@ -1,18 +1,51 @@
 # Ping
 
-Reminders and notes for engineers. It runs in your browser and can be installed as an app. There's no account, and your reminders and notes never leave your computer: they're stored in your own browser.
+Reminders and notes that run in your browser and can be installed as an app. There's no account and no server: everything is saved in your own browser, plus (if you follow the guide below) in a file in your own Google Drive or OneDrive.
 
 **Open Ping:** https://mohamedmrj.github.io/ping/
 
-## Get started (about 1 minute)
-1. Open the link above in **Microsoft Edge**.
-2. Install it as an app: click the **App available** icon at the right of the address bar, or **⋯ → Apps → Install Ping**. Ping now has its own window, a Start menu entry and a taskbar icon.
-3. To start it at sign-in: open `edge://apps`, click **⋯** on Ping, and turn on **Auto-start on device login**.
-4. In Ping, click **Allow notifications**. You'll get a test notification straight away.
+## First: make sure your data is never lost
 
-Reminders pop up while Ping is running, so **minimise it instead of closing it**. Anything that fell due while it was closed shows up when you open it again.
+Ping saves everything in the browser on your computer. If the computer breaks, you switch computers or the browser's data is cleared, it can disappear. The fix takes five minutes: put Ping's save file in a folder that syncs to the cloud. Pick **one** of the two guides below. Both services are free.
 
-Always open Ping the same way, in the same browser. Each browser, and each browser profile, keeps its own separate copy of your data.
+Ping shows the same guide the first time you open it, and you can open it again any time under **Settings → Your data**.
+
+### Option A: Google Drive
+
+1. **Download Google Drive for desktop** (Windows and Mac): https://www.google.com/drive/download/
+2. **Install it and sign in.** Open the downloaded file and follow the steps. Sign in with your Google account. If you don't have one, create one for free at https://accounts.google.com/signup.
+3. **Find Google Drive on your computer.**
+   - Windows: open File Explorer, click **Google Drive** in the left column, then **My Drive**.
+   - Mac: open Finder, click **Google Drive** under Locations, then **My Drive**.
+4. **Create a folder called `Ping`.** Right-click inside My Drive → **New → Folder** (Mac: **New Folder**).
+5. **Make the folder available offline.** Right-click the Ping folder → **Offline access → Available offline**. Ping can then save even without internet, and Google Drive uploads the changes later.
+
+### Option B: OneDrive
+
+1. **Check whether you already have OneDrive.** Windows 10 and 11 have it built in: look for the cloud icon at the bottom right by the clock, or for **OneDrive** in File Explorer's left column. On a Mac, download it from https://www.microsoft.com/microsoft-365/onedrive/download or the App Store.
+2. **Sign in.** Open OneDrive (Windows: Start menu → OneDrive) and sign in with your Microsoft account. If you don't have one, create one for free at https://signup.live.com.
+3. **Find OneDrive on your computer.**
+   - Windows: open File Explorer and click **OneDrive** in the left column (it may be called something like "OneDrive – Personal").
+   - Mac: open Finder and click **OneDrive** under Locations.
+4. **Create a folder called `Ping`.** Right-click inside the OneDrive folder → **New → Folder** (Mac: **New Folder**).
+5. **Keep the folder on this computer.** Right-click the Ping folder → **Always keep on this device**. Ping can then save even without internet, and OneDrive uploads the changes later.
+
+### Then, in Ping
+
+- **Chrome, Edge or Opera:** in the setup (or **Settings → Your data → Create a save file…**), click **Choose a place and save** and pick the `Ping` folder you just made. From then on every change is written to `Ping-data.json` in that folder automatically. The header says **Saved** when both copies are up to date.
+- **Firefox, Safari and other browsers** can't keep a save file. Ping reminds you once a week to download a backup: move that file into your `Ping` folder.
+- **Using Ping on another computer:** install Google Drive or OneDrive there too and sign in with the same account. In Ping, choose **I already have a save file** and open `Ping/Ping-data.json`. Changes on either computer are merged item by item, so nothing is lost when both were used.
+- After a browser restart, the browser may ask once for permission to keep using the file ("Save file needs a click"). That's a browser security rule, not an error; nothing is lost in the meantime.
+
+## Get started
+1. Open the link above in Chrome, Edge, Brave, Firefox or Safari.
+2. Install it as an app (optional but handy): in Chrome or Edge, click the **Install** icon at the right of the address bar. Ping then gets its own window and taskbar icon.
+3. Click **Allow notifications**. You'll get a test notification straight away.
+4. Want Ping running all the time? **Settings → Open Ping when the browser starts → Show me how.**
+
+Reminders pop up while Ping is open, so **minimise it instead of closing it**. Anything that fell due while it was closed shows up when you open it again.
+
+Each browser, and each browser profile, keeps its own copy. Use the save file (above) to share one set of reminders and notes between them.
 
 ## Quick add
 Type in the big box and press **Enter**. English and Swedish both work.
@@ -32,15 +65,27 @@ Type in the big box and press **Enter**. English and Swedish both work.
 **Ctrl+Enter** saves what you typed as a note. Press **?** in Ping to see all keyboard shortcuts.
 
 ## Features
-- **Alerts:** a Windows notification, a card in the Ping window with Done / Snooze / Edit, and a sound.
+- **Alerts:** a system notification, a box in the Ping window with Done / Snooze / Edit, and a sound. Sound, colour, size and position can be changed under Settings.
+- **Keep Ping on top** (Chrome and Edge): a small window that floats above your other windows.
 - **Outlook:** the **Outlook** button downloads a calendar entry. Open it and click Save & Close, and Outlook reminds you on your phone too.
-- **Notes:** written in Markdown, with a preview, code blocks you can copy, `- [ ]` checklists and tables. **Daily log** builds today's standup note from your reminders.
-- **Ticket links:** in Settings, add your Jira or Azure DevOps link so IDs like `DATA-123` become clickable.
-- **Themes:** Lagoon, Fjord and Solarized, each in light and dark.
-- **Your data:** Settings → Your data lets you keep an extra save file on your PC, download a backup, restore one, or export to CSV.
-
-## Moving to a new PC or browser
-In the old one: Settings → **Download backup**. In the new one: Settings → **Restore from backup…**.
+- **Notes:** Markdown with preview, coloured code blocks, `- [ ]` checklists, tables, pictures, templates, version history and a trash that keeps deleted notes for 30 days.
+- **Themes:** Lagoon, Fjord and Solarized, each in light and dark. Swedish or English.
+- **Your data:** a save file (see above), downloadable backups, restore, CSV export, and an automatic copy each day for the last 14 days.
 
 ## For maintainers
-Ping is one static `index.html`, plus `manifest.webmanifest`, `sw.js` (offline support) and two icons. There's no build step. Edit `index.html` and push, and everyone gets the update the next time they open Ping.
+Ping is one static `index.html`, plus `manifest.webmanifest`, `sw.js` (offline support) and two icons. There's no build step: edit `index.html` and push, and everyone gets the update the next time they open Ping.
+
+Storage keys (`reminder-by-me.v1` in localStorage, the `reminder-by-me` IndexedDB database) keep their old names on purpose. Renaming them without a migration would make everyone's reminders disappear.
+
+### Tests
+The `tests/` folder holds the test suite. It isn't needed to run Ping.
+
+```sh
+cd tests
+npm install        # once: installs playwright-core
+npm test           # everything
+npm run test:unit  # fast Node-only tests: sync merge, quick-add parser, code colours, code suggestions
+npm run test:app   # the real page in a headless browser
+```
+
+The browser tests use Playwright's Chromium if it's installed (`npx playwright install chromium`), otherwise Microsoft Edge. Set `PING_BROWSER` to a browser executable to choose another one.
