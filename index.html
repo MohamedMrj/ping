@@ -423,6 +423,95 @@ a.btn { color: var(--ink); text-decoration: none; }
 .drive-steps li::marker { font-weight: 700; color: var(--accent); }
 .drive-steps a { color: var(--accent); }
 
+/* Whiteboard: a sheet of paper that stays light in every theme, so a shared board looks the same for everyone */
+.app:has(#view-board:not([hidden])) { max-width: none; }
+.wb { display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 12px; height: calc(100vh - 118px); min-height: 420px; }
+.wb.side-hidden { grid-template-columns: minmax(0, 1fr); }
+.wb.side-hidden .wb-side { display: none; }
+.wb-side { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 10px; overflow: auto; min-height: 0; }
+.wb-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.wb-list li { display: flex; align-items: center; gap: 6px; padding: 6px 4px 6px 10px; border-radius: 8px; cursor: pointer; }
+.wb-list li:hover { background: var(--surface-2); }
+.wb-list li[aria-selected="true"] { background: var(--accent-soft); }
+.wb-list .nm { flex: 1; min-width: 0; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wb-list small { color: var(--muted); white-space: nowrap; }
+.wb-list .empty-h { cursor: default; color: var(--muted); }
+.wb-main { display: flex; flex-direction: column; gap: 8px; min-width: 0; min-height: 0; }
+.wb-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.wb-top .spacer { flex: 1; }
+.wb-title { font-weight: 600; flex: 0 1 280px; min-width: 120px; }
+.wb-title[readonly] { border-color: transparent; background: transparent; }
+.wb-live { color: var(--ok); font-weight: 700; font-size: 12.5px; }
+.wb-timer { font: 700 14px var(--mono); padding: 3px 10px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); }
+.wb-timer.low { background: var(--danger-soft); color: var(--danger); }
+#wbShareBtn.live { background: var(--ok); border-color: var(--ok); color: #fff; }
+.wb-people { display: flex; padding-left: 6px; }
+.av { width: 28px; height: 28px; border-radius: 50%; display: inline-grid; place-items: center; background: var(--pc, #868e96); color: #fff; font: 700 11px var(--font); border: 2px solid var(--surface); margin-left: -6px; cursor: pointer; padding: 0; }
+.av.viewer { opacity: .75; }
+.wb-stage { position: relative; flex: 1; min-height: 0; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: #fbfbf8; touch-action: none; outline: none; color: #1e1e1e; }
+.wb-stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.wb-stage[data-tool="hand"] canvas, .wb-stage[data-pan] canvas { cursor: grab; }
+.wb-stage[data-tool="pen"] canvas, .wb-stage[data-tool="marker"] canvas, .wb-stage[data-tool="rect"] canvas, .wb-stage[data-tool="ellipse"] canvas, .wb-stage[data-tool="diamond"] canvas,
+.wb-stage[data-tool="triangle"] canvas, .wb-stage[data-tool="line"] canvas, .wb-stage[data-tool="arrow"] canvas, .wb-stage[data-tool="sticky"] canvas, .wb-stage[data-tool="laser"] canvas { cursor: crosshair; }
+.wb-stage[data-tool="text"] canvas { cursor: text; }
+.wb-stage[data-tool="eraser"] canvas { cursor: cell; }
+.wb-panel { position: absolute; z-index: 3; background: #fff; border: 1px solid #dde3e1; border-radius: 12px; box-shadow: 0 4px 16px rgba(16, 32, 30, .12); }
+.wb-tools { left: 10px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 1px; padding: 5px; max-height: calc(100% - 20px); overflow: auto; }
+.wb-tools button { width: 36px; height: 34px; border: 0; border-radius: 8px; background: transparent; cursor: pointer; color: #24302e; display: grid; place-items: center; flex: none; }
+.wb-tools button:hover { background: #eef3f2; }
+.wb-tools button[aria-pressed="true"] { background: #d7efe9; color: #0b5e57; }
+.wb-tools button:disabled { opacity: .3; cursor: default; }
+.wb-tools hr { border: 0; border-top: 1px solid #e3e8e6; margin: 3px 4px; width: auto; }
+.wb-style { left: 50%; bottom: 12px; transform: translateX(-50%); display: flex; gap: 10px; align-items: center; padding: 6px 10px; flex-wrap: wrap; justify-content: center; max-width: calc(100% - 130px); color: #24302e; }
+.wb-grp { display: flex; gap: 4px; align-items: center; }
+.wb-grp + .wb-grp { border-left: 1px solid #e3e8e6; padding-left: 10px; }
+.wb-lbl { font-size: 12px; color: #5a6c69; }
+.wb-sw { width: 22px; height: 22px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 1px #c9d1cf; background: var(--sw); cursor: pointer; padding: 0; }
+.wb-sw[data-v="none"] { background: linear-gradient(135deg, #fff 45%, #e03131 46%, #e03131 54%, #fff 55%); }
+.wb-sw[aria-pressed="true"] { box-shadow: 0 0 0 2px #0d7c72; }
+.wb-style .seg { border-color: #dde3e1; }
+.wb-style .seg button { color: #5a6c69; background: #fff; }
+.wb-style .seg button[aria-pressed="true"] { background: #10201e; color: #fff; }
+.wb-style .btn { color: #24302e; }
+.wb-style .btn:hover { background: #eef3f2; }
+.wb-zoom { right: 10px; bottom: 12px; display: flex; align-items: center; padding: 3px; }
+.wb-zoom button { border: 0; background: transparent; min-width: 30px; height: 28px; border-radius: 7px; cursor: pointer; color: #24302e; font-weight: 600; }
+.wb-zoom button:hover { background: #eef3f2; }
+.wb-banner { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); z-index: 4; background: #10201e; color: #fff; padding: 6px 14px; border-radius: 999px; font-weight: 600; font-size: 13px; display: flex; gap: 12px; align-items: center; max-width: calc(100% - 24px); flex-wrap: wrap; justify-content: center; }
+.wb-banner .btn { color: #10201e; background: #fff; }
+.wb-requests { position: absolute; top: 10px; right: 10px; z-index: 5; display: grid; gap: 6px; }
+.wb-req { display: flex; gap: 8px; align-items: center; background: #fff; border: 1px solid #dde3e1; border-radius: 10px; padding: 8px 10px; box-shadow: 0 4px 16px rgba(16, 32, 30, .14); font-size: 13.5px; color: #10201e; }
+.wb-empty { position: absolute; top: 42%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: #7a8987; pointer-events: none; max-width: min(440px, 80%); }
+.wb-empty h3 { margin: 0 0 6px; font: 600 18px var(--font-display); color: #4a5c59; }
+.wb-empty p { margin: 0; }
+.wb-edit { position: absolute; z-index: 4; border: 0; outline: 1.5px dashed #0d7c72; outline-offset: 2px; background: transparent; resize: none; padding: 0; overflow: hidden; color: #1e1e1e; line-height: 1.25; white-space: pre-wrap; }
+.wb-cursors { position: absolute; inset: 0; pointer-events: none; z-index: 2; overflow: hidden; }
+.wb-cursor { position: absolute; left: 0; top: 0; transition: transform 60ms linear; display: flex; align-items: flex-start; gap: 2px; }
+.wb-cursor span { margin-top: 12px; color: #fff; font: 600 11.5px var(--font); padding: 2px 7px; border-radius: 6px; white-space: nowrap; }
+.wb-join { position: absolute; inset: 0; z-index: 8; display: grid; place-items: center; background: rgba(251, 251, 248, .94); padding: 16px; }
+.wb-join .card { width: min(440px, 100%); color: var(--ink); }
+.wb-join .err { color: var(--danger); }
+.wb-perm { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.wb-plist { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.wb-plist li { display: flex; gap: 8px; align-items: center; }
+.wb-plist .av { margin: 0; cursor: default; }
+.wb-plist b { flex: 1; }
+.wb-live-line { margin: 0; color: var(--ok); font-weight: 700; }
+.wb-name { display: flex; gap: 8px; align-items: center; }
+#wbShareDlg .modal { width: min(620px, 100%); }
+#wbShareDlg h4 { margin: 4px 0 -4px; font: 600 14px var(--font-display); }
+.tabs [data-tab="board"].live::after { content: " ●"; color: var(--ok); }
+body.wb-guest header .chip, body.wb-guest .tabs, body.wb-guest #pipBtn, body.wb-guest .banner { display: none !important; }
+body.wb-guest .wb { grid-template-columns: minmax(0, 1fr); }
+body.wb-guest .wb-side { display: none; }
+@media (max-width: 720px) {
+  .wb, .wb.side-hidden { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); }
+  .wb:not(.side-shown) { grid-template-rows: minmax(0, 1fr); }
+  .wb:not(.side-shown) .wb-side { display: none; }
+  .wb.side-shown .wb-side { display: flex; max-height: 200px; }
+  .wb-style { max-width: calc(100% - 64px); left: 56px; right: 8px; transform: none; top: 8px; bottom: auto; justify-content: flex-start; }
+}
+
 @media (max-width: 720px) {
   .notes { grid-template-columns: minmax(0, 1fr); }
   .note-list { max-height: 220px; }
@@ -445,6 +534,7 @@ a.btn { color: var(--ink); text-decoration: none; }
     <nav class="tabs" role="tablist">
       <button role="tab" data-tab="reminders" aria-selected="true" type="button" data-i18n="tabReminders">Påminnelser</button>
       <button role="tab" data-tab="notes" aria-selected="false" type="button" data-i18n="tabNotes">Anteckningar</button>
+      <button role="tab" data-tab="board" aria-selected="false" type="button" data-i18n="tabBoard">Tavla</button>
       <button role="tab" data-tab="settings" aria-selected="false" type="button" data-i18n="tabSettings">Inställningar</button>
     </nav>
     <button class="icon-btn" type="button" data-act="pip-toggle" id="pipBtn" hidden aria-pressed="false" title="Håll Ping ovanpå andra fönster" aria-label="Håll Ping ovanpå andra fönster" data-i18n-title="alSecPip" data-i18n-aria="alSecPip"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" style="vertical-align:-3px"><rect x="2.5" y="4.5" width="19" height="15" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><rect x="12" y="11" width="7" height="6" rx="1" fill="currentColor"/></svg></button>
@@ -564,6 +654,68 @@ a.btn { color: var(--ink); text-decoration: none; }
         <div class="note-body" id="noteBody">
           <div class="ed-wrap" id="noteWrap"><pre class="ed-find" id="noteFind" aria-hidden="true"></pre><pre class="ed-find ed-measure" id="noteMeasure" aria-hidden="true"></pre><pre class="ed-hl" id="noteHl" aria-hidden="true"></pre><textarea id="noteText" class="ed-in" spellcheck="false" placeholder="# Rubrik&#10;&#10;Skriv vad som helst. Markdown fungerar: **fetstil**, `kod`, ```sql-block```, - [ ] uppgifter, | tabeller |" aria-label="Anteckningstext" data-i18n-ph="notePh" data-i18n-aria="noteAria"></textarea></div>
           <div class="md" id="notePreview" hidden></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHITEBOARD -->
+  <section id="view-board" hidden>
+    <div class="wb" id="wb">
+      <aside class="wb-side">
+        <div class="row">
+          <button class="btn primary sm" type="button" data-act="wb-new" data-i18n="wbNew">Ny tavla</button>
+          <button class="btn sm" type="button" data-act="wb-new-tpl" data-i18n="wbFromTpl">Från mall ▾</button>
+        </div>
+        <ul class="wb-list" id="wbList"></ul>
+        <div><button class="btn ghost sm" type="button" data-act="wb-import" data-i18n="wbImportBtn">Öppna en tavelfil…</button></div>
+        <input type="file" id="wbImportFile" accept=".json,application/json" hidden>
+        <input type="file" id="wbImageFile" accept="image/*" multiple hidden>
+      </aside>
+      <div class="wb-main">
+        <div class="wb-top">
+          <button class="icon-btn" type="button" id="wbSideBtn" data-act="wb-side" title="Visa eller dölj dina tavlor" aria-label="Visa eller dölj dina tavlor" data-i18n-title="wbSideTitle" data-i18n-aria="wbSideTitle">☰</button>
+          <input class="input wb-title" id="wbTitle" maxlength="120" placeholder="Tavlans namn" aria-label="Tavlans namn" data-i18n-ph="wbTitlePh" data-i18n-aria="wbTitlePh">
+          <span class="wb-live" id="wbLive" hidden data-i18n="wbLiveTag">● Live</span>
+          <span class="wb-timer" id="wbTimer" hidden></span>
+          <div class="wb-people" id="wbPeople" hidden></div>
+          <span class="spacer"></span>
+          <button class="btn sm" type="button" id="wbFollowBtn" data-act="wb-follow" hidden></button>
+          <button class="btn sm" type="button" id="wbTimerBtn" data-act="wb-timer" data-i18n="wbTimerBtn">⏱ Timer</button>
+          <button class="btn sm" type="button" id="wbVoteBtn" data-act="wb-vote" data-i18n="wbVoteBtn">Prickröstning</button>
+          <button class="btn sm" type="button" id="wbExportBtn" data-act="wb-export" data-i18n="wbExportBtn">Exportera ▾</button>
+          <button class="btn primary sm" type="button" id="wbShareBtn" data-act="wb-share">Dela</button>
+          <button class="btn sm danger" type="button" id="wbLeaveBtn" data-act="wb-leave" hidden data-i18n="wbLeave">Lämna</button>
+        </div>
+        <div class="wb-stage" id="wbStage" tabindex="0" data-tool="select">
+          <canvas id="wbCanvas"></canvas>
+          <div class="wb-cursors" id="wbCursors"></div>
+          <div class="wb-empty" id="wbEmpty" hidden><h3 data-i18n="wbEmptyH">En tom tavla</h3><p data-i18n="wbEmptyP">Rita med P, lägg till en lapp med S, eller tryck Tab på en lapp för att bygga en tankekarta. Klistra in eller dra hit bilder. Slarviga cirklar, rutor och pilar blir rena former.</p></div>
+          <textarea class="wb-edit" id="wbEdit" hidden spellcheck="true"></textarea>
+          <div class="wb-panel wb-tools" id="wbTools" role="toolbar"></div>
+          <div class="wb-panel wb-style" id="wbStyle" hidden></div>
+          <div class="wb-panel wb-zoom">
+            <button type="button" data-act="wb-zoom-out" title="Zooma ut (−)" aria-label="Zooma ut" data-i18n-title="wbZoomOut" data-i18n-aria="wbZoomOut">−</button>
+            <button type="button" id="wbZoomPct" data-act="wb-zoom-fit" title="Visa allt (Shift+1)" data-i18n-title="wbZoomFit">100%</button>
+            <button type="button" data-act="wb-zoom-in" title="Zooma in (+)" aria-label="Zooma in" data-i18n-title="wbZoomIn" data-i18n-aria="wbZoomIn">+</button>
+          </div>
+          <div class="wb-banner" id="wbBanner" hidden></div>
+          <div class="wb-requests" id="wbRequests" hidden></div>
+          <div class="wb-join" id="wbJoin" hidden>
+            <div class="card">
+              <h3 data-i18n="wbJoinH">Gå med i tavlan</h3>
+              <div id="wbJoinAsk" class="row">
+                <p style="flex:1 1 100%" data-i18n="wbJoinP">Någon har delat en tavla med dig. Skriv namnet som de andra ser bredvid din muspekare.</p>
+                <input class="input" id="wbJoinName" maxlength="40" autocomplete="nickname" placeholder="Ditt namn" aria-label="Ditt namn" data-i18n-ph="wbJoinName" data-i18n-aria="wbJoinName" style="flex:1">
+                <button class="btn primary" type="button" data-act="wb-join" data-i18n="wbJoinBtn">Gå med</button>
+              </div>
+              <p id="wbJoinStatus" aria-live="polite"></p>
+              <div class="row">
+                <button class="btn primary" type="button" id="wbJoinRetry" data-act="wb-join" hidden data-i18n="wbJoinRetry">Försök igen</button>
+                <button class="btn" type="button" id="wbJoinCopy" data-act="wb-join-copy" hidden data-i18n="wbSaveCopy">Spara en kopia bland mina tavlor</button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -771,6 +923,7 @@ a.btn { color: var(--ink); text-decoration: none; }
       <kbd>Ctrl B / I</kbd><span data-i18n="k15">Anteckningar: fetstil / kursiv</span>
       <kbd>Ctrl F</kbd><span data-i18n="k16">Anteckningar: sök i anteckningen</span>
       <kbd>Ctrl Shift L</kbd><span data-i18n="k18">Anteckningar: visa eller dölj listan med anteckningar</span>
+      <kbd>V P S</kbd><span data-i18n="wbKeysBoard">Tavla: verktygen <kbd>V H P M E R O D G L A T S K</kbd>, <kbd>Tab</kbd> ny gren i tankekartan, <kbd>Mellanslag</kbd> dra för att flytta runt</span>
       <kbd>Ctrl Shift M</kbd><span data-i18n="k17">Anteckningar: gör alla kodförslag till kod</span>
       <kbd>Ctrl /</kbd><span data-i18n="k13">Anteckningar: kommentera eller avkommentera kodrader</span>
       <kbd>Shift Tab</kbd><span data-i18n="k14">Anteckningar: dra in (Tab) eller ut (Shift Tab) markerade rader</span>
@@ -961,6 +1114,14 @@ a.btn { color: var(--ink); text-decoration: none; }
     <h2 id="lockTitle" data-i18n="lockT">Ping är redan öppet i ett annat fönster</h2>
     <p data-i18n="lockP">För att inget du skriver ska skrivas över kan Ping bara användas i ett fönster åt gången. Påminnelserna visas i det andra fönstret.</p>
     <div class="modal-foot"><span class="spacer"></span><button class="btn primary" type="button" data-act="lock-take" data-i18n="lockTake">Använd det här fönstret i stället</button></div>
+  </div>
+</div>
+
+<!-- whiteboard: share and permissions (filled in by wbRenderShare) -->
+<div class="scrim" id="wbShareDlg" hidden>
+  <div class="modal" role="dialog" aria-labelledby="wbShareTitle">
+    <h2 id="wbShareTitle" data-i18n="wbShareH">Dela tavlan</h2>
+    <div id="wbShareBody" style="display:grid;gap:12px"></div>
   </div>
 </div>
 
@@ -1704,6 +1865,272 @@ const Sug = (() => {
   return { learn, suggest, scan, emptyVocab };
 })();
 /*SUG-END*/
+
+/*BOARD-START*/
+// Whiteboard model, kept free of the page so it can be tested in Node: items, edits (ops), what each participant
+// may do, shape recognition for hand-drawn strokes, connectors that stay attached, templates and mind maps.
+// A board is { id, title, created, modified, items: { id: item }, perms, room }. Every change travels as an op:
+// { t: 'put', item } (add or replace one item) or { t: 'del', id }. The host's copy is the one that counts.
+const Board = (() => {
+  const TYPES = new Set(['stroke', 'rect', 'ellipse', 'diamond', 'triangle', 'line', 'arrow', 'text', 'sticky', 'image']);
+  const BOXES = new Set(['rect', 'ellipse', 'diamond', 'triangle', 'text', 'sticky', 'image']);
+  const SHAPES = new Set(['rect', 'ellipse', 'diamond', 'triangle']);
+  const isBox = it => !!it && BOXES.has(it.type);
+  const isLine = it => !!it && (it.type === 'line' || it.type === 'arrow');
+  const hasText = it => !!it && (SHAPES.has(it.type) || it.type === 'sticky' || it.type === 'text');
+  const rid = (n = 16) => { const a = new Uint8Array(n); crypto.getRandomValues(a); return Array.from(a, b => (b % 36).toString(36)).join(''); };
+  const defaultPerms = () => ({ edit: 'all', editOthers: true, images: true, approve: false, follow: false, laser: true, export: true });
+  const newBoard = (title = '', now = Date.now()) => ({ id: rid(), title, created: now, modified: now, items: {}, perms: defaultPerms(), room: null });
+  const clone = x => x == null ? x : JSON.parse(JSON.stringify(x));
+
+  // ---------------------------------------------------------------- checking what arrives from other people
+  const num = v => typeof v === 'number' && isFinite(v) && Math.abs(v) < 1e7;
+  const str = (v, max) => v == null || (typeof v === 'string' && v.length <= max);
+  const color = v => v == null || v === 'none' || (typeof v === 'string' && /^#[0-9a-f]{3,8}$/i.test(v));
+  // An item is accepted only if every field has a sensible type and size (anyone with the link can send anything).
+  function validItem(it) {
+    if (!it || typeof it !== 'object' || Array.isArray(it)) return false;
+    if (typeof it.id !== 'string' || !/^[\w-]{1,64}$/.test(it.id) || !TYPES.has(it.type)) return false;
+    if (!num(it.z ?? 0) || !str(it.author, 64) || !color(it.stroke) || !color(it.fill) || !num(it.sw ?? 1) || !num(it.fs ?? 16)) return false;
+    if (!str(it.text, 20000)) return false;
+    if (it.votes != null) {
+      if (typeof it.votes !== 'object' || Array.isArray(it.votes)) return false;
+      const v = Object.entries(it.votes);
+      if (v.length > 500 || v.some(([k, n]) => k.length > 64 || !Number.isInteger(n) || n < 0 || n > 1000)) return false;
+    }
+    if (it.type === 'stroke') return Array.isArray(it.pts) && it.pts.length > 0 && it.pts.length <= 20000 && it.pts.every(p => Array.isArray(p) && p.length >= 2 && num(p[0]) && num(p[1]));
+    if (isLine(it)) return [it.x1, it.y1, it.x2, it.y2].every(num) && str(it.from, 64) && str(it.to, 64);
+    if (![it.x, it.y, it.w, it.h].every(num) || it.w < 0 || it.h < 0) return false;
+    if (it.type === 'image') return typeof it.src === 'string' && /^data:image\/(png|jpe?g|webp|gif);base64,/.test(it.src) && it.src.length < 2.2e6;
+    return true;
+  }
+  // The host checks every op from a guest. who = { cid, host, canEdit }. Returns the op to apply (author, votes and
+  // lock always kept from the host's copy) or null when it isn't allowed.
+  function accept(board, op, who, perms = board.perms) {
+    if (!op || (op.t !== 'put' && op.t !== 'del')) return null;
+    const id = op.t === 'put' ? op.item && op.item.id : op.id;
+    if (typeof id !== 'string') return null;
+    const cur = board.items[id];
+    if (op.t === 'put' && !validItem(op.item)) return null;
+    if (who.host) return op;
+    if (!who.canEdit) return null;
+    if (cur && cur.locked) return null;
+    if (cur && !perms.editOthers && cur.author !== who.cid) return null;
+    if (op.t === 'del') return op;
+    const it = Object.assign({}, op.item);
+    if (cur && cur.type !== it.type) return null;
+    if (it.type === 'image' && !perms.images && (!cur || cur.src !== it.src)) return null;
+    if (cur) { it.author = cur.author; if (cur.votes) it.votes = cur.votes; else delete it.votes; }
+    else { it.author = who.cid; delete it.votes; }
+    delete it.locked;
+    return { t: 'put', item: it };
+  }
+  function apply(board, ops) {
+    for (const op of ops) {
+      if (op.t === 'put' && op.item && typeof op.item.id === 'string') board.items[op.item.id] = op.item;
+      else if (op.t === 'del') delete board.items[op.id];
+    }
+  }
+  // The ops that undo `ops`, given how the items looked before.
+  const inverse = before => Object.entries(before).map(([id, it]) => it ? { t: 'put', item: clone(it) } : { t: 'del', id });
+
+  // ---------------------------------------------------------------- geometry
+  const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
+  function distSeg(p, a, b) {
+    const dx = b[0] - a[0], dy = b[1] - a[1], l2 = dx * dx + dy * dy;
+    let k = l2 ? ((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / l2 : 0;
+    k = Math.max(0, Math.min(1, k));
+    return Math.hypot(p[0] - a[0] - k * dx, p[1] - a[1] - k * dy);
+  }
+  const center = it => [it.x + it.w / 2, it.y + it.h / 2];
+  // Where the line from the item's centre towards `p` leaves the item's outline.
+  function edgePoint(it, p) {
+    const [cx, cy] = center(it), dx = p[0] - cx, dy = p[1] - cy, hw = it.w / 2 || 1, hh = it.h / 2 || 1;
+    if (!dx && !dy) return [cx, cy];
+    let k;
+    if (it.type === 'ellipse') k = 1 / Math.hypot(dx / hw, dy / hh);
+    else if (it.type === 'diamond') k = 1 / (Math.abs(dx) / hw + Math.abs(dy) / hh);
+    else k = Math.min(dx ? hw / Math.abs(dx) : Infinity, dy ? hh / Math.abs(dy) : Infinity);
+    return [cx + dx * k, cy + dy * k];
+  }
+  // A line's two ends; an end tied to an item sits on that item's outline, facing the other end.
+  function ends(it, items) {
+    const A = it.from && items[it.from], B = it.to && items[it.to];
+    const a0 = isBox(A) ? center(A) : [it.x1, it.y1], b0 = isBox(B) ? center(B) : [it.x2, it.y2];
+    return [isBox(A) ? edgePoint(A, b0) : a0, isBox(B) ? edgePoint(B, a0) : b0];
+  }
+  function bounds(it, items = {}) {
+    if (it.type === 'stroke') {
+      let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+      for (const [x, y] of it.pts) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+      const r = (it.sw || 2) / 2;
+      return { x: x0 - r, y: y0 - r, w: x1 - x0 + 2 * r, h: y1 - y0 + 2 * r };
+    }
+    if (isLine(it)) { const [a, b] = ends(it, items); return { x: Math.min(a[0], b[0]), y: Math.min(a[1], b[1]), w: Math.abs(a[0] - b[0]), h: Math.abs(a[1] - b[1]) }; }
+    return { x: it.x, y: it.y, w: it.w, h: it.h };
+  }
+  function unionBounds(list, items) {
+    if (!list.length) return null;
+    let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+    for (const it of list) { const b = bounds(it, items); x0 = Math.min(x0, b.x); y0 = Math.min(y0, b.y); x1 = Math.max(x1, b.x + b.w); y1 = Math.max(y1, b.y + b.h); }
+    return { x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
+  }
+  function hit(it, p, tol, items = {}) {
+    if (it.type === 'stroke') {
+      const r = tol + (it.sw || 2) / 2, P = it.pts;
+      if (P.length === 1) return dist(p, P[0]) <= r;
+      for (let i = 1; i < P.length; i++) if (distSeg(p, P[i - 1], P[i]) <= r) return true;
+      return false;
+    }
+    if (isLine(it)) { const [a, b] = ends(it, items); return distSeg(p, a, b) <= tol + (it.sw || 2) / 2 + 2; }
+    return p[0] >= it.x - tol && p[0] <= it.x + it.w + tol && p[1] >= it.y - tol && p[1] <= it.y + it.h + tol;
+  }
+  function moveItem(it, dx, dy) {
+    if (it.type === 'stroke') it.pts = it.pts.map(p => [p[0] + dx, p[1] + dy]);
+    else if (isLine(it)) { it.x1 += dx; it.y1 += dy; it.x2 += dx; it.y2 += dy; }
+    else { it.x += dx; it.y += dy; }
+  }
+  // Scale around (ox, oy). Text and sticky notes keep readable text: their letters scale with the height.
+  function scaleItem(it, ox, oy, sx, sy) {
+    const X = x => ox + (x - ox) * sx, Y = y => oy + (y - oy) * sy;
+    if (it.type === 'stroke') it.pts = it.pts.map(p => [X(p[0]), Y(p[1])]);
+    else if (isLine(it)) { it.x1 = X(it.x1); it.y1 = Y(it.y1); it.x2 = X(it.x2); it.y2 = Y(it.y2); }
+    else {
+      const x1 = X(it.x), x2 = X(it.x + it.w), y1 = Y(it.y), y2 = Y(it.y + it.h);
+      it.x = Math.min(x1, x2); it.y = Math.min(y1, y2); it.w = Math.abs(x2 - x1); it.h = Math.abs(y2 - y1);
+      if (it.type === 'text') it.fs = Math.max(6, Math.min(400, (it.fs || 20) * Math.abs(sy)));
+    }
+  }
+
+  // ---------------------------------------------------------------- shape recognition
+  // Ramer–Douglas–Peucker: the few points that keep the stroke's shape.
+  function rdp(P, eps) {
+    if (P.length < 3) return P.slice();
+    let max = 0, idx = 0;
+    for (let i = 1; i < P.length - 1; i++) { const d = distSeg(P[i], P[0], P[P.length - 1]); if (d > max) { max = d; idx = i; } }
+    if (max <= eps) return [P[0], P[P.length - 1]];
+    return rdp(P.slice(0, idx + 1), eps).slice(0, -1).concat(rdp(P.slice(idx), eps));
+  }
+  const angleAt = (a, b, c) => { const v1 = [a[0] - b[0], a[1] - b[1]], v2 = [c[0] - b[0], c[1] - b[1]]; const d = Math.hypot(...v1) * Math.hypot(...v2); return d ? Math.acos(Math.max(-1, Math.min(1, (v1[0] * v2[0] + v1[1] * v2[1]) / d))) * 180 / Math.PI : 180; };
+  // A hand-drawn stroke → { type: 'line'|'arrow', x1, y1, x2, y2 } or { type: 'rect'|'ellipse'|'triangle'|'diamond', x, y, w, h },
+  // or null when it doesn't clearly look like one of those (then the drawing stays as drawn).
+  function recognize(pts) {
+    const P = (pts || []).map(p => [p[0], p[1]]);
+    if (P.length < 5) return null;
+    let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity, len = 0;
+    P.forEach((p, i) => { x0 = Math.min(x0, p[0]); x1 = Math.max(x1, p[0]); y0 = Math.min(y0, p[1]); y1 = Math.max(y1, p[1]); if (i) len += dist(P[i - 1], p); });
+    const w = x1 - x0, h = y1 - y0, diag = Math.hypot(w, h);
+    if (diag < 16) return null;
+    const first = P[0], last = P[P.length - 1], gap = dist(first, last);
+    const closed = gap < Math.max(14, 0.2 * diag) && len > 1.6 * diag;
+    if (!closed) {
+      const chord = dist(first, last);
+      if (chord > 0.9 * len && P.every(p => distSeg(p, first, last) < Math.max(4, 0.07 * chord))) return { type: 'line', x1: first[0], y1: first[1], x2: last[0], y2: last[1] };
+      // An arrow drawn in one go: a straight shaft, then a short head back near its tip.
+      const V = rdp(P, Math.max(4, 0.06 * diag));
+      if (V.length >= 4 && V.length <= 6) {
+        const shaft = dist(V[0], V[1]);
+        const headOk = V.slice(2).every(v => dist(v, V[1]) < 0.45 * shaft) && dist(V[2], V[1]) > 0.08 * shaft;
+        if (shaft > 0.7 * diag && headOk && angleAt(V[0], V[1], V[2]) < 75) return { type: 'arrow', x1: V[0][0], y1: V[0][1], x2: V[1][0], y2: V[1][1] };
+      }
+      return null;
+    }
+    const box = { x: x0, y: y0, w, h };
+    if (Math.min(w, h) < 0.12 * Math.max(w, h)) return null;            // a closed loop that's really a squiggle
+    const cx = x0 + w / 2, cy = y0 + h / 2, rx = w / 2, ry = h / 2;
+    const ellErr = P.reduce((s, p) => s + Math.abs(Math.hypot((p[0] - cx) / rx, (p[1] - cy) / ry) - 1), 0) / P.length;
+    // corners: simplify, then drop points that sit on a straight run
+    let V = rdp(P.concat([P[0]]), 0.07 * diag).slice(0, -1);
+    for (let changed = true; changed && V.length > 2;) {
+      changed = false;
+      for (let i = 0; i < V.length; i++) {
+        const a = V[(i - 1 + V.length) % V.length], b = V[i], c = V[(i + 1) % V.length];
+        if (angleAt(a, b, c) > 145 || dist(a, b) < 0.12 * diag) { V.splice(i, 1); changed = true; break; }
+      }
+    }
+    const n = V.length;
+    if (n === 3 && ellErr > 0.08) return Object.assign({ type: 'triangle' }, box);
+    if (ellErr < 0.1) return Object.assign({ type: 'ellipse' }, box);
+    if (n === 4) {
+      const onMid = V.every(v => Math.min(Math.abs(v[0] - cx) / w, Math.abs(v[1] - cy) / h) < 0.18);
+      const right = V.every((v, i) => Math.abs(angleAt(V[(i + 3) % 4], v, V[(i + 1) % 4]) - 90) < 28);
+      if (onMid && !right) return Object.assign({ type: 'diamond' }, box);
+      if (onMid && right && V.every(v => Math.abs(v[0] - cx) < 0.2 * w || Math.abs(v[1] - cy) < 0.2 * h)) return Object.assign({ type: 'diamond' }, box);
+      return Object.assign({ type: 'rect' }, box);
+    }
+    if (n >= 5 && ellErr < 0.2) return Object.assign({ type: 'ellipse' }, box);
+    return null;
+  }
+
+  // ---------------------------------------------------------------- mind maps
+  // The items a connector from `node` leads to.
+  const children = (items, node) => Object.values(items).filter(l => isLine(l) && l.from === node.id && items[l.to]).map(l => items[l.to]);
+  const parentOf = (items, node) => { const l = Object.values(items).find(l => isLine(l) && l.to === node.id && items[l.from]); return l ? items[l.from] : null; };
+  // A new branch to the right of `parent` (below its other branches), joined by a connector.
+  function branch(items, parent, author, ids = [rid(), rid()]) {
+    const kids = children(items, parent), w = parent.type === 'sticky' ? parent.w : 170, h = parent.type === 'sticky' ? parent.h : 64;
+    const x = kids.length ? Math.min(...kids.map(k => k.x)) : parent.x + parent.w + 90;
+    const y = kids.length ? Math.max(...kids.map(k => k.y + k.h)) + 24 : parent.y + parent.h / 2 - h / 2;
+    const z = Math.max(0, ...Object.values(items).map(i => i.z || 0)) + 1;
+    const type = parent.type === 'sticky' ? 'sticky' : SHAPES.has(parent.type) ? 'rect' : 'rect';
+    const node = { id: ids[0], type, x, y, w, h, z: z + 1, author, text: '', stroke: parent.stroke || '#1e1e1e', fill: parent.type === 'sticky' ? parent.fill : (parent.fill || 'none'), sw: parent.sw || 2, fs: parent.type === 'sticky' ? undefined : 16 };
+    const [ax, ay] = center(parent), link = { id: ids[1], type: 'line', from: parent.id, to: node.id, x1: ax, y1: ay, x2: x + w / 2, y2: y + h / 2, z, author, stroke: '#868e96', sw: 2 };
+    return [node, link];
+  }
+
+  // ---------------------------------------------------------------- templates
+  // `tr` gives the visible words in the person's language. Items are centred on (cx, cy).
+  function template(kind, cx, cy, tr, author) {
+    const out = [], id = () => rid();
+    let z = 1;
+    const add = o => { out.push(Object.assign({ id: id(), z: z++, author, stroke: '#1e1e1e', sw: 2 }, o)); return out[out.length - 1]; };
+    const title = (text, x, y) => add({ type: 'text', x, y, w: 600, h: 40, text, fs: 30 });
+    const columns = (names, fills) => {
+      const W = 320, H = 480, gap = 30, total = names.length * W + (names.length - 1) * gap, x0 = cx - total / 2, y0 = cy - H / 2;
+      names.forEach((n, i) => add({ type: 'rect', x: x0 + i * (W + gap), y: y0, w: W, h: H, fill: fills[i], text: n, fs: 22, align: 'top', stroke: '#adb5bd' }));
+      return [x0, y0];
+    };
+    if (kind === 'retro') { const [x, y] = columns([tr('tplRetro1'), tr('tplRetro2'), tr('tplRetro3')], ['#ebfbee', '#fff4e6', '#e7f5ff']); title(tr('tplRetro'), x, y - 60); }
+    else if (kind === 'kanban') { const [x, y] = columns([tr('tplKan1'), tr('tplKan2'), tr('tplKan3')], ['#f1f3f5', '#e7f5ff', '#ebfbee']); title(tr('tplKanban'), x, y - 60); }
+    else if (kind === 'swot') {
+      const S = 300, x0 = cx - S - 10, y0 = cy - S - 10;
+      [['tplS', '#ebfbee'], ['tplW', '#fff5f5'], ['tplO', '#e7f5ff'], ['tplT', '#fff4e6']].forEach(([k, f], i) =>
+        add({ type: 'rect', x: x0 + (i % 2) * (S + 20), y: y0 + Math.floor(i / 2) * (S + 20), w: S, h: S, fill: f, text: tr(k), fs: 22, align: 'top', stroke: '#adb5bd' }));
+      title('SWOT', x0, y0 - 60);
+    }
+    else if (kind === 'flow') {
+      const a = add({ type: 'ellipse', x: cx - 80, y: cy - 260, w: 160, h: 70, fill: '#e7f5ff', text: tr('tplStart'), fs: 18 });
+      const b = add({ type: 'rect', x: cx - 90, y: cy - 130, w: 180, h: 80, fill: 'none', text: tr('tplStep'), fs: 18 });
+      const c = add({ type: 'diamond', x: cx - 100, y: cy, w: 200, h: 120, fill: '#fff9db', text: tr('tplDecide'), fs: 18 });
+      const d = add({ type: 'rect', x: cx + 200, y: cy + 20, w: 180, h: 80, fill: 'none', text: tr('tplStep'), fs: 18 });
+      const e = add({ type: 'ellipse', x: cx - 80, y: cy + 200, w: 160, h: 70, fill: '#ebfbee', text: tr('tplEnd'), fs: 18 });
+      const link = (f, t, text) => { const [x1, y1] = center(f), [x2, y2] = center(t); add({ type: 'arrow', from: f.id, to: t.id, x1, y1, x2, y2, z: 0, text }); };
+      link(a, b); link(b, c); link(c, d, tr('tplYes')); link(c, e, tr('tplNo')); link(d, e);
+    }
+    else if (kind === 'mind') {
+      const root = add({ type: 'ellipse', x: cx - 110, y: cy - 50, w: 220, h: 100, fill: '#e7f5ff', text: tr('tplIdea'), fs: 22, stroke: '#1971c2', sw: 3 });
+      const at = [[-1, -1], [1, -1], [-1, 1], [1, 1]];
+      at.forEach(([sx, sy], i) => {
+        const n = add({ type: 'sticky', x: cx + sx * 260 - 80, y: cy + sy * 150 - 80, w: 160, h: 160, fill: ['#fff3a3', '#ffd1e1', '#c9f2c7', '#cfe5ff'][i], text: '' });
+        add({ type: 'line', from: root.id, to: n.id, x1: cx, y1: cy, x2: n.x + 80, y2: n.y + 80, z: 0, stroke: '#868e96' });
+      });
+    }
+    else if (kind === 'brainstorm') {
+      title(tr('tplBrainstorm'), cx - 300, cy - 260);
+      const fills = ['#fff3a3', '#ffd1e1', '#c9f2c7', '#cfe5ff', '#ffd8a8', '#e5d4ff'];
+      for (let i = 0; i < 6; i++) add({ type: 'sticky', x: cx - 300 + (i % 3) * 210, y: cy - 190 + Math.floor(i / 3) * 210, w: 180, h: 180, fill: fills[i], text: '' });
+    }
+    return out;
+  }
+  // Dot voting results: [{ id, n }] for every sticky note with votes, most votes first.
+  const tally = items => Object.values(items).filter(i => i.type === 'sticky').map(i => ({ id: i.id, n: Object.values(i.votes || {}).reduce((a, b) => a + b, 0) })).filter(x => x.n > 0).sort((a, b) => b.n - a.n);
+  const votesBy = (items, cid) => Object.values(items).reduce((s, i) => s + ((i.votes || {})[cid] || 0), 0);
+
+  return { TYPES, SHAPES, isBox, isLine, hasText, rid, defaultPerms, newBoard, clone, validItem, accept, apply, inverse,
+    dist, distSeg, center, edgePoint, ends, bounds, unionBounds, hit, moveItem, scaleItem, rdp, recognize,
+    children, parentOf, branch, template, tally, votesBy };
+})();
+/*BOARD-END*/
 
 // ---------------------------------------------------------------- state
 // Storage keys keep their original names so existing data carries over.
@@ -4119,8 +4546,10 @@ async function imagesForFile(remoteMap) {
 }
 const withImages = (data, images) => Object.keys(images).length ? Object.assign({}, data, { images }) : data;
 async function exportBackup() {
-  const images = await imagesForFile(null);
-  downloadFile('ping-backup-' + isoDate(new Date()) + '.json', JSON.stringify(withImages(S, images), null, 2), 'application/json');
+  const images = await imagesForFile(null), boards = await wbAllBoards();
+  let data = withImages(S, images);
+  if (boards.length) data = Object.assign({}, data, { boards });     // whiteboards travel in the backup too
+  downloadFile('ping-backup-' + isoDate(new Date()) + '.json', JSON.stringify(data, null, 2), 'application/json');
   S.settings.lastBackup = Date.now(); save(); updateBackupBanner();
   toast(t('backupDone'));
 }
@@ -4157,14 +4586,1694 @@ noteText.addEventListener('paste', e => { const files = imageFiles(e.clipboardDa
 noteText.addEventListener('dragover', e => { if (e.dataTransfer && [...e.dataTransfer.types].includes('Files')) e.preventDefault(); });
 noteText.addEventListener('drop', e => { const files = imageFiles(e.dataTransfer && e.dataTransfer.files); if (!files.length) return; e.preventDefault(); noteText.focus(); addImages(files); });
 
+// Whiteboard texts. Static markup keys only need English (the Swedish is in the markup); everything read through t() has both.
+Object.assign(T.en, {
+  tabBoard: 'Whiteboard', wbNew: 'New board', wbFromTpl: 'From template ▾', wbImportBtn: 'Open a board file…', wbTitlePh: 'Name of the board', wbSideTitle: 'Show or hide your boards',
+  wbLeave: 'Leave', wbTimerBtn: '⏱ Timer', wbVoteBtn: 'Dot voting', wbExportBtn: 'Export ▾', wbLiveTag: '● Live',
+  wbZoomIn: 'Zoom in (+)', wbZoomOut: 'Zoom out (−)', wbZoomFit: 'Show everything (Shift+1)',
+  wbEmptyH: 'An empty board', wbEmptyP: 'Draw with P, add a sticky note with S, or press Tab on a note to grow a mind map. Paste or drop pictures. Rough circles, boxes and arrows turn into clean shapes.',
+  wbJoinH: 'Join the whiteboard', wbJoinP: 'Someone shared a whiteboard with you. Enter the name the others will see next to your pointer.', wbJoinName: 'Your name', wbJoinBtn: 'Join',
+  wbJoinRetry: 'Try again', wbShareH: 'Share this board', wbKeysBoard: 'Whiteboard: tools <kbd>V H P M E R O D G L A T S K</kbd>, <kbd>Tab</kbd> new mind-map branch, <kbd>Space</kbd> drag to move around',
+});
+const WB_T = {
+  en: {
+    wbLedByHost: 'The host is leading: your view follows theirs.', wbViewOnly: 'You can look but not change this board. The host decides who can edit.',
+    wbNoLaser: 'The host has switched off the laser pointer for guests.', wbNoImages: 'The host has switched off pictures for guests.',
+    wbHintSmart: '✨ Turned your drawing into a clean shape. Ctrl+Z brings back what you drew; the ✨ button switches this off.',
+    wbT_select: 'Select and move', wbT_hand: 'Move around the board', wbT_pen: 'Pen', wbT_marker: 'Highlighter', wbT_eraser: 'Eraser', wbT_rect: 'Rectangle', wbT_ellipse: 'Ellipse',
+    wbT_diamond: 'Diamond', wbT_triangle: 'Triangle', wbT_line: 'Line (snaps to shapes)', wbT_arrow: 'Arrow (snaps to shapes)', wbT_text: 'Text', wbT_sticky: 'Sticky note', wbT_image: 'Picture',
+    wbT_laser: 'Laser pointer', wbT_smart: 'Smart shapes: rough drawings become clean shapes', wbT_templates: 'Insert a template',
+    wbSmartOn: '✨ Smart shapes on', wbSmartOff: 'Smart shapes off: drawings stay as drawn',
+    wbColor: 'Colour', wbNoteColor: 'Note colour', wbFill: 'Fill', wbNoFill: 'No fill', wbSize: 'Size', wbSmaller: 'Smaller text', wbBigger: 'Bigger text', wbToggleHead: 'Arrow or plain line',
+    wbFront: 'Bring to front', wbBack: 'Send to back', wbDuplicate: 'Duplicate (Ctrl+D)', wbLock: 'Lock (nobody can move it)', wbUnlock: 'Unlock',
+    tplRetro: 'Retrospective', tplRetro1: 'What went well', tplRetro2: 'What could be better', tplRetro3: 'What we will do',
+    tplKanban: 'Kanban', tplKan1: 'To do', tplKan2: 'Doing', tplKan3: 'Done', wbSwot: 'SWOT analysis',
+    tplS: 'Strengths', tplW: 'Weaknesses', tplO: 'Opportunities', tplT: 'Threats',
+    tplFlow: 'Flowchart', tplStart: 'Start', tplStep: 'Step', tplDecide: 'Decision?', tplEnd: 'End', tplYes: 'Yes', tplNo: 'No',
+    tplMind: 'Mind map', tplIdea: 'Main idea', tplBrainstorm: 'Brainstorm',
+    wbUntitled: 'Untitled board', wbMore: 'More', wbNoBoards: 'No boards yet.', wbDownloadFile: 'Download as a board file', wbDeleteBoard: 'Delete the board',
+    wbSaveFailed: e => 'The board could not be saved: ' + e, wbStopToSwitch: 'This board is shared right now. Stop sharing and open the other board?',
+    wbMissing: 'That board could not be opened.', wbCopySuffix: '(copy)', wbDuplicated: 'Board duplicated', wbConfirmDelete: x => `Delete the board “${x}”?`, wbDeleted: 'Board deleted',
+    wbImported: 'Board opened', wbNotBoard: 'That file is not a Ping board', wbNoExport: 'The host has switched off downloading for guests.', wbExported: 'Picture downloaded',
+    wbCopySaved: 'A copy is saved in your own boards (Whiteboard tab).',
+    wbNoRoom: 'Couldn’t find the board. The host may have closed it or stopped sharing, or the link is old.',
+    wbNoService: 'Couldn’t reach the connection service. Check your internet connection and try again.',
+    wbOldBrowser: 'This browser can’t connect to shared boards. Try Chrome, Edge, Firefox or Safari.', wbIdTaken: 'This board is already being shared from another window or computer.',
+    wbHostName: 'Host', wbConfirmNewLink: 'Make a new link? The old link stops working, and anyone using it is disconnected.', wbNewLinkDone: 'New link made. Share the new one.',
+    wbGuest: 'Guest', wbWantsIn: x => `${x} wants to join the board`, wbJoined: x => `${x} joined`, wbLeft: x => `${x} left`,
+    wbMakeViewer: 'Make view-only', wbMakeEditor: 'Allow editing', wbRemove: x => `Remove ${x} from the board`, wbRemoveShort: 'Remove',
+    wbAsksIn: 'wants to join', wbLetIn: 'Let in', wbDeny: 'Deny',
+    wbConnecting: 'Connecting to the host…', wbConnected: 'Connected. Getting the board…', wbKicked: 'The host removed you from the board.', wbDenied: 'The host didn’t let you in.',
+    wbEnded: 'The host stopped sharing the board.', wbLost: 'The connection to the host was lost.', wbWaiting: 'Waiting for the host to let you in…',
+    wbWelcomeEdit: 'You’re in! Everything you do is shown to the others live.', wbWelcomeView: 'You’re in, as a viewer. You can look, use the laser pointer and vote.',
+    wbRefused: 'The host didn’t allow that change.', wbNowEditor: 'The host lets you edit now.', wbNowViewer: 'The host made you view-only.',
+    wbSummoned: 'The host brought everyone to their view.', wbSummonedAll: 'Everyone now sees what you see.',
+    wbVoteStarted: n => `Dot voting started: ${n} votes each. Click sticky notes to vote.`, wbTimerAdd: '+1 minute', wbTimerStop: 'Stop the timer', wbTimeUp: '⏱ Time is up!',
+    wbVoteEnd: 'End voting and show results', wbVoteStart: n => `Start dot voting: ${n} votes each`, wbVoteResults: 'Show the results', wbVoteClear: 'Remove all votes',
+    wbNoVotes: 'No votes yet.', wbNoVotesLeft: 'You have used all your votes. Alt-click a note to take one back.',
+    wbSharing: '● Sharing', wbShare: 'Share', wbFollowing: '👁 Following the host', wbFollow: 'Follow the host', wbSummon: 'Bring everyone to me',
+    wbBannerView: 'View only', wbBannerLed: 'The host is leading the view', wbBannerVote: (l, n) => `Dot voting: ${l} of ${n} votes left · click a note to vote, Alt-click to take back`,
+    wbYou: '(you)', wbViewer: 'view only', wbEditor: 'can edit',
+    wbPermsH: 'What guests can do', wbPermEdit: 'Who can edit', wbEditAll: 'Everyone who joins', wbEditAllowed: 'Only people I allow', wbEditNone: 'Nobody (view only)',
+    wbPermOthers: 'Guests can move and delete other people’s items (otherwise only their own)', wbPermImages: 'Guests can add pictures', wbPermLaser: 'Guests can use the laser pointer',
+    wbPermExport: 'Guests can download the board', wbPermApprove: 'Ask me before someone joins (waiting room)', wbPermFollow: 'Everyone follows my view (I lead)',
+    wbLiveNow: n => n === 1 ? 'Live: 1 person has joined' : `Live: ${n} people have joined`, wbLink: 'Link to the board',
+    wbLinkHint: 'Send the link to the people you want to invite. The board is live while this window is open; your copy is saved on this computer as usual.',
+    wbShareIntro: 'Invite others to draw with you <strong>live</strong>: everyone sees each other’s drawing, typing and mouse pointer as it happens. Ping makes a link that you send to them. No account is needed.',
+    wbYourName: 'Your name', wbStart: 'Start sharing and make a link', wbStarting: 'Starting…', wbPeopleH: 'People on the board', wbNobodyYet: 'Nobody has joined yet.',
+    wbHowH: 'How does sharing work, and is it private?',
+    wbHowP: 'Your browser becomes the meeting place. A free public service (PeerJS) only helps the browsers find each other; the drawings then go directly between the browsers, encrypted. If a network blocks direct connections, the encrypted data passes through a relay that can’t read it. Nothing is stored anywhere else: the board lives on your computer, and it is live only while you have it open here. Anyone with the link can ask to join, so share it only with the people you want, use the waiting room, or make a new link to shut old ones out.',
+    wbStop: 'Stop sharing', wbNewLink: 'Make a new link', close: 'Close',
+    wbExportPng: 'Download as a picture (PNG)', wbExportPdf: 'Print or save as PDF', wbSaveCopy: 'Save a copy in my boards',
+  },
+  sv: {
+    wbLedByHost: 'Värden leder: din vy följer värdens.', wbViewOnly: 'Du kan titta men inte ändra tavlan. Värden bestämmer vem som får redigera.',
+    wbNoLaser: 'Värden har stängt av laserpekaren för gäster.', wbNoImages: 'Värden har stängt av bilder för gäster.',
+    wbHintSmart: '✨ Din teckning blev en ren form. Ctrl+Z tar tillbaka det du ritade; ✨-knappen stänger av det.',
+    wbT_select: 'Markera och flytta', wbT_hand: 'Flytta runt på tavlan', wbT_pen: 'Penna', wbT_marker: 'Överstrykningspenna', wbT_eraser: 'Suddgummi', wbT_rect: 'Rektangel', wbT_ellipse: 'Ellips',
+    wbT_diamond: 'Romb', wbT_triangle: 'Triangel', wbT_line: 'Linje (fäster vid former)', wbT_arrow: 'Pil (fäster vid former)', wbT_text: 'Text', wbT_sticky: 'Lapp', wbT_image: 'Bild',
+    wbT_laser: 'Laserpekare', wbT_smart: 'Smarta former: slarviga teckningar blir rena former', wbT_templates: 'Infoga en mall',
+    wbSmartOn: '✨ Smarta former på', wbSmartOff: 'Smarta former av: teckningar blir som du ritar dem',
+    wbColor: 'Färg', wbNoteColor: 'Lappens färg', wbFill: 'Fyllning', wbNoFill: 'Ingen fyllning', wbSize: 'Storlek', wbSmaller: 'Mindre text', wbBigger: 'Större text', wbToggleHead: 'Pil eller vanlig linje',
+    wbFront: 'Lägg överst', wbBack: 'Lägg underst', wbDuplicate: 'Duplicera (Ctrl+D)', wbLock: 'Lås (ingen kan flytta den)', wbUnlock: 'Lås upp',
+    tplRetro: 'Retrospektiv', tplRetro1: 'Det här gick bra', tplRetro2: 'Det här kan bli bättre', tplRetro3: 'Det här gör vi',
+    tplKanban: 'Kanban', tplKan1: 'Att göra', tplKan2: 'Pågår', tplKan3: 'Klart', wbSwot: 'SWOT-analys',
+    tplS: 'Styrkor', tplW: 'Svagheter', tplO: 'Möjligheter', tplT: 'Hot',
+    tplFlow: 'Flödesschema', tplStart: 'Start', tplStep: 'Steg', tplDecide: 'Beslut?', tplEnd: 'Slut', tplYes: 'Ja', tplNo: 'Nej',
+    tplMind: 'Tankekarta', tplIdea: 'Huvudidé', tplBrainstorm: 'Brainstorm',
+    wbUntitled: 'Namnlös tavla', wbMore: 'Mer', wbNoBoards: 'Inga tavlor än.', wbDownloadFile: 'Ladda ner som tavelfil', wbDeleteBoard: 'Ta bort tavlan',
+    wbSaveFailed: e => 'Tavlan kunde inte sparas: ' + e, wbStopToSwitch: 'Den här tavlan delas just nu. Sluta dela och öppna den andra tavlan?',
+    wbMissing: 'Tavlan gick inte att öppna.', wbCopySuffix: '(kopia)', wbDuplicated: 'Tavlan har duplicerats', wbConfirmDelete: x => `Ta bort tavlan ”${x}”?`, wbDeleted: 'Tavlan togs bort',
+    wbImported: 'Tavlan öppnades', wbNotBoard: 'Den filen är inte en tavla från Ping', wbNoExport: 'Värden har stängt av nedladdning för gäster.', wbExported: 'Bilden har laddats ner',
+    wbCopySaved: 'En kopia är sparad bland dina egna tavlor (fliken Tavla).',
+    wbNoRoom: 'Hittade inte tavlan. Värden har kanske stängt den eller slutat dela, eller så är länken gammal.',
+    wbNoService: 'Kunde inte nå anslutningstjänsten. Kontrollera internetanslutningen och försök igen.',
+    wbOldBrowser: 'Den här webbläsaren kan inte ansluta till delade tavlor. Prova Chrome, Edge, Firefox eller Safari.', wbIdTaken: 'Tavlan delas redan från ett annat fönster eller en annan dator.',
+    wbHostName: 'Värd', wbConfirmNewLink: 'Skapa en ny länk? Den gamla länken slutar fungera och den som använder den kopplas bort.', wbNewLinkDone: 'Ny länk skapad. Dela den nya.',
+    wbGuest: 'Gäst', wbWantsIn: x => `${x} vill gå med i tavlan`, wbJoined: x => `${x} gick med`, wbLeft: x => `${x} lämnade`,
+    wbMakeViewer: 'Gör till bara läsa', wbMakeEditor: 'Tillåt redigering', wbRemove: x => `Ta bort ${x} från tavlan`, wbRemoveShort: 'Ta bort',
+    wbAsksIn: 'vill gå med', wbLetIn: 'Släpp in', wbDeny: 'Neka',
+    wbConnecting: 'Ansluter till värden…', wbConnected: 'Ansluten. Hämtar tavlan…', wbKicked: 'Värden tog bort dig från tavlan.', wbDenied: 'Värden släppte inte in dig.',
+    wbEnded: 'Värden slutade dela tavlan.', wbLost: 'Anslutningen till värden bröts.', wbWaiting: 'Väntar på att värden ska släppa in dig…',
+    wbWelcomeEdit: 'Du är med! Allt du gör syns för de andra direkt.', wbWelcomeView: 'Du är med som åskådare. Du kan titta, använda laserpekaren och rösta.',
+    wbRefused: 'Värden tillät inte den ändringen.', wbNowEditor: 'Värden låter dig redigera nu.', wbNowViewer: 'Värden gjorde dig till åskådare.',
+    wbSummoned: 'Värden tog med alla till sin vy.', wbSummonedAll: 'Alla ser nu det du ser.',
+    wbVoteStarted: n => `Prickröstning har börjat: ${n} röster var. Klicka på lappar för att rösta.`, wbTimerAdd: '+1 minut', wbTimerStop: 'Stoppa timern', wbTimeUp: '⏱ Tiden är ute!',
+    wbVoteEnd: 'Avsluta röstningen och visa resultatet', wbVoteStart: n => `Starta prickröstning: ${n} röster var`, wbVoteResults: 'Visa resultatet', wbVoteClear: 'Ta bort alla röster',
+    wbNoVotes: 'Inga röster än.', wbNoVotesLeft: 'Du har använt alla dina röster. Alt-klicka på en lapp för att ta tillbaka en.',
+    wbSharing: '● Delas', wbShare: 'Dela', wbFollowing: '👁 Följer värden', wbFollow: 'Följ värden', wbSummon: 'Ta med alla till mig',
+    wbBannerView: 'Bara läsa', wbBannerLed: 'Värden leder vyn', wbBannerVote: (l, n) => `Prickröstning: ${l} av ${n} röster kvar · klicka på en lapp för att rösta, Alt-klicka för att ta tillbaka`,
+    wbYou: '(du)', wbViewer: 'bara läsa', wbEditor: 'kan redigera',
+    wbPermsH: 'Vad gäster får göra', wbPermEdit: 'Vem får redigera', wbEditAll: 'Alla som går med', wbEditAllowed: 'Bara de jag tillåter', wbEditNone: 'Ingen (bara läsa)',
+    wbPermOthers: 'Gäster får flytta och ta bort andras saker (annars bara sina egna)', wbPermImages: 'Gäster får lägga till bilder', wbPermLaser: 'Gäster får använda laserpekaren',
+    wbPermExport: 'Gäster får ladda ner tavlan', wbPermApprove: 'Fråga mig innan någon går med (väntrum)', wbPermFollow: 'Alla följer min vy (jag leder)',
+    wbLiveNow: n => n === 1 ? 'Live: 1 person har gått med' : `Live: ${n} personer har gått med`, wbLink: 'Länk till tavlan',
+    wbLinkHint: 'Skicka länken till dem du vill bjuda in. Tavlan är live så länge det här fönstret är öppet; din kopia sparas på datorn som vanligt.',
+    wbShareIntro: 'Bjud in andra att rita med dig <strong>live</strong>: alla ser varandras ritande, skrivande och muspekare medan det händer. Ping skapar en länk som du skickar till dem. Inget konto behövs.',
+    wbYourName: 'Ditt namn', wbStart: 'Börja dela och skapa en länk', wbStarting: 'Startar…', wbPeopleH: 'Personer på tavlan', wbNobodyYet: 'Ingen har gått med än.',
+    wbHowH: 'Hur fungerar delningen, och är den privat?',
+    wbHowP: 'Din webbläsare blir mötesplatsen. En gratis offentlig tjänst (PeerJS) hjälper bara webbläsarna att hitta varandra; ritningarna går sedan direkt mellan webbläsarna, krypterade. Om ett nätverk stoppar direkta anslutningar går den krypterade datan via en relästation som inte kan läsa den. Inget sparas någon annanstans: tavlan finns på din dator och är live bara medan du har den öppen här. Alla med länken kan be om att gå med, så dela den bara med dem du vill, använd väntrummet, eller skapa en ny länk för att stänga ute gamla.',
+    wbStop: 'Sluta dela', wbNewLink: 'Skapa en ny länk', close: 'Stäng',
+    wbExportPng: 'Ladda ner som bild (PNG)', wbExportPdf: 'Skriv ut eller spara som PDF', wbSaveCopy: 'Spara en kopia bland mina tavlor',
+    tabBoard: 'Tavla', wbTitlePh: 'Tavlans namn',
+  },
+};
+Object.assign(T.en, WB_T.en);
+Object.assign(T.sv, WB_T.sv);
+
+// ---------------------------------------------------------------- whiteboard
+// An endless canvas to draw on alone or together. Boards live in this browser's database (kv 'board-<id>').
+// Sharing: this browser becomes the host. A free public service (PeerJS) only introduces the browsers to each other;
+// drawings then travel directly between them, encrypted by the browser. Everything is live: strokes while they're drawn,
+// items while they're dragged, text while it's typed, and everyone's mouse pointer. Guests send their changes to the
+// host, the host checks each one against the board's permissions (Board.accept) and passes it on to everyone else.
+const WB_FONT = '"Segoe UI", system-ui, -apple-system, sans-serif';
+const WB_INK = ['#1e1e1e', '#e03131', '#f08c00', '#2f9e44', '#1971c2', '#9c36b5', '#868e96'];
+const WB_NOTE = ['#fff3a3', '#ffd1e1', '#c9f2c7', '#cfe5ff', '#ffd8a8', '#e5d4ff'];
+const WB_PEOPLE = ['#e03131', '#1971c2', '#2f9e44', '#9c36b5', '#f08c00', '#0c8599', '#d6336c', '#5c940d'];
+const WB_SIZES = [2, 4, 8];
+const WB_LIVE_MS = 35;                                   // how often changes in progress and pointers are sent
+const PEERJS = { src: 'https://cdn.jsdelivr.net/npm/peerjs@1.5.5/dist/peerjs.min.js', sri: 'sha384-x0YgkOr/3UOZP2CRDxGW9e0Q+2Qjyr3uJrm4xU32Y7ZCNAo7Cc7bjhrZMi/dwczu' };
+const PING_HOME = 'https://mohamedmrj.github.io/ping/';
+const wbStore = (k, v) => { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { } return null; };
+const wbSession = k => { try { let v = sessionStorage.getItem(k); if (!v) { v = Board.rid(12); sessionStorage.setItem(k, v); } return v; } catch (e) { return Board.rid(12); } };
+const wbLocalCid = (() => { let c = wbStore('ping.wbCid'); if (!c) { c = Board.rid(12); wbStore('ping.wbCid', c); } return c; })();
+const wb = {
+  board: null, list: [], view: { x: -300, y: -200, z: 1 }, views: new Map(),
+  tool: 'select', ink: WB_INK[0], note: WB_NOTE[0], size: 1, fill: 'none', smart: true,
+  sel: new Set(), act: null, editing: null, undo: [], redo: [], clip: null, clipMark: '', erasing: new Set(), snap: null,
+  pointers: new Map(), space: false,
+  role: 'local', net: null, room: null, me: { cid: wbLocalCid, name: '', color: WB_PEOPLE[0], canEdit: true, pid: 'host' },
+  perms: Board.defaultPerms(), people: new Map(), guests: [], admitted: new Set(), banned: new Set(), granted: new Set(), revoked: new Set(), colorN: 0,
+  follow: false, hostView: null, timerEnd: null, vote: null, cursors: new Map(), lasers: new Map(), images: new Map(),
+  saveTimer: null, liveTimer: null, live: new Map(), curTimer: null, curPending: null, laserPending: [], viewTimer: null, ended: null,
+};
+try { Object.assign(wb, JSON.parse(wbStore('ping.wbPrefs')) || {}); } catch (e) { }
+wb.tool = 'select';
+const wbSavePrefs = () => wbStore('ping.wbPrefs', JSON.stringify({ ink: wb.ink, note: wb.note, size: wb.size, fill: wb.fill, smart: wb.smart }));
+const stage = $('wbStage'), cv = $('wbCanvas'), wctx = cv.getContext('2d');
+const wbHosting = () => wb.role === 'host' && !!wb.net;
+const wbGuest = () => wb.role === 'guest';
+const wbItems = () => wb.board ? wb.board.items : {};
+
+// ---------------------------------------------------------------- view: world ↔ screen
+const wbToWorld = (sx, sy) => [sx / wb.view.z + wb.view.x, sy / wb.view.z + wb.view.y];
+const wbToScreen = (x, y) => [(x - wb.view.x) * wb.view.z, (y - wb.view.y) * wb.view.z];
+const wbLocal = e => { const r = stage.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
+const wbPt = e => wbToWorld(...wbLocal(e));
+function wbCenterOn(cx, cy, z) {
+  const v = wb.view; v.z = Math.max(0.1, Math.min(8, z || v.z));
+  v.x = cx - stage.clientWidth / 2 / v.z; v.y = cy - stage.clientHeight / 2 / v.z;
+  wbViewChanged(true);
+}
+function wbZoomAt(f, sx = stage.clientWidth / 2, sy = stage.clientHeight / 2) {
+  if (wbLed()) return;
+  const v = wb.view, [wx, wy] = wbToWorld(sx, sy), z = Math.max(0.1, Math.min(8, v.z * f));
+  v.x = wx - sx / z; v.y = wy - sy / z; v.z = z;
+  wbViewChanged();
+}
+function wbFit() {
+  if (wbLed()) return;
+  const b = Board.unionBounds(Object.values(wbItems()), wbItems());
+  if (!b) { wbCenterOn(0, 0, 1); return; }
+  wbCenterOn(b.x + b.w / 2, b.y + b.h / 2, Math.min(2, (stage.clientWidth - 80) / Math.max(1, b.w), (stage.clientHeight - 80) / Math.max(1, b.h)));
+}
+// Guests whose host leads ("everyone follows my view") can't move their own view.
+function wbLed() {
+  if (wbGuest() && wb.perms.follow) { if (Date.now() - (wb.ledToast || 0) > 4000) { wb.ledToast = Date.now(); toast(t('wbLedByHost')); } return true; }
+  if (wbGuest()) wb.follow = false;
+  return false;
+}
+function wbViewChanged(fromFollow) {
+  if (wb.board) wb.views.set(wb.board.id, Object.assign({}, wb.view));
+  $('wbZoomPct').textContent = Math.round(wb.view.z * 100) + '%';
+  if (wbHosting() && !wb.viewTimer) wb.viewTimer = setTimeout(() => { wb.viewTimer = null; if (wbHosting()) wb.net.all({ k: 'view', v: wbHostView() }); }, 120);
+  if (wb.editing) wbPlaceEditor();
+  if (!fromFollow) wbUiBanner();
+  wbDraw();
+}
+const wbHostView = () => { const [cx, cy] = wbToWorld(stage.clientWidth / 2, stage.clientHeight / 2); return { cx, cy, z: wb.view.z }; };
+
+// ---------------------------------------------------------------- drawing
+let wbQueued = false;
+function wbDraw() { if (!wbQueued) { wbQueued = true; requestAnimationFrame(wbRender); } }
+const wbSorted = () => Object.values(wbItems()).sort((a, b) => (a.z || 0) - (b.z || 0));
+function wbImage(src) {
+  let img = wb.images.get(src);
+  if (!img) { img = new Image(); img.onload = wbDraw; img.src = src; wb.images.set(src, img); }
+  return img.complete && img.naturalWidth ? img : null;
+}
+function wbShapePath(c, it) {
+  const { x, y, w, h } = it;
+  c.beginPath();
+  if (it.type === 'ellipse') c.ellipse(x + w / 2, y + h / 2, w / 2, h / 2, 0, 0, Math.PI * 2);
+  else if (it.type === 'diamond') { c.moveTo(x + w / 2, y); c.lineTo(x + w, y + h / 2); c.lineTo(x + w / 2, y + h); c.lineTo(x, y + h / 2); c.closePath(); }
+  else if (it.type === 'triangle') { c.moveTo(x + w / 2, y); c.lineTo(x + w, y + h); c.lineTo(x, y + h); c.closePath(); }
+  else if (c.roundRect) c.roundRect(x, y, w, h, Math.min(8, w / 4, h / 4)); else c.rect(x, y, w, h);
+}
+function wbWrap(c, text, maxW) {
+  const out = [];
+  for (const para of String(text).split('\n')) {
+    let line = '';
+    for (const word of para.split(/(\s+)/)) {
+      if (!word) continue;
+      const test = line + word;
+      if (line.trim() && word.trim() && c.measureText(test).width > maxW) { out.push(line.trimEnd()); line = word; }
+      else line = test;
+      while (c.measureText(line).width > maxW && line.length > 1) {       // one very long word: break it
+        let k = line.length - 1; while (k > 1 && c.measureText(line.slice(0, k)).width > maxW) k--;
+        out.push(line.slice(0, k)); line = line.slice(k);
+      }
+    }
+    out.push(line);
+  }
+  return out;
+}
+// Sticky notes shrink their text until it fits; the result is remembered per text and size.
+const wbFitCache = new Map();
+function wbStickyFs(it) {
+  const key = (it.text || '') + '|' + Math.round(it.w) + '|' + Math.round(it.h) + '|' + (it.fs || 22);
+  if (wbFitCache.has(key)) return wbFitCache.get(key);
+  let fs = it.fs || 22;
+  for (; fs > 8; fs--) { wctx.font = `${fs}px ${WB_FONT}`; if (wbWrap(wctx, it.text || '', it.w - 20).length * fs * 1.25 <= it.h - 20) break; }
+  if (wbFitCache.size > 2000) wbFitCache.clear();
+  wbFitCache.set(key, fs);
+  return fs;
+}
+function wbText(c, it, fs, color, mode) {
+  c.font = `${mode === 'title' ? '600 ' : ''}${fs}px ${WB_FONT}`; c.fillStyle = color; c.textBaseline = 'top';
+  const lh = fs * 1.25;
+  if (it.type === 'text') { c.textAlign = 'left'; String(it.text || '').split('\n').forEach((l, i) => c.fillText(l, it.x, it.y + i * lh)); return; }
+  const lines = wbWrap(c, it.text || '', Math.max(10, it.w - 20)), total = lines.length * lh;
+  const y = mode === 'title' ? it.y + 14 : it.y + (it.h - total) / 2;
+  c.save(); c.beginPath(); c.rect(it.x, it.y, it.w, it.h); c.clip();
+  c.textAlign = 'center'; lines.forEach((l, i) => c.fillText(l, it.x + it.w / 2, y + i * lh));
+  c.restore();
+}
+// How many votes to show on a sticky note: during secret voting only your own.
+function wbVotesShown(it) {
+  const v = it.votes || {};
+  if (wb.vote && wb.vote.active && wb.vote.hidden) return { n: v[wb.me.cid] || 0, mine: true };
+  return { n: Object.values(v).reduce((a, b) => a + b, 0), mine: false };
+}
+function wbDrawItem(c, it, items, o = {}) {
+  c.save(); c.lineJoin = 'round'; c.lineCap = 'round';
+  const stroke = it.stroke || '#1e1e1e', sw = it.sw || 2, hideText = o.editing === it.id;
+  if (it.type === 'stroke') {
+    const P = it.pts;
+    c.strokeStyle = stroke; c.fillStyle = stroke; c.lineWidth = sw;
+    if (it.hl) { c.globalAlpha = 0.35; c.globalCompositeOperation = 'multiply'; }
+    c.beginPath();
+    if (P.length === 1) { c.arc(P[0][0], P[0][1], sw / 2, 0, Math.PI * 2); c.fill(); }
+    else {
+      c.moveTo(P[0][0], P[0][1]);
+      for (let i = 1; i < P.length - 1; i++) c.quadraticCurveTo(P[i][0], P[i][1], (P[i][0] + P[i + 1][0]) / 2, (P[i][1] + P[i + 1][1]) / 2);
+      c.lineTo(P[P.length - 1][0], P[P.length - 1][1]); c.stroke();
+    }
+  } else if (Board.isLine(it)) {
+    const [a, b] = Board.ends(it, items);
+    c.strokeStyle = stroke; c.lineWidth = sw; c.beginPath(); c.moveTo(a[0], a[1]); c.lineTo(b[0], b[1]); c.stroke();
+    if (it.type === 'arrow') {
+      const ang = Math.atan2(b[1] - a[1], b[0] - a[0]), L = Math.max(11, sw * 3.5);
+      c.beginPath(); c.moveTo(b[0] - L * Math.cos(ang - 0.45), b[1] - L * Math.sin(ang - 0.45)); c.lineTo(b[0], b[1]);
+      c.lineTo(b[0] - L * Math.cos(ang + 0.45), b[1] - L * Math.sin(ang + 0.45)); c.stroke();
+    }
+    if (it.text) {
+      const mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2;
+      c.font = `14px ${WB_FONT}`; const w = c.measureText(it.text).width + 10;
+      c.fillStyle = '#fbfbf8'; c.fillRect(mx - w / 2, my - 10, w, 20);
+      c.fillStyle = '#1e1e1e'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(it.text, mx, my);
+    }
+  } else if (Board.SHAPES.has(it.type)) {
+    wbShapePath(c, it);
+    if (it.fill && it.fill !== 'none') { c.fillStyle = it.fill; c.fill(); }
+    if (stroke !== 'none') { c.strokeStyle = stroke; c.lineWidth = sw; c.stroke(); }
+    if (it.text && !hideText) wbText(c, it, it.fs || 18, '#1e1e1e', it.align === 'top' ? 'title' : '');
+  } else if (it.type === 'sticky') {
+    c.shadowColor = 'rgba(0,0,0,.16)'; c.shadowBlur = 12; c.shadowOffsetY = 4;
+    c.fillStyle = it.fill || WB_NOTE[0]; c.fillRect(it.x, it.y, it.w, it.h);
+    c.shadowColor = 'transparent';
+    if (it.text && !hideText) wbText(c, it, wbStickyFs(it), '#1e1e1e', '');
+    const v = wbVotesShown(it);
+    if (v.n && o.votes !== false) {
+      const r = 14, cx = it.x + it.w - 4, cy = it.y + 4;
+      c.fillStyle = v.mine ? '#1971c2' : '#e03131'; c.beginPath(); c.arc(cx, cy, r, 0, Math.PI * 2); c.fill();
+      c.fillStyle = '#fff'; c.font = `700 13px ${WB_FONT}`; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(String(v.n), cx, cy + 1);
+    }
+  } else if (it.type === 'text') {
+    if (!hideText) wbText(c, it, it.fs || 20, stroke, '');
+  } else if (it.type === 'image') {
+    const img = wbImage(it.src);
+    if (img) c.drawImage(img, it.x, it.y, it.w, it.h); else { c.fillStyle = '#e9ecef'; c.fillRect(it.x, it.y, it.w, it.h); }
+  }
+  c.restore();
+}
+function wbSelBounds() {
+  const items = wbItems(), list = [...wb.sel].map(id => items[id]).filter(Boolean);
+  return list.length ? Board.unionBounds(list, items) : null;
+}
+// Corner handles of the selection (or the two ends of one selected line), in screen coordinates.
+function wbHandles() {
+  const items = wbItems(), list = [...wb.sel].map(id => items[id]).filter(Boolean);
+  if (!list.length || list.some(i => i.locked || !wbEditable(i))) return [];
+  if (list.length === 1 && Board.isLine(list[0])) return Board.ends(list[0], items).map((p, i) => ({ k: 'end', i, p: wbToScreen(p[0], p[1]) }));
+  const b = Board.unionBounds(list, items), [x0, y0] = wbToScreen(b.x, b.y), [x1, y1] = wbToScreen(b.x + b.w, b.y + b.h);
+  return [[x0, y0], [x1, y0], [x1, y1], [x0, y1]].map((p, i) => ({ k: 'corner', i, p }));
+}
+function wbRender() {
+  wbQueued = false;
+  if ($('view-board').hidden || !wb.board) return;
+  const box = $('wb'), want = Math.max(420, Math.round(innerHeight - box.getBoundingClientRect().top - 14)) + 'px';
+  if (box.style.height !== want) box.style.height = want;
+  const dpr = devicePixelRatio || 1, W = stage.clientWidth, H = stage.clientHeight;
+  if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
+  const c = wctx, v = wb.view, items = wbItems();
+  c.setTransform(dpr, 0, 0, dpr, 0, 0);
+  c.fillStyle = '#fbfbf8'; c.fillRect(0, 0, W, H);
+  let step = 24 * v.z; while (step < 14) step *= 2;
+  c.fillStyle = '#d3dad8';
+  for (let x = ((-v.x * v.z) % step + step) % step; x < W; x += step) for (let y = ((-v.y * v.z) % step + step) % step; y < H; y += step) c.fillRect(x - 0.8, y - 0.8, 1.6, 1.6);
+  c.setTransform(dpr * v.z, 0, 0, dpr * v.z, -v.x * v.z * dpr, -v.y * v.z * dpr);
+  const vx1 = v.x + W / v.z, vy1 = v.y + H / v.z, editing = wb.editing && wb.editing.id;
+  for (const it of wbSorted()) {
+    if (wb.erasing.has(it.id)) continue;
+    const b = Board.bounds(it, items);
+    if (b.x > vx1 || b.y > vy1 || b.x + b.w < v.x || b.y + b.h < v.y) continue;
+    wbDrawItem(c, it, items, { editing });
+  }
+  // the rest is drawn in screen pixels
+  c.setTransform(dpr, 0, 0, dpr, 0, 0);
+  if (wb.snap && items[wb.snap]) { const b = Board.bounds(items[wb.snap], items), [x, y] = wbToScreen(b.x, b.y); c.strokeStyle = '#0d7c72'; c.lineWidth = 2; c.setLineDash([]); c.strokeRect(x - 3, y - 3, b.w * v.z + 6, b.h * v.z + 6); }
+  const sb = wbSelBounds();
+  if (sb && !wb.editing) {
+    const [x, y] = wbToScreen(sb.x, sb.y);
+    c.strokeStyle = '#0d7c72'; c.lineWidth = 1.5; c.setLineDash([5, 4]); c.strokeRect(x - 4, y - 4, sb.w * v.z + 8, sb.h * v.z + 8); c.setLineDash([]);
+    for (const h of wbHandles()) { c.fillStyle = '#fff'; c.strokeStyle = '#0d7c72'; c.beginPath(); c.rect(h.p[0] - 5, h.p[1] - 5, 10, 10); c.fill(); c.stroke(); }
+    if ([...wb.sel].some(id => items[id] && items[id].locked)) { c.font = `14px ${WB_FONT}`; c.fillText('🔒', x - 4, y - 10); }
+  }
+  if (wb.act && wb.act.k === 'band') {
+    const [a, b] = [wbToScreen(...wb.act.a), wbToScreen(...wb.act.b)];
+    c.fillStyle = 'rgba(13,124,114,.08)'; c.strokeStyle = '#0d7c72'; c.lineWidth = 1;
+    c.fillRect(Math.min(a[0], b[0]), Math.min(a[1], b[1]), Math.abs(a[0] - b[0]), Math.abs(a[1] - b[1]));
+    c.strokeRect(Math.min(a[0], b[0]), Math.min(a[1], b[1]), Math.abs(a[0] - b[0]), Math.abs(a[1] - b[1]));
+  }
+  // laser trails fade out over 1.5 s
+  const now = performance.now();
+  let live = false;
+  for (const [id, trail] of wb.lasers) {
+    while (trail.length && now - trail[0].t > 1500) trail.shift();
+    if (!trail.length) { wb.lasers.delete(id); continue; }
+    live = true;
+    const col = id === 'me' ? '#e03131' : wbPersonColor(id);
+    c.lineCap = 'round'; c.lineJoin = 'round';
+    for (let i = 1; i < trail.length; i++) {
+      const p = wbToScreen(trail[i - 1].x, trail[i - 1].y), q = wbToScreen(trail[i].x, trail[i].y);
+      c.globalAlpha = Math.max(0, 1 - (now - trail[i].t) / 1500); c.strokeStyle = col; c.lineWidth = 4;
+      c.beginPath(); c.moveTo(p[0], p[1]); c.lineTo(q[0], q[1]); c.stroke();
+    }
+    const last = trail[trail.length - 1], p = wbToScreen(last.x, last.y);
+    c.globalAlpha = 1; c.fillStyle = col; c.beginPath(); c.arc(p[0], p[1], 5, 0, Math.PI * 2); c.fill();
+  }
+  c.globalAlpha = 1;
+  wbPlaceCursors();
+  $('wbEmpty').hidden = !!Object.keys(items).length || !!wb.act;
+  if (live) wbDraw();
+}
+
+// ---------------------------------------------------------------- who may change what (guests ask the host)
+function wbEditable(it) {
+  if (!wbGuest()) return true;
+  if (!wb.me.canEdit || !it || it.locked) return false;
+  return wb.perms.editOthers || it.author === wb.me.cid;
+}
+function wbCanCreate(type) {
+  if (!wbGuest()) return true;
+  if (!wb.me.canEdit) return false;
+  return type !== 'image' || wb.perms.images;
+}
+const wbTopZ = () => Math.max(0, ...Object.values(wbItems()).map(i => i.z || 0)) + 1;
+const wbBottomZ = () => Math.min(0, ...Object.values(wbItems()).map(i => i.z || 0)) - 1;
+function wbTopAt(p, filter) {
+  const items = wbItems(), tol = 6 / wb.view.z, list = wbSorted();
+  for (let i = list.length - 1; i >= 0; i--) if ((!filter || filter(list[i])) && Board.hit(list[i], p, tol, items)) return list[i];
+  return null;
+}
+const wbBoxAt = (p, except) => wbTopAt(p, it => Board.isBox(it) && it.type !== 'text' && it.id !== except);
+
+// ---------------------------------------------------------------- changes: live while they happen, one undo step when done
+function wbSendOps(ops) {
+  if (!wb.net || !ops.length) return;
+  if (wb.role === 'host') wb.net.all({ k: 'ops', ops }); else wb.net.send({ k: 'ops', ops });
+}
+// Items that are changing right now (being drawn, dragged or typed in) go out every WB_LIVE_MS.
+function wbLive(ids) {
+  if (!wb.net) return;
+  for (const id of ids) wb.live.set(id, true);
+  if (!wb.liveTimer) wb.liveTimer = setTimeout(wbFlushLive, WB_LIVE_MS);
+}
+function wbFlushLive() {
+  wb.liveTimer = null;
+  const items = wbItems(), ops = [...wb.live.keys()].map(id => items[id] ? { t: 'put', item: items[id] } : { t: 'del', id });
+  wb.live.clear(); wbSendOps(ops);
+}
+// before = { id: how the item looked before (null if new) }. The items' current state is the "after".
+function wbCommit(before, opts = {}) {
+  const ids = Object.keys(before), items = wbItems();
+  if (!ids.length || !wb.board) return;
+  const after = {};
+  for (const id of ids) after[id] = Board.clone(items[id] || null);
+  for (const id of ids) wb.live.delete(id);
+  if (ids.every(id => JSON.stringify(before[id]) === JSON.stringify(after[id]))) { if (opts.sendAnyway) wbSendOps(ids.map(id => after[id] ? { t: 'put', item: after[id] } : { t: 'del', id })); return; }
+  if (opts.undo !== false) { wb.undo.push({ before, after }); if (wb.undo.length > 300) wb.undo.shift(); wb.redo = []; }
+  wbSendOps(ids.map(id => after[id] ? { t: 'put', item: after[id] } : { t: 'del', id }));
+  wbChanged();
+}
+function wbChanged() {
+  if (!wb.board) return;
+  wb.board.modified = Date.now();
+  wbSaveSoon(); wbDraw(); wbRenderStyle();
+}
+function wbUndo(redo) {
+  const e = (redo ? wb.redo : wb.undo).pop(); if (!e) return;
+  const target = redo ? e.after : e.before, items = wbItems(), before = {};
+  for (const [id, next] of Object.entries(target)) {
+    const cur = items[id] || null;
+    if (wbGuest() && !Board.accept(wb.board, next ? { t: 'put', item: next } : { t: 'del', id }, { cid: wb.me.cid, canEdit: wb.me.canEdit }, wb.perms)) continue;
+    before[id] = Board.clone(cur);
+    if (next) items[id] = Board.clone(next); else delete items[id];
+  }
+  (redo ? wb.undo : wb.redo).push(e);
+  for (const id of [...wb.sel]) if (!items[id]) wb.sel.delete(id);
+  wbCommit(before, { undo: false });
+}
+// Deleting an item also deletes the connectors tied to it.
+function wbDelete(ids) {
+  const items = wbItems(), gone = new Set(ids.filter(id => items[id] && !items[id].locked && wbEditable(items[id])));
+  for (const l of Object.values(items)) if (Board.isLine(l) && (gone.has(l.from) || gone.has(l.to)) && wbEditable(l) && !l.locked) gone.add(l.id);
+  if (!gone.size) return;
+  const before = {};
+  for (const id of gone) { before[id] = Board.clone(items[id]); delete items[id]; wb.sel.delete(id); }
+  wbCommit(before);
+}
+function wbPaste(list, dx = 24, dy = 24) {
+  if (!wbCanCreate('any') || !list || !list.length) return;
+  const map = new Map(list.map(i => [i.id, uid()])), items = wbItems(), before = {};
+  let z = wbTopZ();
+  wb.sel.clear();
+  for (const src of list) {
+    if (src.type === 'image' && !wbCanCreate('image')) continue;
+    const it = Board.clone(src);
+    it.id = map.get(src.id); it.z = z++; it.author = wb.me.cid; delete it.votes; delete it.locked;
+    if (Board.isLine(it)) { if (!map.has(it.from)) it.from = null; else it.from = map.get(it.from); if (!map.has(it.to)) it.to = null; else it.to = map.get(it.to); }
+    Board.moveItem(it, dx, dy);
+    before[it.id] = null; items[it.id] = it; wb.sel.add(it.id);
+  }
+  wbCommit(before);
+}
+function wbSetZ(top) {
+  const items = wbItems(), list = [...wb.sel].map(id => items[id]).filter(i => i && wbEditable(i)).sort((a, b) => (a.z || 0) - (b.z || 0));
+  const before = {}; let z = top ? wbTopZ() : wbBottomZ() - list.length;
+  for (const it of list) { before[it.id] = Board.clone(it); it.z = z++; }
+  wbCommit(before);
+}
+function wbStyleSel(fn) {
+  const items = wbItems(), before = {};
+  for (const id of wb.sel) { const it = items[id]; if (!it || it.locked || !wbEditable(it)) continue; before[id] = Board.clone(it); fn(it); }
+  wbCommit(before);
+}
+function wbToggleLock() {
+  if (wbGuest()) return;
+  const items = wbItems(), list = [...wb.sel].map(id => items[id]).filter(Boolean), lock = list.some(i => !i.locked), before = {};
+  for (const it of list) { before[it.id] = Board.clone(it); if (lock) it.locked = true; else delete it.locked; }
+  wbCommit(before);
+}
+
+// ---------------------------------------------------------------- text editing on the board
+function wbMeasureText(it) {
+  wctx.font = `${it.fs || 20}px ${WB_FONT}`;
+  const lines = String(it.text || '').split('\n');
+  it.w = Math.max(8, ...lines.map(l => wctx.measureText(l).width)) + 4;
+  it.h = lines.length * (it.fs || 20) * 1.25;
+}
+function wbEditText(it, isNew) {
+  if (!Board.hasText(it) && !Board.isLine(it)) return;
+  if (!isNew && (it.locked || !wbEditable(it))) return;
+  wbFinishEdit();
+  wb.editing = { id: it.id, isNew, before: isNew ? null : Board.clone(it) };
+  if (isNew) wbItems()[it.id] = it;
+  const ta = $('wbEdit');
+  ta.value = it.text || ''; ta.hidden = false;
+  wbPlaceEditor();
+  ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length);
+  wbDraw();
+}
+function wbPlaceEditor() {
+  const e = wb.editing, ta = $('wbEdit'); if (!e) return;
+  const it = wbItems()[e.id]; if (!it) { wbFinishEdit(true); return; }
+  const z = wb.view.z;
+  if (Board.isLine(it)) {
+    const [a, b] = Board.ends(it, wbItems()), [sx, sy] = wbToScreen((a[0] + b[0]) / 2, (a[1] + b[1]) / 2);
+    Object.assign(ta.style, { left: (sx - 80) + 'px', top: (sy - 12) + 'px', width: '160px', height: '24px', font: `14px ${WB_FONT}`, textAlign: 'center', paddingTop: '0px', color: '#1e1e1e' });
+    return;
+  }
+  const fs = (it.type === 'sticky' ? wbStickyFs(it) : it.fs || (it.type === 'text' ? 20 : 18)) * z;
+  const [sx, sy] = wbToScreen(it.x, it.y);
+  ta.style.font = `${it.align === 'top' ? '600 ' : ''}${fs}px ${WB_FONT}`; ta.style.lineHeight = '1.25';
+  ta.style.color = it.type === 'text' ? (it.stroke || '#1e1e1e') : '#1e1e1e';
+  if (it.type === 'text') {
+    Object.assign(ta.style, { left: sx + 'px', top: sy + 'px', textAlign: 'left', paddingTop: '0px' });
+    ta.style.width = Math.max(40, it.w * z + fs) + 'px'; ta.style.height = Math.max(fs * 1.3, it.h * z) + 'px';
+  } else {
+    Object.assign(ta.style, { left: (sx + 10 * z) + 'px', top: (sy + 10 * z) + 'px', width: Math.max(20, (it.w - 20) * z) + 'px', height: Math.max(20, (it.h - 20) * z) + 'px', textAlign: 'center' });
+    ta.style.paddingTop = '0px';
+    if (it.align !== 'top') ta.style.paddingTop = Math.max(0, ((it.h - 20) * z - ta.scrollHeight) / 2) + 'px';
+  }
+}
+$('wbEdit').addEventListener('input', () => {
+  const e = wb.editing; if (!e) return;
+  const it = wbItems()[e.id]; if (!it) return;
+  it.text = $('wbEdit').value;
+  if (it.type === 'text') wbMeasureText(it);
+  wbPlaceEditor(); wbLive([it.id]); wbDraw();
+});
+$('wbEdit').addEventListener('blur', () => setTimeout(() => { if (document.activeElement !== $('wbEdit')) wbFinishEdit(); }, 0));
+function wbFinishEdit(cancel) {
+  const e = wb.editing; if (!e) return;
+  wb.editing = null; $('wbEdit').hidden = true;
+  const items = wbItems(), it = items[e.id];
+  if (it) {
+    if (cancel && e.before) items[e.id] = e.before;
+    else if (cancel && e.isNew) delete items[e.id];
+    else if (it.type === 'text' && !String(it.text || '').trim()) delete items[e.id];
+    else if (it.type === 'text') wbMeasureText(it);
+  }
+  wbCommit({ [e.id]: e.before }, { sendAnyway: e.isNew });
+  wbDraw(); wbRenderStyle();
+  if (currentTab() === 'board') stage.focus({ preventScroll: true });
+}
+
+// ---------------------------------------------------------------- pointer: draw, select, move, resize, pan, pinch
+const WB_TOOLS = ['select', 'hand', 'pen', 'marker', 'eraser', 'rect', 'ellipse', 'diamond', 'triangle', 'line', 'arrow', 'text', 'sticky', 'laser'];
+const WB_STAY = new Set(['pen', 'marker', 'eraser', 'laser', 'hand']);   // other tools go back to "select" after one use
+function wbSetTool(tool) {
+  if (!WB_TOOLS.includes(tool)) return;
+  wbFinishEdit();
+  wb.tool = tool;
+  if (tool !== 'select') { wb.sel.clear(); }
+  stage.dataset.tool = tool;
+  wbRenderTools(); wbRenderStyle(); wbDraw();
+}
+function wbCursorSend(p) {
+  if (!wb.net) return;
+  wb.curPending = p;
+  if (!wb.curTimer) wb.curTimer = setTimeout(() => {
+    wb.curTimer = null; const q = wb.curPending; if (!q || !wb.net) return;
+    const m = { k: 'cur', x: Math.round(q[0]), y: Math.round(q[1]) };
+    if (wbHosting()) wb.net.all(Object.assign(m, { id: 'host' })); else wb.net.send(m);
+    if (wb.laserPending.length) {
+      const l = { k: 'laser', pts: wb.laserPending.splice(0) };
+      if (wbHosting()) wb.net.all(Object.assign(l, { id: 'host' })); else wb.net.send(l);
+    }
+  }, WB_LIVE_MS);
+}
+cv.addEventListener('pointerdown', e => {
+  if (!wb.board) return;
+  e.preventDefault();                    // keep focus where we put it (a text box opened by this click must stay focused)
+  if (wb.editing) wbFinishEdit();
+  closePop();
+  stage.focus({ preventScroll: true });
+  wb.pointers.set(e.pointerId, wbLocal(e));
+  try { cv.setPointerCapture(e.pointerId); } catch (err) { }
+  if (wb.pointers.size === 2) {                          // second finger: pinch to zoom, cancel what the first one started
+    wbCancelAct();
+    const [a, b] = [...wb.pointers.values()];
+    wb.act = { k: 'pinch', d: Math.hypot(a[0] - b[0], a[1] - b[1]), m: [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2] };
+    return;
+  }
+  if (e.button === 2) return;
+  const p = wbPt(e), [sx, sy] = wbLocal(e), items = wbItems();
+  const tool = wb.space || e.button === 1 ? 'hand' : wb.tool;
+  if (tool === 'hand') { if (!wbLed()) wb.act = { k: 'pan', s: [sx, sy], v: [wb.view.x, wb.view.y] }; return; }
+  if (wb.vote && wb.vote.active && tool === 'select') {
+    const it = wbTopAt(p, i => i.type === 'sticky');
+    if (it) { wbVote(it.id, e.altKey || e.shiftKey ? -1 : 1); return; }
+  }
+  if (tool === 'laser') {
+    if (wbGuest() && !wb.perms.laser) { toast(t('wbNoLaser')); return; }
+    wb.act = { k: 'laser' }; wbLaserAdd(p); return;
+  }
+  if (tool === 'select') {
+    const h = wbHandles().find(h => Math.hypot(h.p[0] - sx, h.p[1] - sy) < 9);
+    if (h) {
+      const orig = {}; for (const id of wb.sel) orig[id] = Board.clone(items[id]);
+      wb.act = h.k === 'end' ? { k: 'end', i: h.i, id: [...wb.sel][0], orig } : { k: 'scale', i: h.i, b: wbSelBounds(), orig, shift: e.shiftKey };
+      return;
+    }
+    const it = wbTopAt(p);
+    if (it) {
+      if (e.shiftKey && wb.sel.has(it.id)) { wb.sel.delete(it.id); wbRenderStyle(); wbDraw(); return; }
+      if (!wb.sel.has(it.id)) { if (!e.shiftKey) wb.sel.clear(); wb.sel.add(it.id); }
+      const ids = [...wb.sel].filter(id => items[id] && !items[id].locked && wbEditable(items[id]));
+      if (ids.length) {
+        const orig = {};
+        for (const id of ids) {
+          const l = items[id];
+          if (Board.isLine(l)) {                         // a line moved without the items it's tied to comes loose
+            const [a, b] = Board.ends(l, items);
+            if (l.from && !wb.sel.has(l.from)) { l.x1 = a[0]; l.y1 = a[1]; }
+            if (l.to && !wb.sel.has(l.to)) { l.x2 = b[0]; l.y2 = b[1]; }
+          }
+          orig[id] = Board.clone(items[id]);
+        }
+        wb.act = { k: 'move', last: p, orig, moved: false };
+      }
+    } else {
+      if (!e.shiftKey) wb.sel.clear();
+      wb.act = { k: 'band', a: p, b: p };
+    }
+    wbRenderStyle(); wbDraw(); return;
+  }
+  if (!wbCanCreate(tool)) { toast(t('wbViewOnly')); return; }
+  if (tool === 'eraser') { wb.act = { k: 'erase' }; wbEraseAt(p); return; }
+  const base = { id: uid(), z: wbTopZ(), author: wb.me.cid };
+  if (tool === 'pen' || tool === 'marker') {
+    const it = Object.assign(base, { type: 'stroke', pts: [[+p[0].toFixed(1), +p[1].toFixed(1)]], stroke: wb.ink, sw: WB_SIZES[wb.size] * (tool === 'marker' ? 4 : 1) });
+    if (tool === 'marker') it.hl = true;
+    items[it.id] = it; wb.act = { k: 'draw', id: it.id, tool }; wbLive([it.id]); wbDraw(); return;
+  }
+  if (tool === 'line' || tool === 'arrow') {
+    const from = wbBoxAt(p);
+    const it = Object.assign(base, { type: tool, x1: p[0], y1: p[1], x2: p[0], y2: p[1], stroke: wb.ink, sw: WB_SIZES[wb.size], from: from ? from.id : null, to: null });
+    items[it.id] = it; wb.act = { k: 'shape', id: it.id, a: p }; return;
+  }
+  if (Board.SHAPES.has(tool)) {
+    const it = Object.assign(base, { type: tool, x: p[0], y: p[1], w: 0, h: 0, stroke: wb.ink, fill: wb.fill, sw: WB_SIZES[wb.size], text: '', fs: 18 });
+    items[it.id] = it; wb.act = { k: 'shape', id: it.id, a: p }; return;
+  }
+  if (tool === 'text') { wbSetTool('select'); wbEditText(Object.assign(base, { type: 'text', x: p[0], y: p[1] - 12, w: 8, h: 25, text: '', stroke: wb.ink, fs: 20 }), true); return; }
+  if (tool === 'sticky') {
+    wbSetTool('select');
+    const it = Object.assign(base, { type: 'sticky', x: p[0] - 90, y: p[1] - 90, w: 180, h: 180, fill: wb.note, text: '' });
+    wbEditText(it, true); wb.sel = new Set([it.id]); wbLive([it.id]); return;
+  }
+});
+cv.addEventListener('pointermove', e => {
+  if (!wb.board) return;
+  const p = wbPt(e), [sx, sy] = wbLocal(e), items = wbItems(), a = wb.act;
+  wbCursorSend(p);
+  if (wb.pointers.has(e.pointerId)) wb.pointers.set(e.pointerId, [sx, sy]);
+  if (!a) { cv.style.cursor = wb.tool === 'select' && wbHandles().some(h => Math.hypot(h.p[0] - sx, h.p[1] - sy) < 9) ? 'nwse-resize' : ''; return; }
+  switch (a.k) {
+    case 'pinch': {
+      if (wb.pointers.size < 2) return;
+      const [q, r] = [...wb.pointers.values()], d = Math.hypot(q[0] - r[0], q[1] - r[1]), m = [(q[0] + r[0]) / 2, (q[1] + r[1]) / 2];
+      if (wbGuest() && wb.perms.follow) return;
+      wb.view.x -= (m[0] - a.m[0]) / wb.view.z; wb.view.y -= (m[1] - a.m[1]) / wb.view.z;
+      wbZoomAt(d / a.d, m[0], m[1]); a.d = d; a.m = m; return;
+    }
+    case 'pan': wb.view.x = a.v[0] - (sx - a.s[0]) / wb.view.z; wb.view.y = a.v[1] - (sy - a.s[1]) / wb.view.z; wbViewChanged(); return;
+    case 'move': {
+      const dx = p[0] - a.last[0], dy = p[1] - a.last[1]; a.last = p; a.moved = true;
+      for (const id of Object.keys(a.orig)) if (items[id]) Board.moveItem(items[id], dx, dy);
+      wbLive(Object.keys(a.orig)); break;
+    }
+    case 'scale': {
+      const b = a.b, corners = [[b.x, b.y], [b.x + b.w, b.y], [b.x + b.w, b.y + b.h], [b.x, b.y + b.h]], o = corners[(a.i + 2) % 4], h = corners[a.i];
+      let fx = (p[0] - o[0]) / ((h[0] - o[0]) || 1), fy = (p[1] - o[1]) / ((h[1] - o[1]) || 1);
+      const keep = e.shiftKey || Object.keys(a.orig).some(id => ['image', 'text'].includes(items[id] && items[id].type));
+      if (keep) { const f = Math.max(Math.abs(fx), Math.abs(fy)); fx = f * Math.sign(fx || 1); fy = f * Math.sign(fy || 1); }
+      for (const [id, o0] of Object.entries(a.orig)) { const it = Board.clone(o0); Board.scaleItem(it, o[0], o[1], fx, fy); items[id] = it; }
+      wbLive(Object.keys(a.orig)); break;
+    }
+    case 'end': {
+      const it = items[a.id]; if (!it) break;
+      const hit = wbBoxAt(p, it.id); wb.snap = hit ? hit.id : null;
+      if (a.i === 0) { it.x1 = p[0]; it.y1 = p[1]; it.from = null; } else { it.x2 = p[0]; it.y2 = p[1]; it.to = null; }
+      wbLive([it.id]); break;
+    }
+    case 'band': a.b = p; break;
+    case 'draw': {
+      const it = items[a.id]; if (!it) break;
+      const last = it.pts[it.pts.length - 1];
+      if (Math.hypot(p[0] - last[0], p[1] - last[1]) * wb.view.z < 1.5) return;
+      it.pts.push([+p[0].toFixed(1), +p[1].toFixed(1)]); wbLive([it.id]); break;
+    }
+    case 'shape': {
+      const it = items[a.id]; if (!it) break;
+      if (Board.isLine(it)) {
+        let q = p;
+        if (e.shiftKey) { const ang = Math.round(Math.atan2(p[1] - a.a[1], p[0] - a.a[0]) / (Math.PI / 12)) * (Math.PI / 12), d = Math.hypot(p[0] - a.a[0], p[1] - a.a[1]); q = [a.a[0] + d * Math.cos(ang), a.a[1] + d * Math.sin(ang)]; }
+        it.x2 = q[0]; it.y2 = q[1];
+        const hit = wbBoxAt(q, it.id); wb.snap = hit && hit.id !== it.from ? hit.id : null;
+      } else {
+        let w = p[0] - a.a[0], h = p[1] - a.a[1];
+        if (e.shiftKey) { const s = Math.max(Math.abs(w), Math.abs(h)); w = s * Math.sign(w || 1); h = s * Math.sign(h || 1); }
+        it.x = Math.min(a.a[0], a.a[0] + w); it.y = Math.min(a.a[1], a.a[1] + h); it.w = Math.abs(w); it.h = Math.abs(h);
+      }
+      wbLive([it.id]); break;
+    }
+    case 'erase': wbEraseAt(p); break;
+    case 'laser': wbLaserAdd(p); break;
+  }
+  wbDraw();
+});
+function wbPointerEnd(e) {
+  wb.pointers.delete(e.pointerId);
+  const a = wb.act; if (!a) return;
+  if (a.k === 'pinch') { if (wb.pointers.size < 2) wb.act = null; return; }
+  wb.act = null;
+  const items = wbItems();
+  switch (a.k) {
+    case 'move': if (a.moved) wbCommit(a.orig); break;
+    case 'scale': wbCommit(a.orig); break;
+    case 'end': {
+      const it = items[a.id];
+      if (it && wb.snap) { if (a.i === 0) it.from = wb.snap; else it.to = wb.snap; }
+      wb.snap = null; wbCommit(a.orig); break;
+    }
+    case 'band': {
+      const x0 = Math.min(a.a[0], a.b[0]), y0 = Math.min(a.a[1], a.b[1]), x1 = Math.max(a.a[0], a.b[0]), y1 = Math.max(a.a[1], a.b[1]);
+      if (x1 - x0 > 2 / wb.view.z || y1 - y0 > 2 / wb.view.z)
+        for (const it of Object.values(items)) { const b = Board.bounds(it, items); if (b.x < x1 && b.x + b.w > x0 && b.y < y1 && b.y + b.h > y0) wb.sel.add(it.id); }
+      break;
+    }
+    case 'draw': {
+      const it = items[a.id]; if (!it) break;
+      wbCommit({ [it.id]: null }, { sendAnyway: true });
+      if (wb.smart && a.tool === 'pen') {
+        const r = Board.recognize(it.pts);
+        if (r) {
+          const shape = Object.assign({ id: uid(), z: it.z, author: wb.me.cid, stroke: it.stroke, sw: Math.max(2, it.sw) }, r);
+          if (Board.isLine(shape)) {
+            const f = wbBoxAt([shape.x1, shape.y1]), g = wbBoxAt([shape.x2, shape.y2]);
+            shape.from = f ? f.id : null; shape.to = g && (!f || g.id !== f.id) ? g.id : null;
+          } else Object.assign(shape, { fill: 'none', text: '', fs: 18 });
+          const before = { [it.id]: Board.clone(it), [shape.id]: null };
+          delete items[it.id]; items[shape.id] = shape;
+          wbCommit(before);
+          wbHint('wbHintSmart');
+        }
+      }
+      break;
+    }
+    case 'shape': {
+      const it = items[a.id]; if (!it) break;
+      if (Board.isLine(it)) {
+        if (Math.hypot(it.x2 - it.x1, it.y2 - it.y1) < 6 / wb.view.z) { delete items[it.id]; wb.snap = null; break; }
+        if (wb.snap) it.to = wb.snap;
+        wb.snap = null;
+      } else if (it.w < 6 / wb.view.z && it.h < 6 / wb.view.z) { it.w = 160; it.h = it.type === 'rect' ? 100 : 120; it.x -= it.w / 2; it.y -= it.h / 2; }
+      wbCommit({ [it.id]: null });
+      wb.sel = new Set([it.id]); wbSetTool('select');
+      break;
+    }
+    case 'erase': {
+      const before = {};
+      for (const id of wb.erasing) if (items[id]) { before[id] = Board.clone(items[id]); delete items[id]; }
+      wb.erasing.clear();
+      wbCommit(before); break;
+    }
+  }
+  wbRenderStyle(); wbDraw();
+}
+cv.addEventListener('pointerup', wbPointerEnd);
+cv.addEventListener('pointercancel', e => { wbCancelAct(); wb.pointers.delete(e.pointerId); });
+cv.addEventListener('pointerleave', () => { if (wb.net && !wb.act) { wb.curPending = null; } });
+cv.addEventListener('contextmenu', e => e.preventDefault());
+function wbCancelAct() {
+  const a = wb.act; wb.act = null;
+  if (!a) return;
+  const items = wbItems();
+  if ((a.k === 'draw' || a.k === 'shape') && items[a.id]) { delete items[a.id]; wbSendOps([{ t: 'del', id: a.id }]); }
+  if (['move', 'scale', 'end'].includes(a.k)) { for (const [id, o] of Object.entries(a.orig)) items[id] = o; wbSendOps(Object.values(a.orig).map(item => ({ t: 'put', item }))); }
+  wb.erasing.clear(); wb.snap = null; wbDraw();
+}
+cv.addEventListener('dblclick', e => {
+  if (!wb.board) return;
+  const p = wbPt(e), it = wbTopAt(p);
+  if (it && (Board.hasText(it) || Board.isLine(it))) { wb.sel = new Set([it.id]); wbEditText(it, false); return; }
+  if (!it && wbCanCreate('text')) wbEditText({ id: uid(), type: 'text', x: p[0], y: p[1] - 12, w: 8, h: 25, text: '', stroke: wb.ink, fs: 20, z: wbTopZ(), author: wb.me.cid }, true);
+});
+stage.addEventListener('wheel', e => {
+  if (!wb.board) return;
+  e.preventDefault();
+  const [sx, sy] = wbLocal(e);
+  if (e.ctrlKey || e.metaKey) wbZoomAt(Math.exp(-e.deltaY * 0.0022), sx, sy);
+  else if (!wbLed()) { wb.view.x += e.deltaX / wb.view.z; wb.view.y += e.deltaY / wb.view.z; wbViewChanged(); }
+}, { passive: false });
+function wbEraseAt(p) {
+  const items = wbItems(), tol = 8 / wb.view.z;
+  for (const it of Object.values(items)) if (!wb.erasing.has(it.id) && !it.locked && wbEditable(it) && Board.hit(it, p, tol, items)) wb.erasing.add(it.id);
+  wbDraw();
+}
+function wbLaserAdd(p) {
+  let trail = wb.lasers.get('me'); if (!trail) wb.lasers.set('me', trail = []);
+  trail.push({ x: p[0], y: p[1], t: performance.now() });
+  if (wb.net) { wb.laserPending.push([Math.round(p[0]), Math.round(p[1])]); wbCursorSend(p); }
+  wbDraw();
+}
+let wbHinted = {};
+function wbHint(key) { if (wbHinted[key]) return; wbHinted[key] = true; toast(t(key)); }
+
+// ---------------------------------------------------------------- keyboard, paste and drop
+const wbModalOpen = () => [...document.querySelectorAll('.scrim')].some(s => !s.hidden);
+document.addEventListener('keydown', e => {
+  if (currentTab() !== 'board' || !wb.board || wbModalOpen()) return;
+  if (e.target === $('wbEdit')) {
+    if (e.key === 'Escape' || (e.key === 'Enter' && (e.ctrlKey || e.metaKey))) { e.preventDefault(); wbFinishEdit(); }
+    else if (e.key === 'Tab') { e.preventDefault(); const id = wb.editing && wb.editing.id; wbFinishEdit(); const it = wbItems()[id]; if (it) wbBranch(it, e.shiftKey); }
+    return;
+  }
+  if (typing(e.target) || !$('wbJoin').hidden) return;
+  const mod = e.ctrlKey || e.metaKey, k = e.key.toLowerCase(), items = wbItems();
+  const sel = [...wb.sel].map(id => items[id]).filter(Boolean);
+  if (e.key === ' ' && !mod) { e.preventDefault(); if (!wb.space) { wb.space = true; stage.dataset.pan = '1'; } return; }
+  if (mod && k === 'z') { e.preventDefault(); wbUndo(e.shiftKey); return; }
+  if (mod && k === 'y') { e.preventDefault(); wbUndo(true); return; }
+  if (mod && k === 'a') { e.preventDefault(); wb.sel = new Set(Object.keys(items)); wbRenderStyle(); wbDraw(); return; }
+  if (mod && k === 'd') { e.preventDefault(); wbPaste(sel); return; }
+  if (mod && (k === 'c' || k === 'x') && sel.length) {
+    wb.clip = Board.clone(sel); wb.clipMark = '⁣' + Date.now();
+    try { navigator.clipboard.writeText(wb.clipMark).catch(() => { }); } catch (err) { }
+    if (k === 'x') { e.preventDefault(); wbDelete(sel.map(i => i.id)); }
+    return;
+  }
+  if (mod) return;
+  if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); wbDelete(sel.map(i => i.id)); return; }
+  if (e.key === 'Escape') { if (wb.act) wbCancelAct(); wb.sel.clear(); wbSetTool('select'); return; }
+  if (e.key.startsWith('Arrow') && sel.length) {
+    e.preventDefault();
+    const d = e.shiftKey ? 10 : 1, dx = e.key === 'ArrowLeft' ? -d : e.key === 'ArrowRight' ? d : 0, dy = e.key === 'ArrowUp' ? -d : e.key === 'ArrowDown' ? d : 0, before = {};
+    for (const it of sel) if (!it.locked && wbEditable(it)) { before[it.id] = Board.clone(it); Board.moveItem(it, dx, dy); }
+    wbCommit(before); return;
+  }
+  if ((e.key === 'Tab' || e.key === 'Enter') && sel.length === 1 && (Board.hasText(sel[0]) && sel[0].type !== 'text')) {
+    e.preventDefault();
+    if (e.key === 'Tab') wbBranch(sel[0], false); else { const parent = Board.parentOf(items, sel[0]); if (parent) wbBranch(parent, false); else wbEditText(sel[0], false); }
+    return;
+  }
+  if (e.key === 'Enter' && sel.length === 1) { e.preventDefault(); wbEditText(sel[0], false); return; }
+  if (e.key === '+' || e.key === '=') return wbZoomAt(1.2);
+  if (e.key === '-') return wbZoomAt(1 / 1.2);
+  if (e.key === '0') { if (!wbLed()) wbCenterOn(...wbHostViewCenter(), 1); return; }
+  if (e.key === '1' && e.shiftKey || e.key === '!') return wbFit();
+  const keys = { v: 'select', h: 'hand', p: 'pen', m: 'marker', e: 'eraser', r: 'rect', o: 'ellipse', d: 'diamond', g: 'triangle', l: 'line', a: 'arrow', t: 'text', s: 'sticky', k: 'laser' };
+  if (keys[k]) { wbSetTool(keys[k]); return; }
+  if (k === 'i') { wbPickImage(); return; }
+});
+const wbHostViewCenter = () => wbToWorld(stage.clientWidth / 2, stage.clientHeight / 2);
+document.addEventListener('keyup', e => { if (e.key === ' ' && wb.space) { wb.space = false; delete stage.dataset.pan; } });
+// Mind map: Tab adds a branch to the selected note, Enter (or Shift+Tab while typing) a sibling.
+function wbBranch(node, sibling) {
+  const items = wbItems();
+  if (sibling) { const p = Board.parentOf(items, node); if (p) node = p; }
+  if (!wbCanCreate('sticky')) { toast(t('wbViewOnly')); return; }
+  const [n, l] = Board.branch(items, node, wb.me.cid, [uid(), uid()]);
+  items[l.id] = l; wbCommit({ [l.id]: null });
+  wb.sel = new Set([n.id]);
+  wbEditText(n, true);
+  const [sx, sy] = wbToScreen(n.x + n.w, n.y + n.h);
+  if (sx > stage.clientWidth - 20 || sy > stage.clientHeight - 20 || sx < 0 || sy < 0) wbCenterOn(n.x + n.w / 2, n.y + n.h / 2);
+}
+document.addEventListener('paste', async e => {
+  if (currentTab() !== 'board' || !wb.board || wbModalOpen() || (typing(document.activeElement) && document.activeElement !== stage)) return;
+  const files = imageFiles(e.clipboardData && e.clipboardData.items);
+  if (files.length) { e.preventDefault(); wbAddImages(files); return; }
+  const text = e.clipboardData ? e.clipboardData.getData('text/plain') : '';
+  e.preventDefault();
+  if (wb.clip && (!text || text === wb.clipMark)) { wbPaste(wb.clip); return; }
+  if (text && text.trim() && wbCanCreate('text')) {
+    const [x, y] = wbHostViewCenter(), it = { id: uid(), type: 'text', x, y, text: text.slice(0, 5000), stroke: wb.ink, fs: 20, z: wbTopZ(), author: wb.me.cid };
+    wbMeasureText(it); it.x -= it.w / 2; wbItems()[it.id] = it; wbCommit({ [it.id]: null }); wb.sel = new Set([it.id]); wbDraw();
+  }
+});
+stage.addEventListener('dragover', e => { if (e.dataTransfer && [...e.dataTransfer.types].includes('Files')) e.preventDefault(); });
+stage.addEventListener('drop', e => { const files = imageFiles(e.dataTransfer && e.dataTransfer.files); if (!files.length) return; e.preventDefault(); wbAddImages(files, wbPt(e)); });
+function wbPickImage() { if (!wbCanCreate('image')) { toast(t(wbGuest() && wb.me.canEdit ? 'wbNoImages' : 'wbViewOnly')); return; } $('wbImageFile').click(); }
+$('wbImageFile').addEventListener('change', e => { const files = [...e.target.files]; e.target.value = ''; wbAddImages(files); });
+async function wbAddImages(files, at) {
+  if (!wbCanCreate('image')) { toast(t(wbGuest() && wb.me.canEdit ? 'wbNoImages' : 'wbViewOnly')); return; }
+  let [x, y] = at || wbHostViewCenter();
+  const before = {}, items = wbItems();
+  wb.sel.clear();
+  for (const f of files) {
+    try {
+      const src = await imageToDataUrl(f);
+      if (src.length * 0.75 > IMG_MAX_BYTES) { toast(t('imgTooBig')); continue; }
+      const img = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; });
+      const k = Math.min(1, 480 / Math.max(img.naturalWidth, img.naturalHeight));
+      const it = { id: uid(), type: 'image', x: x - img.naturalWidth * k / 2, y: y - img.naturalHeight * k / 2, w: img.naturalWidth * k, h: img.naturalHeight * k, src, z: wbTopZ(), author: wb.me.cid };
+      wb.images.set(src, img); items[it.id] = it; before[it.id] = null; wb.sel.add(it.id);
+      x += 30; y += 30;
+    } catch (err) { toast(t('imgFailed')); }
+  }
+  wbCommit(before);
+}
+
+// ---------------------------------------------------------------- toolbar and style bar
+const WB_ICON = {
+  select: '<path d="M5 3l11.5 6.2-5 1.3-2.2 5z"/>', hand: '<path d="M7.5 11V5.5a1.4 1.4 0 0 1 2.8 0V10M10.3 9.5V4.4a1.4 1.4 0 0 1 2.8 0v5M13.1 9.6V6a1.4 1.4 0 0 1 2.8 0v6.5a5.5 5.5 0 0 1-5.5 5.5h-.8a5.5 5.5 0 0 1-4.6-2.5L3.3 12a1.4 1.4 0 0 1 2.3-1.6l1.9 2.1"/>',
+  pen: '<path d="M13.5 4.5l3 3L8 16H5v-3z"/>', marker: '<path d="M12.5 4l4.5 4.5-6 6H6.5v-4.5zM4 18h7"/>', eraser: '<path d="M8 17h9M3.8 12.8l7-7 5.2 5.2-5.8 5.8H8z"/>',
+  rect: '<rect x="4" y="5" width="13" height="11" rx="1.5"/>', ellipse: '<ellipse cx="10.5" cy="10.5" rx="7" ry="5.5"/>', diamond: '<path d="M10.5 3.5l7 7-7 7-7-7z"/>',
+  triangle: '<path d="M10.5 4l7 12.5h-14z"/>', line: '<path d="M4.5 16.5l12-12"/>', arrow: '<path d="M4.5 16.5l12-12M9 4.5h7.5V12"/>', text: '<path d="M5 5h11M10.5 5v12"/>',
+  sticky: '<path d="M4 4h13v9l-4 4H4zM13 17v-4h4"/>', image: '<rect x="3" y="4.5" width="15" height="12" rx="1.5"/><circle cx="13" cy="8.5" r="1.3"/><path d="M3.5 14.5l4-4 4 4 2.5-2.5 3.5 3.5"/>',
+  laser: '<circle cx="10.5" cy="10.5" r="2.4"/><path d="M10.5 3v2.5M10.5 15.5V18M3 10.5h2.5M15.5 10.5H18M5.2 5.2L7 7M14 14l1.8 1.8M5.2 15.8L7 14M14 7l1.8-1.8"/>',
+  smart: '<path d="M10.5 3l1.7 4.6 4.6 1.7-4.6 1.7-1.7 4.6-1.7-4.6-4.6-1.7 4.6-1.7zM16 14l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z"/>',
+  templates: '<path d="M4 4h5.5v5.5H4zM11.5 4H17v5.5h-5.5zM4 11.5h5.5V17H4zM11.5 11.5H17V17h-5.5z"/>',
+};
+const wbSvg = name => `<svg viewBox="0 0 21 21" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${WB_ICON[name]}</svg>`;
+const WB_TOOLBAR = [['select', 'V'], ['hand', 'H'], '|', ['pen', 'P'], ['marker', 'M'], ['eraser', 'E'], '|', ['rect', 'R'], ['ellipse', 'O'], ['diamond', 'D'], ['triangle', 'G'], ['line', 'L'], ['arrow', 'A'], '|', ['text', 'T'], ['sticky', 'S'], ['image', 'I'], '|', ['laser', 'K'], ['smart', ''], ['templates', '']];
+function wbRenderTools() {
+  $('wbTools').innerHTML = WB_TOOLBAR.map(x => {
+    if (x === '|') return '<hr>';
+    const [name, key] = x, label = t('wbT_' + name) + (key ? ` (${key})` : '');
+    const pressed = name === 'smart' ? wb.smart : name === wb.tool;
+    const off = !['select', 'hand', 'laser', 'smart', 'templates'].includes(name) && !wbCanCreate(name);
+    return `<button type="button" data-wb-tool="${name}" title="${esc(label)}" aria-label="${esc(label)}" aria-pressed="${pressed}"${off ? ' disabled' : ''}>${wbSvg(name)}</button>`;
+  }).join('');
+}
+$('wbTools').addEventListener('click', e => {
+  const b = e.target.closest('[data-wb-tool]'); if (!b) return;
+  const name = b.dataset.wbTool;
+  if (name === 'smart') { wb.smart = !wb.smart; wbSavePrefs(); wbRenderTools(); toast(t(wb.smart ? 'wbSmartOn' : 'wbSmartOff')); return; }
+  if (name === 'templates') { wbTemplateMenu(b, false); return; }
+  if (name === 'image') { wbPickImage(); return; }
+  wbSetTool(name);
+});
+function wbRenderStyle() {
+  const bar = $('wbStyle'), items = wbItems(), sel = [...wb.sel].map(id => items[id]).filter(Boolean);
+  const types = new Set(sel.length ? sel.map(i => i.type) : [wb.tool === 'marker' ? 'stroke' : wb.tool === 'pen' ? 'stroke' : wb.tool]);
+  const editable = sel.length ? sel.some(i => !i.locked && wbEditable(i)) : wbCanCreate(wb.tool);
+  const has = (...ts) => ts.some(x => types.has(x));
+  const parts = [];
+  const sw = (attr, val, color, on, label) => `<button type="button" class="wb-sw" data-wb-style="${attr}" data-v="${val}" style="--sw:${color}" aria-pressed="${on}" title="${esc(label)}" aria-label="${esc(label)}"></button>`;
+  const cur = sel[0];
+  if (editable && has('stroke', 'line', 'arrow', 'rect', 'ellipse', 'diamond', 'triangle', 'text', 'pen', 'marker'))
+    parts.push(WB_INK.map((c, i) => sw('ink', c, c, (cur ? cur.stroke : wb.ink) === c, t('wbColor') + ' ' + (i + 1))).join(''));
+  if (editable && has('sticky')) parts.push(WB_NOTE.map((c, i) => sw('note', c, c, (cur && cur.type === 'sticky' ? cur.fill : wb.note) === c, t('wbNoteColor') + ' ' + (i + 1))).join(''));
+  if (editable && has('rect', 'ellipse', 'diamond', 'triangle')) {
+    const f = cur && Board.SHAPES.has(cur.type) ? cur.fill || 'none' : wb.fill;
+    parts.push(`<span class="wb-lbl">${esc(t('wbFill'))}</span>` + sw('fill', 'none', 'transparent', f === 'none', t('wbNoFill')) + WB_NOTE.slice(0, 5).map((c, i) => sw('fill', c, c, f === c, t('wbFill') + ' ' + (i + 1))).join(''));
+  }
+  if (editable && has('stroke', 'line', 'arrow', 'rect', 'ellipse', 'diamond', 'triangle', 'pen', 'marker')) {
+    const s = cur && cur.sw ? WB_SIZES.findIndex(v => v === cur.sw || v * 4 === cur.sw) : wb.size;
+    parts.push(`<span class="seg">${['S', 'M', 'L'].map((l, i) => `<button type="button" data-wb-style="size" data-v="${i}" aria-pressed="${s === i}" title="${esc(t('wbSize'))} ${l}">${l}</button>`).join('')}</span>`);
+  }
+  if (editable && sel.length && has('text', 'rect', 'ellipse', 'diamond', 'triangle', 'sticky'))
+    parts.push(`<button type="button" class="btn sm ghost" data-wb-style="font" data-v="-1" title="${esc(t('wbSmaller'))}">A−</button><button type="button" class="btn sm ghost" data-wb-style="font" data-v="1" title="${esc(t('wbBigger'))}">A+</button>`);
+  if (editable && sel.length === 1 && Board.isLine(cur)) parts.push(`<button type="button" class="btn sm ghost" data-wb-style="head" title="${esc(t('wbToggleHead'))}">${cur.type === 'arrow' ? '→' : '—'}</button>`);
+  if (sel.length) {
+    const acts = [];
+    if (editable) acts.push(['front', '⤒', t('wbFront')], ['back', '⤓', t('wbBack')], ['dup', '⧉', t('wbDuplicate')]);
+    if (!wbGuest()) acts.push(['lock', sel.some(i => i.locked) ? '🔓' : '🔒', t(sel.some(i => i.locked) ? 'wbUnlock' : 'wbLock')]);
+    if (editable) acts.push(['del', '🗑', t('delete')]);
+    if (acts.length) parts.push(acts.map(([k, icon, label]) => `<button type="button" class="btn sm ghost" data-wb-style="${k}" title="${esc(label)}" aria-label="${esc(label)}">${icon}</button>`).join(''));
+  }
+  bar.innerHTML = parts.map(p => `<span class="wb-grp">${p}</span>`).join('');
+  bar.hidden = !parts.length || !!wb.editing;
+}
+$('wbStyle').addEventListener('mousedown', e => e.preventDefault());
+$('wbStyle').addEventListener('click', e => {
+  const b = e.target.closest('[data-wb-style]'); if (!b) return;
+  const k = b.dataset.wbStyle, v = b.dataset.v, sel = wb.sel.size > 0;
+  if (k === 'ink') { if (sel) wbStyleSel(it => { if (it.type !== 'sticky' && it.type !== 'image') it.stroke = v; }); else wb.ink = v; }
+  else if (k === 'note') { if (sel) wbStyleSel(it => { if (it.type === 'sticky') it.fill = v; }); else wb.note = v; }
+  else if (k === 'fill') { if (sel) wbStyleSel(it => { if (Board.SHAPES.has(it.type)) it.fill = v; }); else wb.fill = v; }
+  else if (k === 'size') { if (sel) wbStyleSel(it => { if (it.type === 'stroke') it.sw = WB_SIZES[+v] * (it.hl ? 4 : 1); else if (it.sw != null || Board.isLine(it) || Board.SHAPES.has(it.type)) it.sw = WB_SIZES[+v]; }); else wb.size = +v; }
+  else if (k === 'font') wbStyleSel(it => { const d = +v; if (it.type === 'sticky') it.fs = Math.max(10, Math.min(60, (it.fs || 22) + d * 4)); else if (Board.hasText(it)) { it.fs = Math.max(8, Math.min(120, (it.fs || 18) + d * 4)); if (it.type === 'text') wbMeasureText(it); } });
+  else if (k === 'head') wbStyleSel(it => { if (Board.isLine(it)) it.type = it.type === 'arrow' ? 'line' : 'arrow'; });
+  else if (k === 'front' || k === 'back') wbSetZ(k === 'front');
+  else if (k === 'dup') wbPaste([...wb.sel].map(id => wbItems()[id]).filter(Boolean));
+  else if (k === 'lock') wbToggleLock();
+  else if (k === 'del') wbDelete([...wb.sel]);
+  wbSavePrefs(); wbRenderStyle(); wbDraw();
+});
+
+// ---------------------------------------------------------------- templates
+function wbTemplateMenu(anchor, asNew) {
+  if (!asNew && !wbCanCreate('sticky')) { toast(t('wbViewOnly')); return; }
+  const kinds = [['retro', 'tplRetro'], ['kanban', 'tplKanban'], ['swot', 'SWOT'], ['flow', 'tplFlow'], ['mind', 'tplMind'], ['brainstorm', 'tplBrainstorm']];
+  openPop(anchor, kinds.map(([k, label]) => [label === 'SWOT' ? 'SWOT' : t(label), () => asNew ? wbNewBoard(k) : wbInsertTemplate(k)]));
+}
+function wbInsertTemplate(kind) {
+  const [cx, cy] = wbHostViewCenter(), items = wbItems(), z = wbTopZ(), before = {};
+  const list = Board.template(kind, cx, cy, k => t(k), wb.me.cid);
+  wb.sel.clear();
+  for (const it of list) { it.z = (it.z || 0) + z; items[it.id] = it; before[it.id] = null; wb.sel.add(it.id); }
+  wbCommit(before);
+  const b = Board.unionBounds(list, items);
+  if (b && !(wbGuest() && wb.perms.follow)) wbCenterOn(b.x + b.w / 2, b.y + b.h / 2, Math.min(wb.view.z, (stage.clientWidth - 60) / b.w, (stage.clientHeight - 60) / b.h));
+}
+
+// ---------------------------------------------------------------- boards on this computer
+async function wbLoadList() {
+  const out = [];
+  try {
+    for (const k of (await kv.keys()).map(String).filter(k => k.startsWith('board-'))) {
+      try { const b = JSON.parse(await kv.get(k)); out.push({ id: b.id, title: b.title || '', modified: b.modified || 0, n: Object.keys(b.items || {}).length }); } catch (e) { }
+    }
+  } catch (e) { }
+  wb.list = out.sort((a, b) => b.modified - a.modified);
+  wbRenderList();
+}
+function wbRenderList() {
+  const cur = wb.board && wb.board.id;
+  $('wbList').innerHTML = wb.list.map(b => `<li data-id="${esc(b.id)}" aria-selected="${b.id === cur}"><span class="nm">${esc(b.title || t('wbUntitled'))}</span><small>${esc(fmtDay(new Date(b.modified)))}</small><button type="button" class="btn ghost sm" data-wb-more title="${esc(t('wbMore'))}" aria-label="${esc(t('wbMore'))}">⋯</button></li>`).join('')
+    || `<li class="empty-h">${esc(t('wbNoBoards'))}</li>`;
+}
+$('wbList').addEventListener('click', e => {
+  const li = e.target.closest('li[data-id]'); if (!li) return;
+  const id = li.dataset.id;
+  if (e.target.closest('[data-wb-more]')) {
+    openPop(e.target.closest('[data-wb-more]'), [[t('wbDuplicate'), () => wbDuplicateBoard(id)], [t('wbDownloadFile'), () => wbExportFile(id)], [t('wbDeleteBoard'), () => wbDeleteBoard(id)]]);
+    return;
+  }
+  if (!wb.board || id !== wb.board.id) wbOpen(id);
+});
+function wbNormalize(b) {
+  b = b && typeof b === 'object' ? b : {};
+  const items = {};
+  for (const it of Object.values(b.items || {})) if (Board.validItem(it)) items[it.id] = it;
+  return Object.assign(Board.newBoard(''), b, { items, perms: Object.assign(Board.defaultPerms(), b.perms || {}) });
+}
+function wbSaveSoon() {
+  if (!wb.board || wbGuest()) return;
+  clearTimeout(wb.saveTimer);
+  wb.saveTimer = setTimeout(wbSaveNow, 400);
+}
+async function wbSaveNow() {
+  clearTimeout(wb.saveTimer); wb.saveTimer = null;
+  const b = wb.board; if (!b || wbGuest()) return;
+  try { await kv.set('board-' + b.id, JSON.stringify(b)); }
+  catch (e) { toast(t('wbSaveFailed', e.message || String(e))); return; }
+  const entry = wb.list.find(x => x.id === b.id), info = { id: b.id, title: b.title, modified: b.modified, n: Object.keys(b.items).length };
+  if (entry) Object.assign(entry, info); else wb.list.unshift(info);
+  wb.list.sort((x, y) => y.modified - x.modified);
+  wbRenderList();
+}
+function wbLoadBoard(b, role = 'local') {
+  wbFinishEdit();
+  wb.board = b; wb.role = role; wb.undo = []; wb.redo = []; wb.sel.clear(); wb.act = null;
+  if (role !== 'guest') { wb.perms = b.perms; wbStore('ping.wbLast', b.id); }
+  $('wbTitle').value = b.title || '';
+  const v = wb.views.get(b.id);
+  requestAnimationFrame(() => { if (v) { wb.view = Object.assign({}, v); wbViewChanged(); } else wbFit(); });
+  wbUi(); wbRenderList(); wbDraw();
+}
+async function wbOpen(id) {
+  if (wbHosting() && wb.board && wb.board.id !== id) { if (!confirm(t('wbStopToSwitch'))) return; wbStopSharing(); }
+  await wbSaveNow();
+  let txt = null; try { txt = await kv.get('board-' + id); } catch (e) { }
+  if (!txt) { toast(t('wbMissing')); await wbLoadList(); return; }
+  try { wbLoadBoard(wbNormalize(JSON.parse(txt))); } catch (e) { toast(t('wbMissing')); }
+}
+async function wbNewBoard(kind, focusTitle = true) {
+  if (wbHosting()) { if (!confirm(t('wbStopToSwitch'))) return; wbStopSharing(); }
+  await wbSaveNow();
+  const b = Board.newBoard(kind ? t({ retro: 'tplRetro', kanban: 'tplKanban', swot: 'wbSwot', flow: 'tplFlow', mind: 'tplMind', brainstorm: 'tplBrainstorm' }[kind]) : t('wbUntitled'));
+  wbLoadBoard(b);
+  if (kind) requestAnimationFrame(() => { const list = Board.template(kind, 0, 0, k => t(k), wb.me.cid); for (const it of list) b.items[it.id] = it; wbChanged(); wbFit(); });
+  await wbSaveNow();
+  if (focusTitle) setTimeout(() => { $('wbTitle').focus(); $('wbTitle').select(); }, 50);
+}
+async function wbDuplicateBoard(id) {
+  await wbSaveNow();
+  try {
+    const b = wbNormalize(JSON.parse(await kv.get('board-' + id)));
+    b.id = Board.rid(); b.room = null; b.title = (b.title || t('wbUntitled')) + ' ' + t('wbCopySuffix'); b.created = b.modified = Date.now();
+    await kv.set('board-' + b.id, JSON.stringify(b)); await wbLoadList(); toast(t('wbDuplicated'));
+  } catch (e) { toast(t('wbMissing')); }
+}
+async function wbDeleteBoard(id) {
+  const entry = wb.list.find(x => x.id === id);
+  if (!confirm(t('wbConfirmDelete', (entry && entry.title) || t('wbUntitled')))) return;
+  if (wb.board && wb.board.id === id && wbHosting()) wbStopSharing();
+  const txt = await kv.get('board-' + id);
+  await kv.del('board-' + id);
+  if (wb.board && wb.board.id === id) { wb.board = null; }
+  await wbLoadList();
+  if (!wb.board) { if (wb.list.length) await wbOpen(wb.list[0].id); else await wbNewBoard(); }
+  toast(t('wbDeleted'), t('undo'), async () => { await kv.set('board-' + id, txt); await wbLoadList(); await wbOpen(id); });
+}
+async function wbAllBoards() {
+  await wbSaveNow();
+  const out = [];
+  try { for (const k of (await kv.keys()).map(String).filter(k => k.startsWith('board-'))) { try { out.push(JSON.parse(await kv.get(k))); } catch (e) { } } } catch (e) { }
+  return out;
+}
+// Restoring a backup brings back its boards: missing ones are added; "replace" also overwrites boards with the same id.
+async function wbRestoreBoards(list, replace) {
+  let n = 0;
+  for (const raw of Array.isArray(list) ? list : []) {
+    const b = wbNormalize(raw); if (typeof raw.id !== 'string') continue;
+    b.id = raw.id;
+    if (!replace && await kv.get('board-' + b.id)) continue;
+    await kv.set('board-' + b.id, JSON.stringify(b)); n++;
+  }
+  if (n) await wbLoadList();
+  return n;
+}
+async function wbExportFile(id) {
+  await wbSaveNow();
+  const b = id === (wb.board && wb.board.id) ? wb.board : JSON.parse(await kv.get('board-' + id));
+  downloadFile(fileSafe(b.title || t('wbUntitled')) + '.ping-board.json', JSON.stringify({ ping: 'board', version: 1, board: b }), 'application/json');
+}
+$('wbImportFile').addEventListener('change', async e => {
+  const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+  try {
+    const j = JSON.parse(await f.text()), raw = j && j.ping === 'board' ? j.board : null;
+    if (!raw || typeof raw.items !== 'object') throw new Error('not a board');
+    const b = wbNormalize(raw); b.id = Board.rid(); b.room = null; b.modified = Date.now();
+    await kv.set('board-' + b.id, JSON.stringify(b)); await wbLoadList(); await wbOpen(b.id); toast(t('wbImported'));
+  } catch (err) { toast(t('wbNotBoard')); }
+});
+$('wbTitle').addEventListener('input', () => {
+  if (!wb.board || wbGuest()) return;
+  wb.board.title = $('wbTitle').value.slice(0, 120); wbChanged();
+  if (wbHosting()) wb.net.all({ k: 'title', title: wb.board.title });
+});
+
+// ---------------------------------------------------------------- export
+async function wbImagesReady() {
+  await Promise.all(Object.values(wbItems()).filter(i => i.type === 'image').map(i => new Promise(res => { const img = wbImage(i.src); if (img) res(); else { const im = wb.images.get(i.src); im.addEventListener('load', res, { once: true }); im.addEventListener('error', res, { once: true }); setTimeout(res, 3000); } })));
+}
+function wbCanvasImage() {
+  const items = wbItems(), list = wbSorted(), b = Board.unionBounds(list, items) || { x: 0, y: 0, w: 400, h: 300 }, pad = 40;
+  const W = b.w + pad * 2, H = b.h + pad * 2, s = Math.min(2, 8000 / Math.max(W, H));
+  const c = document.createElement('canvas'); c.width = Math.max(1, Math.round(W * s)); c.height = Math.max(1, Math.round(H * s));
+  const x = c.getContext('2d'); x.fillStyle = '#ffffff'; x.fillRect(0, 0, c.width, c.height);
+  x.setTransform(s, 0, 0, s, (pad - b.x) * s, (pad - b.y) * s);
+  for (const it of list) wbDrawItem(x, it, items, {});
+  return c;
+}
+async function wbExport(kind) {
+  if (wbGuest() && !wb.perms.export) { toast(t('wbNoExport')); return; }
+  await wbImagesReady();
+  const name = fileSafe(wb.board.title || t('wbUntitled'));
+  if (kind === 'png') { wbCanvasImage().toBlob(blob => { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name + '.png'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); toast(t('wbExported')); }, 'image/png'); return; }
+  if (kind === 'pdf') {
+    const area = $('printArea');
+    area.innerHTML = `<h2>${esc(wb.board.title || t('wbUntitled'))}</h2><img alt="" src="${wbCanvasImage().toDataURL('image/png')}" style="max-width:100%">`;
+    document.body.classList.add('printing');
+    const done = () => { document.body.classList.remove('printing'); area.innerHTML = ''; removeEventListener('afterprint', done); };
+    addEventListener('afterprint', done);
+    setTimeout(() => { try { print(); } catch (e) { done(); } }, 80);
+    return;
+  }
+  if (kind === 'file') wbExportFile(wb.board.id);
+}
+async function wbSaveCopy() {
+  if (!wb.board || !wb.perms.export) { toast(t('wbNoExport')); return; }
+  const b = wbNormalize(Board.clone(wb.board)); b.id = Board.rid(); b.room = null; b.perms = Board.defaultPerms(); b.modified = Date.now();
+  b.title = (b.title || t('wbUntitled')) + ' ' + t('wbCopySuffix');
+  try { await kv.set('board-' + b.id, JSON.stringify(b)); toast(t('wbCopySaved')); } catch (e) { toast(t('wbSaveFailed', e.message)); }
+}
+
+// ---------------------------------------------------------------- connecting browsers (PeerJS, or a local stand-in for tests)
+let peerLib = null;
+function loadPeer() {
+  return peerLib ||= new Promise((res, rej) => {
+    if (window.Peer) return res(window.Peer);
+    const s = document.createElement('script');
+    s.src = PEERJS.src; s.integrity = PEERJS.sri; s.crossOrigin = 'anonymous';
+    s.onload = () => window.Peer ? res(window.Peer) : rej(new Error('PeerJS'));
+    s.onerror = () => { peerLib = null; s.remove(); rej(Object.assign(new Error('load'), { type: 'load' })); };
+    document.head.appendChild(s);
+  });
+}
+const WbNet = {
+  // The host: every guest connects to the peer "ping-wb-<room>".
+  async host(room, h) {
+    if (window.PING_WB_LOCAL) return wbLocalHost(room, h);
+    const Peer = await loadPeer();
+    return new Promise((res, rej) => {
+      const peer = new Peer('ping-wb-' + room, { debug: 0 }), conns = new Map();
+      let open = false;
+      const api = {
+        send(id, m) { const c = conns.get(id); if (c && c.open) try { c.send(m); } catch (e) { } },
+        all(m, except) { for (const [id, c] of conns) if (id !== except && c.open) try { c.send(m); } catch (e) { } },
+        drop(id) { const c = conns.get(id); if (c) { conns.delete(id); setTimeout(() => c.close(), 400); } },
+        close() { for (const c of conns.values()) try { c.close(); } catch (e) { } conns.clear(); peer.destroy(); },
+      };
+      peer.on('open', () => { open = true; res(api); });
+      peer.on('connection', c => {
+        c.on('open', () => { conns.set(c.peer, c); h.join(c.peer, c.metadata || {}); });
+        c.on('data', d => { if (conns.has(c.peer)) h.msg(c.peer, d); });
+        c.on('close', () => { if (conns.delete(c.peer)) h.leave(c.peer); });
+        c.on('error', () => { });
+      });
+      peer.on('disconnected', () => { if (!peer.destroyed) setTimeout(() => { try { peer.reconnect(); } catch (e) { } }, 1500); });   // new guests need the service; people already in stay connected
+      peer.on('error', e => { if (!open) { peer.destroy(); rej(e); } else if (h.error) h.error(e); });
+    });
+  },
+  async join(room, meta, h) {
+    if (window.PING_WB_LOCAL) return wbLocalJoin(room, meta, h);
+    const Peer = await loadPeer();
+    return new Promise((res, rej) => {
+      const peer = new Peer({ debug: 0 });
+      let done = false, conn = null;
+      const fail = e => { if (done) return; done = true; peer.destroy(); rej(e); };
+      const timer = setTimeout(() => fail(Object.assign(new Error('timeout'), { type: 'peer-unavailable' })), 20000);
+      peer.on('open', () => {
+        conn = peer.connect('ping-wb-' + room, { reliable: true, metadata: meta });
+        conn.on('open', () => { done = true; clearTimeout(timer); res({ send(m) { if (conn.open) try { conn.send(m); } catch (e) { } }, close() { try { conn.close(); } catch (e) { } peer.destroy(); } }); });
+        conn.on('data', d => h.msg(d));
+        conn.on('close', () => { if (done) h.close(); });
+        conn.on('error', () => { });
+      });
+      peer.on('error', e => { if (!done) { clearTimeout(timer); fail(e); } else if (e.type !== 'peer-unavailable') h.close(e); });
+    });
+  },
+};
+// Same API over BroadcastChannel, between tabs of one browser: the automated tests use it (no internet needed).
+function wbLocalHost(room, h) {
+  const bc = new BroadcastChannel('ping-wb-' + room), peers = new Set();
+  bc.onmessage = ({ data: m }) => {
+    if (!m || m.to !== 'host') return;
+    if (m.k === 'hello') { peers.add(m.from); bc.postMessage({ to: m.from, k: 'ok' }); h.join(m.from, m.meta || {}); }
+    else if (m.k === 'msg' && peers.has(m.from)) h.msg(m.from, m.d);
+    else if (m.k === 'bye' && peers.delete(m.from)) h.leave(m.from);
+  };
+  return Promise.resolve({
+    send(id, d) { if (peers.has(id)) bc.postMessage({ to: id, k: 'msg', d }); },
+    all(d, except) { for (const id of peers) if (id !== except) bc.postMessage({ to: id, k: 'msg', d }); },
+    drop(id) { if (peers.delete(id)) setTimeout(() => bc.postMessage({ to: id, k: 'bye' }), 100); },
+    close() { for (const id of peers) bc.postMessage({ to: id, k: 'bye' }); peers.clear(); setTimeout(() => bc.close(), 50); },
+  });
+}
+function wbLocalJoin(room, meta, h) {
+  const bc = new BroadcastChannel('ping-wb-' + room), id = 'g-' + Board.rid(8);
+  return new Promise((res, rej) => {
+    let ok = false;
+    const timer = setTimeout(() => { if (!ok) { bc.close(); rej(Object.assign(new Error('timeout'), { type: 'peer-unavailable' })); } }, 1500);
+    bc.onmessage = ({ data: m }) => {
+      if (!m || m.to !== id) return;
+      if (m.k === 'ok' && !ok) { ok = true; clearTimeout(timer); res({ send(d) { bc.postMessage({ to: 'host', from: id, k: 'msg', d }); }, close() { bc.postMessage({ to: 'host', from: id, k: 'bye' }); bc.close(); } }); }
+      else if (m.k === 'msg') h.msg(m.d);
+      else if (m.k === 'bye') { bc.close(); h.close(); }
+    };
+    bc.postMessage({ to: 'host', from: id, k: 'hello', meta });
+  });
+}
+function wbErrText(e) {
+  const k = e && e.type;
+  if (k === 'peer-unavailable') return t('wbNoRoom');
+  if (k === 'load' || k === 'network' || k === 'server-error' || k === 'socket-error' || k === 'socket-closed') return t('wbNoService');
+  if (k === 'browser-incompatible') return t('wbOldBrowser');
+  if (k === 'unavailable-id') return t('wbIdTaken');
+  return (e && e.message) || String(e);
+}
+const wbLink = () => (location.protocol.startsWith('http') ? location.origin + location.pathname.replace(/index\.html$/, '') : PING_HOME) + '#wb=' + wb.board.room;
+
+// ---------------------------------------------------------------- hosting
+const wbCanEdit = cid => wb.perms.edit === 'all' ? !wb.revoked.has(cid) : wb.perms.edit === 'allowed' ? wb.granted.has(cid) : false;
+const wbPersonColor = id => id === 'host' ? (wbGuest() ? '#0d7c72' : wb.me.color) : ((wbGuest() ? wb.guests.find(p => p.id === id) : wb.people.get(id)) || { color: '#868e96' }).color;
+const wbMyName = () => (wbStore('ping.wbName') || '').trim();
+function wbPeopleList() {
+  return [{ id: 'host', name: wb.me.name || t('wbHostName'), color: '#0d7c72', host: true, canEdit: true },
+    ...[...wb.people.values()].filter(p => !p.waiting).map(p => ({ id: p.pid, name: p.name, color: p.color, canEdit: p.canEdit }))];
+}
+function wbPushPeople() { if (wbHosting()) wb.net.all({ k: 'people', people: wbPeopleList() }); wbRenderPeople(); wbRenderShare(); }
+function wbPushPerms() {
+  if (!wbHosting()) return;
+  for (const p of wb.people.values()) if (!p.waiting) { p.canEdit = wbCanEdit(p.cid); wb.net.send(p.pid, { k: 'perms', perms: wb.perms, canEdit: p.canEdit }); }
+  wbPushPeople();
+}
+async function wbStartSharing() {
+  if (!wb.board || wbGuest() || wb.net) return;
+  wb.board.room ||= Board.rid(20); wbSaveSoon();
+  wb.sharing = 'starting'; wbRenderShare();
+  try {
+    wb.net = await WbNet.host(wb.board.room, { join: wbOnJoin, msg: wbOnHostMsg, leave: wbOnLeave, error: e => toast(wbErrText(e)) });
+  } catch (e) { wb.sharing = null; wb.net = null; wbRenderShare(); toast(wbErrText(e)); return; }
+  wb.sharing = null; wb.role = 'host'; wb.me.color = '#0d7c72'; wb.me.name = wbMyName();
+  wb.people.clear(); wb.admitted.clear(); wb.banned.clear(); wb.granted.clear(); wb.revoked.clear();
+  wbUi(); wbRenderShare(); wbRenderPeople();
+}
+function wbStopSharing() {
+  if (!wb.net || wbGuest()) return;
+  try { wb.net.all({ k: 'end' }); } catch (e) { }
+  const net = wb.net; wb.net = null; setTimeout(() => net.close(), 200);
+  wb.role = 'local'; wb.people.clear(); wb.vote = null; wb.timerEnd = null;
+  for (const id of [...wb.cursors.keys()]) wbRemoveCursor(id);
+  wbUi(); wbRenderShare(); wbRenderPeople(); wbDraw();
+}
+async function wbNewLink() {
+  if (!wb.board || !confirm(t('wbConfirmNewLink'))) return;
+  const was = wbHosting();
+  if (was) wbStopSharing();
+  wb.board.room = Board.rid(20); await wbSaveNow();
+  if (was) await wbStartSharing(); else wbRenderShare();
+  toast(t('wbNewLinkDone'));
+}
+function wbOnJoin(pid, meta) {
+  const cid = String((meta && meta.cid) || pid).slice(0, 64), name = String((meta && meta.name) || '').replace(/\s+/g, ' ').trim().slice(0, 40) || t('wbGuest');
+  if (wb.banned.has(cid)) { wb.net.send(pid, { k: 'deny' }); wb.net.drop(pid); return; }
+  const p = { pid, cid, name, color: WB_PEOPLE[wb.colorN++ % WB_PEOPLE.length], canEdit: wbCanEdit(cid), waiting: false };
+  wb.people.set(pid, p);
+  if (wb.perms.approve && !wb.admitted.has(cid)) { p.waiting = true; wb.net.send(pid, { k: 'wait' }); wbRenderRequests(); toast(t('wbWantsIn', name)); playSound(alertCfg().sound, alertCfg().volume); return; }
+  wbWelcome(p);
+}
+function wbWelcome(p) {
+  p.waiting = false; wb.admitted.add(p.cid); p.canEdit = wbCanEdit(p.cid);
+  wb.net.send(p.pid, { k: 'welcome', you: { pid: p.pid, color: p.color, canEdit: p.canEdit }, title: wb.board.title, items: wb.board.items, perms: wb.perms,
+    people: wbPeopleList(), timer: wb.timerEnd ? wb.timerEnd - Date.now() : null, vote: wb.vote, view: wbHostView() });
+  wbPushPeople(); wbRenderRequests();
+  toast(t('wbJoined', p.name));
+}
+function wbOnLeave(pid) {
+  const p = wb.people.get(pid); if (!p) return;
+  wb.people.delete(pid); wbRemoveCursor(pid); wb.lasers.delete(pid);
+  if (!p.waiting) { wbPushPeople(); toast(t('wbLeft', p.name)); }
+  wbRenderRequests();
+}
+function wbOnHostMsg(pid, m) {
+  const p = wb.people.get(pid);
+  if (!p || p.waiting || !m || typeof m !== 'object') return;
+  if (m.k === 'ops') wbHostOps(p, m.ops);
+  else if (m.k === 'cur' && Number.isFinite(m.x) && Number.isFinite(m.y)) { wbSetCursor(pid, m.x, m.y, p.name, p.color); wb.net.all({ k: 'cur', id: pid, x: m.x, y: m.y }, pid); }
+  else if (m.k === 'laser' && wb.perms.laser && Array.isArray(m.pts)) { const pts = m.pts.slice(0, 200).filter(q => Array.isArray(q) && Number.isFinite(q[0]) && Number.isFinite(q[1])); wbLaserIn(pid, pts); wb.net.all({ k: 'laser', id: pid, pts }, pid); }
+  else if (m.k === 'vote') wbApplyVote(p.cid, m.id, m.d);
+}
+function wbHostOps(p, ops) {
+  if (!Array.isArray(ops)) return;
+  const who = { cid: p.cid, canEdit: p.canEdit }, ok = [], fix = {};
+  for (const op of ops.slice(0, 2000)) {
+    const a = Board.accept(wb.board, op, who, wb.perms);
+    if (a) { Board.apply(wb.board, [a]); ok.push(a); }
+    else { const id = op && (op.t === 'put' ? op.item && op.item.id : op.id); if (typeof id === 'string' && id.length < 65) fix[id] = wb.board.items[id] || null; }
+  }
+  if (ok.length) {
+    wb.net.all({ k: 'ops', ops: ok }, p.pid);
+    for (const id of [...wb.sel]) if (!wb.board.items[id]) wb.sel.delete(id);
+    if (wb.editing && !wb.board.items[wb.editing.id]) wbFinishEdit(true);
+    wbChanged();
+  }
+  if (Object.keys(fix).length) wb.net.send(p.pid, { k: 'fix', items: fix });
+}
+// The host's controls over one participant.
+function wbPersonMenu(anchor, pid) {
+  const p = wb.people.get(pid); if (!p) return;
+  const items = [[p.canEdit ? t('wbMakeViewer') : t('wbMakeEditor'), () => {
+    if (p.canEdit) { wb.revoked.add(p.cid); wb.granted.delete(p.cid); } else { wb.granted.add(p.cid); wb.revoked.delete(p.cid); if (wb.perms.edit === 'none') { wb.perms.edit = 'allowed'; wbSaveSoon(); } }
+    wbPushPerms();
+  }], [t('wbRemove', p.name), () => { wb.banned.add(p.cid); wb.net.send(pid, { k: 'kick' }); wb.net.drop(pid); wbOnLeave(pid); }]];
+  openPop(anchor, items);
+}
+function wbAdmit(pid, yes) {
+  const p = wb.people.get(pid); if (!p || !p.waiting || !wbHosting()) return;
+  if (yes) wbWelcome(p);
+  else { wb.net.send(pid, { k: 'deny' }); wb.net.drop(pid); wb.people.delete(pid); wbRenderRequests(); }
+}
+function wbRenderRequests() {
+  const waiting = [...wb.people.values()].filter(p => p.waiting);
+  $('wbRequests').hidden = !waiting.length;
+  $('wbRequests').innerHTML = waiting.map(p => `<div class="wb-req"><b>${esc(p.name)}</b> ${esc(t('wbAsksIn'))}<button type="button" class="btn primary sm" data-wb-admit="${esc(p.pid)}" data-yes="1">${esc(t('wbLetIn'))}</button><button type="button" class="btn sm" data-wb-admit="${esc(p.pid)}">${esc(t('wbDeny'))}</button></div>`).join('');
+}
+$('wbRequests').addEventListener('click', e => { const b = e.target.closest('[data-wb-admit]'); if (b) wbAdmit(b.dataset.wbAdmit, !!b.dataset.yes); });
+
+// ---------------------------------------------------------------- joining someone's board
+let wbJoinState = null;
+function wbGuestBoot(room) {
+  wb.room = room; wb.role = 'guest'; wb.me.cid = wbSession('ping.wbGuestCid');
+  document.body.classList.add('wb-guest');
+  showTab('board');
+  $('wbJoinName').value = wbMyName();
+  wbJoinShow('ask');
+  setTimeout(() => $('wbJoinName').focus(), 50);
+}
+function wbJoinShow(state, text) {
+  wbJoinState = state;
+  $('wbJoin').hidden = state === 'in';
+  $('wbJoinAsk').hidden = state !== 'ask';
+  $('wbJoinStatus').textContent = text || '';
+  $('wbJoinStatus').classList.toggle('err', ['fail', 'lost', 'deny', 'kick', 'end'].includes(state));
+  $('wbJoinRetry').hidden = !['fail', 'lost'].includes(state);
+  $('wbJoinCopy').hidden = !(['lost', 'end', 'kick'].includes(state) && wb.board && wb.perms.export);
+}
+async function wbJoin() {
+  const name = $('wbJoinName').value.replace(/\s+/g, ' ').trim().slice(0, 40);
+  if (!name) { $('wbJoinName').focus(); return; }
+  wbStore('ping.wbName', name); wb.me.name = name;
+  wbJoinShow('connecting', t('wbConnecting'));
+  wb.kicked = wb.ended = wb.denied = false;
+  try { wb.net = await WbNet.join(wb.room, { name, cid: wb.me.cid }, { msg: wbOnGuestMsg, close: wbOnGuestClose }); }
+  catch (e) { wb.net = null; wbJoinShow('fail', wbErrText(e)); return; }
+  if (wbJoinState === 'connecting') wbJoinShow('connecting', t('wbConnected'));
+}
+function wbOnGuestClose() {
+  wb.net = null;
+  for (const id of [...wb.cursors.keys()]) wbRemoveCursor(id);
+  if (wb.kicked) wbJoinShow('kick', t('wbKicked'));
+  else if (wb.denied) wbJoinShow('deny', t('wbDenied'));
+  else if (wb.ended) wbJoinShow('end', t('wbEnded'));
+  else wbJoinShow('lost', t('wbLost'));
+}
+function wbOnGuestMsg(m) {
+  if (!m || typeof m !== 'object') return;
+  switch (m.k) {
+    case 'wait': wbJoinShow('wait', t('wbWaiting')); break;
+    case 'deny': wb.denied = true; break;
+    case 'kick': wb.kicked = true; break;
+    case 'end': wb.ended = true; break;
+    case 'welcome': {
+      const b = wbNormalize({ id: 'guest-' + wb.room, title: m.title, items: m.items, perms: m.perms });
+      wb.perms = b.perms; wb.me.canEdit = !!(m.you && m.you.canEdit); wb.me.pid = m.you && m.you.pid; wb.me.color = (m.you && m.you.color) || WB_PEOPLE[1];
+      wb.guests = Array.isArray(m.people) ? m.people : [];
+      wb.vote = m.vote || null; wb.timerEnd = m.timer ? Date.now() + m.timer : null;
+      wb.follow = true;
+      wbLoadBoard(b, 'guest');
+      wbJoinShow('in');
+      if (m.view) requestAnimationFrame(() => wbCenterOn(m.view.cx, m.view.cy, m.view.z));
+      toast(t(wb.me.canEdit ? 'wbWelcomeEdit' : 'wbWelcomeView'));
+      break;
+    }
+    case 'ops': {
+      if (!wb.board || !Array.isArray(m.ops)) break;
+      const editing = wb.editing && wb.editing.id;
+      const ops = m.ops.filter(op => op && (op.t === 'del' ? typeof op.id === 'string' : Board.validItem(op.item)) && (op.t === 'del' ? op.id : op.item.id) !== editing);
+      Board.apply(wb.board, ops);
+      for (const id of [...wb.sel]) if (!wb.board.items[id]) wb.sel.delete(id);
+      wbDraw(); wbRenderStyle(); break;
+    }
+    case 'fix': {
+      if (!wb.board || !m.items) break;
+      for (const [id, it] of Object.entries(m.items)) { if (it && Board.validItem(it)) wb.board.items[id] = it; else if (!it) delete wb.board.items[id]; }
+      toast(t('wbRefused')); wbDraw(); break;
+    }
+    case 'perms': {
+      wb.perms = Object.assign(Board.defaultPerms(), m.perms);
+      const could = wb.me.canEdit; wb.me.canEdit = !!m.canEdit;
+      if (could !== wb.me.canEdit) toast(t(wb.me.canEdit ? 'wbNowEditor' : 'wbNowViewer'));
+      if (!wb.me.canEdit) wbSetTool(wb.tool === 'laser' || wb.tool === 'hand' ? wb.tool : 'select');
+      wbUi(); break;
+    }
+    case 'people': wb.guests = Array.isArray(m.people) ? m.people : []; for (const id of [...wb.cursors.keys()]) if (!wb.guests.some(p => p.id === id)) wbRemoveCursor(id); wbRenderPeople(); break;
+    case 'cur': { const p = wb.guests.find(x => x.id === m.id); if (p && m.id !== wb.me.pid && Number.isFinite(m.x)) wbSetCursor(m.id, m.x, m.y, p.name, p.color); break; }
+    case 'laser': if (Array.isArray(m.pts) && m.id !== wb.me.pid) wbLaserIn(m.id, m.pts); break;
+    case 'view': wb.hostView = m.v; if (m.v && (wb.follow || wb.perms.follow || m.summon)) { if (m.summon) toast(t('wbSummoned')); wbCenterOn(m.v.cx, m.v.cy, m.v.z); } break;
+    case 'timer': wb.timerEnd = m.left ? Date.now() + m.left : null; wbTick(); break;
+    case 'vote': wb.vote = m.vote || null; if (wb.vote && wb.vote.active) toast(t('wbVoteStarted', wb.vote.per)); wbUiBanner(); wbDraw(); break;
+    case 'title': if (wb.board) { wb.board.title = String(m.title || '').slice(0, 120); $('wbTitle').value = wb.board.title; } break;
+  }
+}
+function wbLeave() {
+  if (wb.net) { try { wb.net.close(); } catch (e) { } wb.net = null; }
+  location.hash = ''; location.reload();
+}
+
+// ---------------------------------------------------------------- other people's pointers and lasers
+function wbSetCursor(id, x, y, name, color) {
+  let c = wb.cursors.get(id);
+  if (!c) {
+    const el = document.createElement('div'); el.className = 'wb-cursor';
+    el.innerHTML = `<svg viewBox="0 0 16 16" width="16" height="16"><path d="M1 1l5 13 2-5.5L14 7z" fill="${esc(color)}" stroke="#fff" stroke-width="1.2" stroke-linejoin="round"/></svg><span></span>`;
+    $('wbCursors').appendChild(el); c = { el }; wb.cursors.set(id, c);
+  }
+  c.el.querySelector('span').textContent = name; c.el.querySelector('span').style.background = color;
+  c.x = x; c.y = y; c.t = Date.now();
+  wbPlaceCursor(c);
+}
+function wbPlaceCursor(c) {
+  const [sx, sy] = wbToScreen(c.x, c.y), out = sx < -20 || sy < -20 || sx > stage.clientWidth || sy > stage.clientHeight;
+  c.el.style.transform = `translate(${sx}px, ${sy}px)`;
+  c.el.hidden = out || Date.now() - c.t > 8000;
+}
+function wbPlaceCursors() { for (const c of wb.cursors.values()) wbPlaceCursor(c); }
+function wbRemoveCursor(id) { const c = wb.cursors.get(id); if (c) { c.el.remove(); wb.cursors.delete(id); } }
+setInterval(() => { if (wb.cursors.size && currentTab() === 'board') wbPlaceCursors(); }, 2000);
+function wbLaserIn(id, pts) {
+  let trail = wb.lasers.get(id); if (!trail) wb.lasers.set(id, trail = []);
+  const now = performance.now();
+  for (const q of pts.slice(0, 200)) if (Number.isFinite(q[0]) && Number.isFinite(q[1])) trail.push({ x: q[0], y: q[1], t: now });
+  wbDraw();
+}
+
+// ---------------------------------------------------------------- facilitation: follow, timer, dot voting
+function wbSummon() { if (!wbHosting()) return; wb.net.all({ k: 'view', v: wbHostView(), summon: true }); toast(t('wbSummonedAll')); }
+function wbToggleFollow() {
+  if (!wbGuest()) return;
+  if (wb.perms.follow) { toast(t('wbLedByHost')); return; }
+  wb.follow = !wb.follow;
+  if (wb.follow && wb.hostView) wbCenterOn(wb.hostView.cx, wb.hostView.cy, wb.hostView.z);
+  wbUiBanner(); wbUiTop();
+}
+function wbTimerMenu(anchor) {
+  const set = ms => { wb.timerEnd = ms ? Date.now() + ms : null; if (wbHosting()) wb.net.all({ k: 'timer', left: ms }); wbTick(); };
+  const items = [1, 2, 3, 5, 10, 15, 30].map(n => [t('mins', n), () => set(n * 60000)]);
+  if (wb.timerEnd) items.unshift([t('wbTimerAdd'), () => set(Math.max(0, wb.timerEnd - Date.now()) + 60000)], [t('wbTimerStop'), () => set(0)]);
+  openPop(anchor, items);
+}
+function wbTick() {
+  const el = $('wbTimer');
+  if (!wb.timerEnd) { el.hidden = true; return; }
+  const left = wb.timerEnd - Date.now();
+  if (left <= 0) {
+    wb.timerEnd = null; el.hidden = true;
+    const a = alertCfg(); playSound(a.sound, a.volume, 2, 1); toast(t('wbTimeUp'));
+    return;
+  }
+  const s = Math.ceil(left / 1000);
+  el.hidden = false; el.textContent = '⏱ ' + Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+  el.classList.toggle('low', s <= 30);
+}
+setInterval(wbTick, 250);
+function wbVoteMenu(anchor) {
+  const start = per => { wb.vote = { active: true, per, hidden: true }; wbPushVote(); toast(t('wbVoteStarted', per)); };
+  const items = [];
+  if (wb.vote && wb.vote.active) items.push([t('wbVoteEnd'), () => { wb.vote = { active: false, per: wb.vote.per, hidden: false }; wbPushVote(); wbShowResults(anchor); }]);
+  else { items.push(...[3, 5, 10].map(n => [t('wbVoteStart', n), () => start(n)])); if (Board.tally(wbItems()).length) items.push([t('wbVoteResults'), () => wbShowResults(anchor)]); }
+  if (Board.tally(wbItems()).length) items.push([t('wbVoteClear'), () => { const before = {}; for (const it of Object.values(wbItems())) if (it.votes) { before[it.id] = Board.clone(it); delete it.votes; } wbCommit(before); wb.vote = null; wbPushVote(); }]);
+  openPop(anchor, items);
+}
+function wbPushVote() { if (wbHosting()) wb.net.all({ k: 'vote', vote: wb.vote }); wbUiBanner(); wbDraw(); }
+function wbShowResults(anchor) {
+  const items = wbItems(), list = Board.tally(items).slice(0, 12);
+  if (!list.length) { toast(t('wbNoVotes')); return; }
+  setTimeout(() => openPop(anchor, list.map(r => [`${r.n} · ${(items[r.id].text || '').split('\n')[0].slice(0, 50) || '…'}`, () => { const it = items[r.id]; wb.sel = new Set([r.id]); wbCenterOn(it.x + it.w / 2, it.y + it.h / 2); }])), 0);
+}
+function wbVote(id, d) {
+  if (!wb.vote || !wb.vote.active) return;
+  const mine = Board.votesBy(wbItems(), wb.me.cid);
+  if (d > 0 && mine >= wb.vote.per) { toast(t('wbNoVotesLeft')); return; }
+  if (wbGuest()) { if (wb.net) wb.net.send({ k: 'vote', id, d }); }
+  else wbApplyVote(wb.me.cid, id, d);
+}
+function wbApplyVote(cid, id, d) {
+  const it = wbItems()[id];
+  if (!wb.vote || !wb.vote.active || !it || it.type !== 'sticky' || typeof cid !== 'string') return;
+  if (d > 0 && Board.votesBy(wbItems(), cid) >= wb.vote.per) return;
+  const before = { [id]: Board.clone(it) }, votes = Object.assign({}, it.votes), n = Math.max(0, (votes[cid] || 0) + (d > 0 ? 1 : -1));
+  if (n) votes[cid] = n; else delete votes[cid];
+  it.votes = votes;
+  wbCommit(before, { undo: false });
+  wbUiBanner();
+}
+
+// ---------------------------------------------------------------- page chrome: top bar, people, banner, share dialog
+function wbUi() { wbRenderTools(); wbRenderStyle(); wbUiTop(); wbUiBanner(); wbRenderPeople(); wbRenderRequests(); wbTick(); }
+function wbUiTop() {
+  const g = wbGuest(), host = wbHosting(), waiting = g && !wb.board;
+  $('wbTitle').readOnly = g;
+  $('wbTitle').placeholder = g ? '' : t('wbTitlePh');
+  $('wbSideBtn').hidden = g;
+  $('wbShareBtn').hidden = g;
+  $('wbShareBtn').textContent = t(host ? 'wbSharing' : 'wbShare');
+  $('wbShareBtn').classList.toggle('live', host);
+  $('wbLeaveBtn').hidden = !g;
+  $('wbFollowBtn').hidden = !(g || host) || waiting;
+  $('wbFollowBtn').textContent = t(g ? (wb.follow || wb.perms.follow ? 'wbFollowing' : 'wbFollow') : 'wbSummon');
+  $('wbFollowBtn').setAttribute('aria-pressed', String(g && (wb.follow || wb.perms.follow)));
+  $('wbTimerBtn').hidden = g; $('wbVoteBtn').hidden = g;
+  $('wbExportBtn').hidden = g && (!wb.perms.export || waiting);
+  $('wbLive').hidden = !host;
+  const tab = document.querySelector('.tabs [data-tab="board"]');
+  if (tab) tab.classList.toggle('live', host);
+}
+function wbUiBanner() {
+  const lines = [], g = wbGuest();
+  if (g && !wb.me.canEdit) lines.push(esc(t('wbBannerView')));
+  if (g && wb.perms.follow) lines.push(esc(t('wbBannerLed')));
+  if (wb.vote && wb.vote.active) {
+    const left = wb.vote.per - Board.votesBy(wbItems(), wb.me.cid);
+    lines.push(esc(t('wbBannerVote', left, wb.vote.per)) + (g ? '' : ` <button type="button" class="btn sm" data-wb-act="vote-end">${esc(t('wbVoteEnd'))}</button>`));
+  }
+  $('wbBanner').hidden = !lines.length;
+  $('wbBanner').innerHTML = lines.map(l => `<span>${l}</span>`).join('');
+}
+$('wbBanner').addEventListener('click', e => { if (e.target.closest('[data-wb-act="vote-end"]')) { wb.vote = { active: false, per: wb.vote.per, hidden: false }; wbPushVote(); wbShowResults($('wbVoteBtn')); } });
+function wbRenderPeople() {
+  const list = wbGuest() ? wb.guests : wbHosting() ? wbPeopleList() : [];
+  $('wbPeople').innerHTML = list.map(p => {
+    const me = wbGuest() ? p.id === wb.me.pid : p.host, initials = (p.name || '?').split(' ').map(s => s[0]).join('').slice(0, 2).toUpperCase();
+    const label = p.name + (me ? ' ' + t('wbYou') : '') + (p.host ? ' · ' + t('wbHostName') : p.canEdit ? '' : ' · ' + t('wbViewer'));
+    return `<button type="button" class="av${p.canEdit ? '' : ' viewer'}" data-wb-person="${esc(p.id)}" style="--pc:${esc(p.color)}" title="${esc(label)}" aria-label="${esc(label)}">${esc(initials)}</button>`;
+  }).join('');
+  $('wbPeople').hidden = !list.length;
+}
+$('wbPeople').addEventListener('click', e => {
+  const b = e.target.closest('[data-wb-person]'); if (!b) return;
+  const id = b.dataset.wbPerson;
+  if (wbHosting() && id !== 'host') wbPersonMenu(b, id);
+  else if (wbGuest() && id === 'host') wbToggleFollow();
+  else { const c = wb.cursors.get(id); if (c && !wbLed()) wbCenterOn(c.x, c.y); }
+});
+const WB_PERM_KEYS = [['editOthers', 'wbPermOthers'], ['images', 'wbPermImages'], ['laser', 'wbPermLaser'], ['export', 'wbPermExport'], ['approve', 'wbPermApprove'], ['follow', 'wbPermFollow']];
+function wbRenderShare() {
+  const body = $('wbShareBody'); if (!body || $('wbShareDlg').hidden || !wb.board) return;
+  const host = wbHosting(), p = wb.perms;
+  const people = [...wb.people.values()].filter(x => !x.waiting);
+  body.innerHTML = `
+    ${host ? `<p class="wb-live-line">● ${esc(t('wbLiveNow', people.length))}</p>
+      <div class="row"><input class="input wide" id="wbLinkInput" readonly value="${esc(wbLink())}" aria-label="${esc(t('wbLink'))}"><button type="button" class="btn primary" data-wb-share="copy">${esc(t('copy'))}</button></div>
+      <p class="hint">${esc(t('wbLinkHint'))}</p>`
+    : `<p>${t('wbShareIntro')}</p>
+      <div class="row"><label class="wb-name">${esc(t('wbYourName'))} <input class="input" id="wbHostName" maxlength="40" value="${esc(wbMyName())}" placeholder="${esc(t('wbHostName'))}"></label></div>
+      <div class="row"><button type="button" class="btn primary" data-wb-share="start"${wb.sharing ? ' disabled' : ''}>${esc(t(wb.sharing ? 'wbStarting' : 'wbStart'))}</button></div>`}
+    <h4>${esc(t('wbPermsH'))}</h4>
+    <label class="wb-perm">${esc(t('wbPermEdit'))} <select class="input" data-wb-perm="edit">
+      ${[['all', 'wbEditAll'], ['allowed', 'wbEditAllowed'], ['none', 'wbEditNone']].map(([v, k]) => `<option value="${v}"${p.edit === v ? ' selected' : ''}>${esc(t(k))}</option>`).join('')}</select></label>
+    ${WB_PERM_KEYS.map(([k, label]) => `<label class="check"><input type="checkbox" data-wb-perm="${k}"${p[k] ? ' checked' : ''}> <span>${esc(t(label))}</span></label>`).join('')}
+    ${host ? `<h4>${esc(t('wbPeopleH'))}</h4>${people.length ? `<ul class="wb-plist">${people.map(x => `<li><span class="av" style="--pc:${esc(x.color)}">${esc(x.name.slice(0, 1).toUpperCase())}</span><b>${esc(x.name)}</b><span class="count">${esc(t(x.canEdit ? 'wbEditor' : 'wbViewer'))}</span>
+      <button type="button" class="btn sm" data-wb-share="toggle" data-pid="${esc(x.pid)}">${esc(t(x.canEdit ? 'wbMakeViewer' : 'wbMakeEditor'))}</button><button type="button" class="btn sm ghost danger" data-wb-share="kick" data-pid="${esc(x.pid)}">${esc(t('wbRemoveShort'))}</button></li>`).join('')}</ul>` : `<p class="hint">${esc(t('wbNobodyYet'))}</p>`}` : ''}
+    <details><summary>${esc(t('wbHowH'))}</summary><p class="hint">${esc(t('wbHowP'))}</p></details>
+    <div class="modal-foot">${host ? `<button type="button" class="btn ghost danger" data-wb-share="stop">${esc(t('wbStop'))}</button>` : ''}${wb.board.room ? `<button type="button" class="btn ghost" data-wb-share="newlink">${esc(t('wbNewLink'))}</button>` : ''}<span class="spacer"></span><button type="button" class="btn" data-wb-share="close">${esc(t('close'))}</button></div>`;
+}
+function wbOpenShare() { if (!wb.board || wbGuest()) return; $('wbShareDlg').hidden = false; wbRenderShare(); }
+$('wbShareDlg').addEventListener('mousedown', e => { if (e.target === $('wbShareDlg')) $('wbShareDlg').hidden = true; });
+$('wbShareDlg').addEventListener('click', e => {
+  const b = e.target.closest('[data-wb-share]'); if (!b) return;
+  const k = b.dataset.wbShare;
+  if (k === 'close') $('wbShareDlg').hidden = true;
+  else if (k === 'start') { const n = ($('wbHostName') && $('wbHostName').value.trim().slice(0, 40)) || ''; wbStore('ping.wbName', n); wbStartSharing(); }
+  else if (k === 'copy') copyText(wbLink());
+  else if (k === 'stop') wbStopSharing();
+  else if (k === 'newlink') wbNewLink();
+  else if (k === 'toggle' || k === 'kick') {
+    const p = wb.people.get(b.dataset.pid); if (!p) return;
+    if (k === 'kick') { wb.banned.add(p.cid); wb.net.send(p.pid, { k: 'kick' }); wb.net.drop(p.pid); wbOnLeave(p.pid); }
+    else { if (p.canEdit) { wb.revoked.add(p.cid); wb.granted.delete(p.cid); } else { wb.granted.add(p.cid); wb.revoked.delete(p.cid); if (wb.perms.edit === 'none') wb.perms.edit = 'allowed'; } wbSaveSoon(); wbPushPerms(); }
+  }
+});
+$('wbShareDlg').addEventListener('change', e => {
+  const el = e.target.closest('[data-wb-perm]'); if (!el || !wb.board) return;
+  const k = el.dataset.wbPerm;
+  wb.perms[k] = el.type === 'checkbox' ? el.checked : el.value;
+  wb.board.perms = wb.perms; wbSaveSoon(); wbPushPerms(); wbRenderShare();
+  if (k === 'follow' && el.checked && wbHosting()) wb.net.all({ k: 'view', v: wbHostView() });
+});
+
+// ---------------------------------------------------------------- buttons, tab and start
+function wbAct(name, b) {
+  switch (name) {
+    case 'new': wbNewBoard(); break;
+    case 'new-tpl': wbTemplateMenu(b, true); break;
+    case 'import': $('wbImportFile').click(); break;
+    case 'side': if (innerWidth <= 720) { $('wb').classList.toggle('side-shown'); requestAnimationFrame(wbDraw); break; }
+      $('wb').classList.toggle('side-hidden'); wbStore('ping.wbSide', $('wb').classList.contains('side-hidden') ? '0' : '1'); requestAnimationFrame(wbDraw); break;
+    case 'share': wbOpenShare(); break;
+    case 'leave': wbLeave(); break;
+    case 'follow': wbGuest() ? wbToggleFollow() : wbSummon(); break;
+    case 'timer': wbTimerMenu(b); break;
+    case 'vote': wbVoteMenu(b); break;
+    case 'export': openPop(b, [[t('wbExportPng'), () => wbExport('png')], [t('wbExportPdf'), () => wbExport('pdf')], ...(wbGuest() ? [[t('wbSaveCopy'), wbSaveCopy]] : [[t('wbDownloadFile'), () => wbExport('file')]])]); break;
+    case 'zoom-in': wbZoomAt(1.2); break;
+    case 'zoom-out': wbZoomAt(1 / 1.2); break;
+    case 'zoom-fit': wbFit(); break;
+    case 'join': wbJoin(); break;
+    case 'join-copy': wbSaveCopy(); break;
+  }
+}
+$('wbJoinName').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); wbJoin(); } });
+let wbStarted = false;
+async function wbShow() {
+  if (wbStore('ping.wbSide') === '0') $('wb').classList.add('side-hidden');
+  if (!wbStarted && !wbGuest()) {
+    wbStarted = true;
+    await wbLoadList();
+    const last = wbStore('ping.wbLast');
+    if (wb.list.some(b => b.id === last)) await wbOpen(last);
+    else if (wb.list.length) await wbOpen(wb.list[0].id);
+    else await wbNewBoard(null, false);
+  }
+  wbUi();
+  requestAnimationFrame(() => { wbDraw(); stage.focus({ preventScroll: true }); });
+}
+if ('ResizeObserver' in window) new ResizeObserver(() => { wbDraw(); if (wb.editing) wbPlaceEditor(); }).observe(stage);
+addEventListener('pagehide', () => { if (wbHosting()) try { wb.net.all({ k: 'end' }); } catch (e) { } if (wb.saveTimer) wbSaveNow(); });
+addEventListener('hashchange', () => { if (/^#wb=[a-z0-9]{12,40}$/.test(location.hash)) location.reload(); });
+const wbGuestRoom = (location.hash.match(/^#wb=([a-z0-9]{12,40})$/) || [])[1] || null;
+
 // ---------------------------------------------------------------- tabs, settings & global buttons
 function showTab(name) {
   document.querySelectorAll('.tabs button').forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === name)));
-  ['reminders', 'notes', 'settings'].forEach(v => $('view-' + v).hidden = v !== name);
+  if (name !== 'board') wbFinishEdit();
+  ['reminders', 'notes', 'board', 'settings'].forEach(v => $('view-' + v).hidden = v !== name);
   if (name !== 'notes') flushNote();
   if (name === 'notes') { renderNotes(); if (!curNote && liveNotes().length) loadNote(sortedNotes()[0]); }
   if (name === 'reminders') quickInput.focus();
   if (name === 'settings') renderSnapshots();
+  if (name === 'board') wbShow();
   syncHeadHeight();
 }
 const currentTab = () => document.querySelector('.tabs [aria-selected="true"]').dataset.tab;
@@ -4315,6 +6424,7 @@ document.addEventListener('click', e => {
     case 'close-startup': $('startupDlg').hidden = true; break;
     case 'copy-ping-url': copyText(pingUrl()); break;
     case 'copy-settings-url': copyText($('settingsUrl').textContent); break;
+    default: if (b.dataset.act.startsWith('wb-')) wbAct(b.dataset.act.slice(3), b);
   }
 });
 
@@ -4484,8 +6594,9 @@ async function doRestore() {
   if (!raw) return;
   const replace = document.querySelector('input[name=restoreMode]:checked').value === 'replace';
   const data = normalize(JSON.parse(JSON.stringify(raw)));
-  delete data.images;
+  delete data.images; delete data.boards;
   if (raw.images) await pullImages(raw.images);
+  if (raw.boards) await wbRestoreBoards(raw.boards, replace);
   if (replace) {
     const keep = S.settings, ns = Object.assign({}, keep);
     if (raw.settings) for (const k of SHARED_SETTINGS) if (raw.settings[k] !== undefined) ns[k] = raw.settings[k];
@@ -4532,6 +6643,7 @@ document.addEventListener('keydown', e => {
   if (e.ctrlKey || e.metaKey || e.altKey || typing(document.activeElement) || !$('editor').hidden || !$('keysDlg').hidden
       || !$('setupDlg').hidden || !$('lockDlg').hidden || !$('startupDlg').hidden || !$('codeDlg').hidden || !$('linkDlg').hidden || !$('histDlg').hidden || !$('trashDlg').hidden || !$('restoreDlg').hidden || !isActiveWindow) return;
   if (e.key === '?') { $('keysDlg').hidden = false; return; }
+  if (currentTab() === 'board') return;   // the whiteboard has its own keys
   if (e.key === '1') return showTab('reminders');
   if (e.key === '2') return showTab('notes');
   if (e.key === '3') return showTab('settings');
@@ -4593,6 +6705,7 @@ function renderAll() {
   renderAlertSettings();
   updatePipUi();
   renderReminders(); renderNotes(); updateTitle(); updateNotifUi(); updateBackupBanner();
+  wbUi(); wbRenderList(); wbRenderShare();
 }
 
 // ---------------------------------------------------------------- service worker (offline + system notifications)
@@ -4614,7 +6727,8 @@ try { const v = localStorage.getItem('ping.noteView'); if (v) { setNoteView(v); 
 loadImages();
 updateQuickPreview();
 updateSaveChip();
-claimWindow(false);                     // become the editing window (or show the "already open" notice)
+if (wbGuestRoom) wbGuestBoot(wbGuestRoom);   // a whiteboard link: this window only shows that board and never touches Ping's own data
+else claimWindow(false);                // become the editing window (or show the "already open" notice)
 initFile().then(() => {
   fileInitDone = true;
   maybeOnboard();
@@ -4623,7 +6737,7 @@ initFile().then(() => {
 check();                                // catch up on anything missed while closed
 setInterval(check, 5000);
 setInterval(() => { if (!document.hidden && $('editor').hidden) renderReminders(); if (!quickInput.value.trim() || document.activeElement !== quickInput) updateQuickPreview(); }, 30000);
-quickInput.focus();
+if (!wbGuestRoom) quickInput.focus();
 </script>
 </body>
 </html>

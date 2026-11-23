@@ -1,6 +1,6 @@
 # Ping
 
-Reminders and notes that run in your browser and can be installed as an app. There's no account and no server: everything is saved in your own browser, plus (if you follow the guide below) in a file in your own Google Drive or OneDrive.
+Reminders, notes and a live whiteboard that run in your browser and can be installed as an app. There's no account and no server: everything is saved in your own browser, plus (if you follow the guide below) in a file in your own Google Drive or OneDrive. The only time anything goes over the internet is when you share a whiteboard (see below).
 
 **Open Ping:** https://mohamedmrj.github.io/ping/
 
@@ -72,8 +72,35 @@ Type in the big box and press **Enter**. English and Swedish both work.
 - **Themes:** Lagoon, Fjord and Solarized, each in light and dark. Swedish or English.
 - **Your data:** a save file (see above), downloadable backups, restore, CSV export, and an automatic copy each day for the last 14 days.
 
+## Whiteboard
+The **Whiteboard** tab is an endless canvas you can use alone or with others.
+
+- **Draw and write:** pen, highlighter, eraser, rectangles, ellipses, diamonds, triangles, lines, arrows, text, sticky notes and pictures (paste, drag in, or the picture tool). Select, move, resize, lock, duplicate, bring to front, and undo/redo everything.
+- **Smart shapes (✨):** a rough circle, box, triangle, diamond, line or arrow drawn with the pen becomes a clean shape. Ctrl+Z brings back what you drew. Lines and arrows snap to shapes and stay attached when the shapes move.
+- **Mind maps:** select a sticky note or shape and press **Tab** for a new branch, **Enter** for a sibling.
+- **Templates:** retrospective, kanban, SWOT, flowchart, mind map and brainstorm.
+- **Export:** a PNG picture, print or save as PDF, or a board file you can open again later. Boards are saved on your computer and included in **Download backup**.
+
+### Sharing a board live
+1. Click **Share**, type your name and click **Start sharing and make a link**.
+2. Send the link to the people you want to invite. They open it, type a name and click **Join**. They don't need Ping or an account.
+3. Everyone sees everything live: drawing as it's drawn, notes as they're typed, items as they're dragged, and everyone's mouse pointer with their name.
+
+What the host controls (in the Share window):
+- **Who can edit:** everyone who joins, only the people you allow, or nobody (view only). You can also change it per person, or remove someone from the board.
+- Whether guests may move and delete other people's items, add pictures, use the laser pointer, and download the board.
+- **Waiting room:** you let each person in.
+- **Everyone follows my view:** you lead the session. **Bring everyone to me** does it once.
+- **Make a new link** shuts out everyone who had the old one.
+
+Facilitation tools for the host: a countdown timer everyone sees, and secret dot voting on sticky notes (3, 5 or 10 votes each), with the results revealed at the end. Guests can follow the host's view, and anyone can use the laser pointer (K) when it's allowed.
+
+How it works, and privacy: the host's browser is the meeting place. A free public service ([PeerJS](https://peerjs.com)) only helps the browsers find each other. The drawings then go directly between the browsers, encrypted. On networks that block direct connections, the encrypted data passes through PeerJS's relay, which can't read it. Nothing is stored anywhere else, and the board is live only while the host has it open. Anyone with the link can ask to join, so share it only with the people you mean, or use the waiting room.
+
 ## For maintainers
 Ping is one static `index.html`, plus `manifest.webmanifest`, `sw.js` (offline support) and two icons. There's no build step: edit `index.html` and push, and everyone gets the update the next time they open Ping.
+
+The only external file is PeerJS 1.5.5, loaded from jsDelivr with a Subresource Integrity hash, and only when someone shares or joins a whiteboard. Everything else works offline.
 
 Storage keys (`reminder-by-me.v1` in localStorage, the `reminder-by-me` IndexedDB database) keep their old names on purpose. Renaming them without a migration would make everyone's reminders disappear.
 
@@ -84,8 +111,8 @@ The `tests/` folder holds the test suite. It isn't needed to run Ping.
 cd tests
 npm install        # once: installs playwright-core
 npm test           # everything
-npm run test:unit  # fast Node-only tests: sync merge, quick-add parser, code colours, code suggestions
-npm run test:app   # the real page in a headless browser
+npm run test:unit  # fast Node-only tests: sync merge, quick-add parser, whiteboard model, code colours, code suggestions
+npm run test:app   # the real page in a headless browser, including a whiteboard host and guests
 ```
 
-The browser tests use Playwright's Chromium if it's installed (`npx playwright install chromium`), otherwise Microsoft Edge. Set `PING_BROWSER` to a browser executable to choose another one.
+The browser tests use Playwright's Chromium if it's installed (`npx playwright install chromium`), otherwise Microsoft Edge. Set `PING_BROWSER` to a browser executable to choose another one. The whiteboard tests connect the host and guests through a local stand-in for PeerJS (`window.PING_WB_LOCAL`), so they need no internet.
