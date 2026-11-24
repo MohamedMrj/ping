@@ -237,7 +237,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 a { color: var(--accent); }
 code, kbd, .mono { font-family: var(--mono); }
 
-.app { max-width: 1080px; margin: 0 auto; padding-block: 18px 40px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 16px; }
+.app { max-width: 1080px; margin: 0 auto; padding-block: 18px 40px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }   /* minmax(0,1fr): a long label never makes the page wider than a phone */
 
 /* header */
 header { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
@@ -264,6 +264,7 @@ header { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
 
 /* buttons */
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; border: 1px solid var(--line); background: var(--surface); padding: 7px 13px; border-radius: 8px; cursor: pointer; font-weight: 600; white-space: nowrap; }
+@media (max-width: 520px) { .btn { white-space: normal; max-width: 100%; } }   /* a long button label wraps on a phone instead of widening the page */
 .btn:hover { background: var(--surface-2); }
 .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
 .btn.primary:hover { filter: brightness(1.07); }
@@ -277,7 +278,7 @@ header { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
 .seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
 
 /* quick add */
-.quick { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px; display: grid; gap: 8px; }
+.quick { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; }
 .quick-row { display: flex; gap: 8px; }
 .quick input { flex: 1; min-width: 0; font-size: 17px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 9px; background: var(--bg); }
 .quick input:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px var(--accent-soft); }
@@ -335,13 +336,13 @@ kbd { font-size: 11.5px; line-height: 1; padding: 2px 5px; border: 1px solid var
 .rem.done .title { text-decoration: line-through; color: var(--muted); }
 .rem.done .when { opacity: .55; }
 .acts { display: flex; gap: 2px; }
-.empty { text-align: center; padding: 40px 20px; background: var(--surface); border: 1px dashed var(--line); border-radius: 12px; color: var(--muted); display: grid; gap: 12px; justify-items: center; }
+.empty { text-align: center; padding: 40px 20px; background: var(--surface); border: 1px dashed var(--line); border-radius: 12px; color: var(--muted); display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; justify-items: center; }
 .empty h3 { margin: 0; font: 600 17px var(--font-display); color: var(--ink); }
 .examples { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
 .examples .btn { font-family: var(--mono); font-weight: 500; font-size: 12.5px; }
 
 /* popover */
-.pop { max-height: min(60vh, 440px); overflow: auto; position: fixed; z-index: 60; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow); padding: 5px; min-width: 200px; display: grid; }
+.pop { max-height: min(60vh, 440px); overflow: auto; position: fixed; z-index: 78; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow); padding: 5px; min-width: 200px; display: grid; }
 .pop button { text-align: left; border: 0; background: none; padding: 7px 10px; border-radius: 6px; cursor: pointer; }
 .pop button:hover, .pop button:focus-visible { background: var(--surface-2); }
 
@@ -379,7 +380,8 @@ kbd { font-size: 11.5px; line-height: 1; padding: 2px 5px; border: 1px solid var
 .md.live { cursor: text; }
 .md.live > [data-sl], .md.live li[data-sl] { border-radius: 6px; transition: background-color .12s; }
 .md.live > [data-sl]:hover, .md.live li[data-sl]:hover { background-color: color-mix(in srgb, var(--accent) 6%, transparent); }
-.md.live .live-ed { position: relative; overflow: clip; margin: .45em -17px; border-radius: 10px; background: color-mix(in srgb, var(--accent) 4%, var(--surface)); box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 40%, transparent); }
+/* contain: the window has a fixed height, so the editor resizing inside it on every key never re-lays out the rest of the note */
+.md.live .live-ed { contain: size layout paint; position: relative; overflow: clip; margin: .45em -17px; border-radius: 10px; background: color-mix(in srgb, var(--accent) 4%, var(--surface)); box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 40%, transparent); }
 .md.live .live-ed > .ed-wrap { position: absolute; left: 0; right: 0; top: 0; background: transparent; }
 .md.live .ed-wrap > .ed-in, .md.live .ed-wrap > .ed-hl, .md.live .ed-wrap > .ed-find { border-color: transparent; }
 .md.live .ed-wrap > .ed-in { min-height: 0; }
@@ -439,8 +441,9 @@ html { scroll-padding-top: var(--note-head-h, 0px); }
 .sug-bar .lbl { margin-right: auto; }
 .ed-wrap.code-ed > .ed-in { min-height: 240px; }
 .md { min-height: 500px; padding: 6px 22px 18px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); overflow-wrap: anywhere; min-width: 0; }
-.md h1, .md h2, .md h3, .md h4 { font-family: var(--font-display); line-height: 1.25; margin: 1.1em 0 .4em; text-wrap: balance; }
+.md h1, .md h2, .md h3, .md h4, .md h5, .md h6 { font-family: var(--font-display); line-height: 1.25; margin: 1.1em 0 .4em; text-wrap: balance; }
 .md h1 { font-size: 22px; } .md h2 { font-size: 18px; } .md h3 { font-size: 15.5px; } .md h4 { font-size: 14.5px; }
+.md h5 { font-size: 13.5px; } .md h6 { font-size: 13px; color: var(--muted); }
 .md p, .md ul, .md ol, .md blockquote, .md table, .md .code { margin: .6em 0; }
 .md ul, .md ol { padding-left: 1.4em; }
 .md li.task { list-style: none; margin-left: -1.3em; }
@@ -475,8 +478,8 @@ html { scroll-padding-top: var(--note-head-h, 0px); }
 .md th { background: var(--surface-2); }
 
 /* settings */
-.settings { display: grid; gap: 14px; max-width: 780px; }
-.card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; display: grid; gap: 10px; }
+.settings { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; max-width: 780px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; }
 .card h3 { margin: 0; font: 600 15.5px var(--font-display); }
 .card p { margin: 0; color: var(--muted); font-size: 13.5px; max-width: 72ch; }
 .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
@@ -506,7 +509,7 @@ details.adv summary { cursor: pointer; font-size: 13px; color: var(--muted); }
 details.adv[open] { display: grid; gap: 8px; }
 
 /* modal */
-.scrim { position: fixed; inset: 0; background: rgba(5, 15, 14, .45); display: grid; place-items: center; z-index: 50; padding: 16px; }
+.scrim { position: fixed; inset: 0; background: rgba(5, 15, 14, .45); display: grid; place-items: center; z-index: 72; padding: 16px; }
 .modal { background: var(--surface); border-radius: 14px; box-shadow: var(--shadow); width: min(580px, 100%); max-height: calc(100vh - 32px); overflow: auto; padding: 20px; display: grid; gap: 14px; }
 .modal h2 { margin: 0; font: 600 18px var(--font-display); }
 .field { display: grid; gap: 5px; min-width: 0; }
@@ -852,7 +855,7 @@ body.wb-full .wb.full-side .wb-side { display: flex; max-height: none; }
           <canvas id="wbCanvas"></canvas>
           <div class="wb-cursors" id="wbCursors"></div>
           <div class="wb-empty" id="wbEmpty" hidden><h3 data-i18n="wbEmptyH">En tom tavla</h3><p data-i18n="wbEmptyP">Rita med P, lägg till en lapp med S, eller tryck Tab på en lapp för att bygga en tankekarta. Klistra in eller dra hit bilder. Slarviga cirklar, rutor och pilar blir rena former.</p></div>
-          <textarea class="wb-edit" id="wbEdit" hidden spellcheck="true"></textarea>
+          <textarea class="wb-edit" id="wbEdit" hidden spellcheck="true" maxlength="20000"></textarea>
           <div class="wb-panel wb-tools" id="wbTools" role="toolbar"></div>
           <div class="wb-panel wb-style" id="wbStyle" hidden></div>
           <div class="wb-panel wb-zoom">
@@ -1362,13 +1365,16 @@ const Cron = (() => {
   }
   function next(c, afterMs) {
     if (typeof c === 'string') c = parse(c);
-    const d = new Date(afterMs); d.setSeconds(0, 0); d.setTime(d.getTime() + 60000);
+    // Always move forward. In the hour that repeats when clocks go back (02:00-03:00 in late October), setting a
+    // local time picks the first of the two, which can be earlier than where we are: then a minute is added instead.
+    const d = new Date(Math.floor(afterMs / 60000) * 60000 + 60000);
+    const jump = f => { const at = d.getTime(); f(); if (d.getTime() <= at) d.setTime(at + 60000); };
     for (let i = 0; i < 200000; i++) {
-      if (!c.mon.has(d.getMonth() + 1)) { d.setMonth(d.getMonth() + 1, 1); d.setHours(0, 0, 0, 0); continue; }
+      if (!c.mon.has(d.getMonth() + 1)) { jump(() => { d.setMonth(d.getMonth() + 1, 1); d.setHours(0, 0, 0, 0); }); continue; }
       const domOk = c.dom.has(d.getDate()), dowOk = c.dow.has(d.getDay());
       const dayOk = c.domAny && c.dowAny ? true : c.domAny ? dowOk : c.dowAny ? domOk : (domOk || dowOk);
-      if (!dayOk) { d.setDate(d.getDate() + 1); d.setHours(0, 0, 0, 0); continue; }
-      if (!c.hour.has(d.getHours())) { d.setHours(d.getHours() + 1, 0, 0, 0); continue; }
+      if (!dayOk) { jump(() => { d.setDate(d.getDate() + 1); d.setHours(0, 0, 0, 0); }); continue; }
+      if (!c.hour.has(d.getHours())) { jump(() => d.setHours(d.getHours() + 1, 0, 0, 0)); continue; }
       if (!c.min.has(d.getMinutes())) { d.setTime(d.getTime() + 60000); continue; }
       return d.getTime();
     }
@@ -1383,7 +1389,8 @@ const QuickParser = (() => {
   const WB = `(?:(?<=${L})(?!${L})|(?<!${L})(?=${L}))`;   // Unicode-aware \b
   const R = (p, f = 'iu') => new RegExp(p.replace(/\\b/g, WB).replace(/\\w/g, L), f);
 
-  const DAY = 'monday|tuesday|wednesday|thursday|friday|saturday|sunday|måndag|tisdag|onsdag|torsdag|fredag|lördag|söndag|mon|tue|tues|wed|thu|thur|thurs|fri';
+  // "fri" is also Swedish for "free" ("boka fri tid"): as a day it must end the text or come before a time or a comma
+  const DAY = 'monday|tuesday|wednesday|thursday|friday|saturday|sunday|måndag|tisdag|onsdag|torsdag|fredag|lördag|söndag|mon|tue|tues|wed|thu|thur|thurs|fri(?=\\s*$|\\s*,|\\s+(?:at|kl|klockan|@|\\d))';
   const MON = 'january|february|march|april|may|june|july|august|september|october|november|december|januari|februari|mars|maj|juni|juli|augusti|oktober|jan|feb|mar|apr|jun|jul|aug|sept|sep|oct|okt|nov|dec';
   const SUF = String.raw`(?:\s+(?:at\s+|kl\.?\s*|klockan\s+|@\s*)?(?<h>[01]?\d|2[0-3])(?:[:.](?<mi>[0-5]\d))?(?:\s*(?<ap>am|pm))?)?(?!\w)`;
 
@@ -1459,7 +1466,7 @@ const QuickParser = (() => {
 
     // repetition by calendar
     if (res.repeat === 'none') {
-      m = s.match(R(String.raw`\b(?:every|each|varje)\s+(?<d>${DAY}|sat|sun)` + SUF));
+      m = s.match(R(String.raw`\b(?:every|each|varje)\s+(?<d>${DAY}|sat|sun|fri)` + SUF));
       if (m) { res.repeat = 'weekly'; weekday = dayIndex(m.groups.d); time = sufTime(m); s = cut(s, m); }
       else {
         const pats = [
@@ -1503,7 +1510,7 @@ const QuickParser = (() => {
     m = s.match(R(String.raw`\b(?:today|idag|i\s+dag)` + SUF));
     if (m) { if (!date) date = today; time = time ?? sufTime(m); s = cut(s, m); }
     if (weekday < 0) {
-      m = s.match(R(String.raw`\b(?<pre>on\s+|next\s+|this\s+|nästa\s+|på\s+)?(?<d>${DAY}|(?<=\b(?:on|next|this)\s+)(?:sat|sun))` + SUF));   // short sat/sun only after on/next/this: "enjoy the sun" stays text
+      m = s.match(R(String.raw`\b(?<pre>on\s+|next\s+|this\s+|nästa\s+|på\s+)?(?<d>${DAY}|(?<=\b(?:on|next|this)\s+)(?:sat|sun|fri))(?!\.\w)` + SUF));   // "monday.com" is not a day   // short sat/sun only after on/next/this: "enjoy the sun" stays text
       if (m) { nextWeek = /^(?:next|nästa)/i.test(m.groups.pre || ''); weekday = dayIndex(m.groups.d); time = time ?? sufTime(m); s = cut(s, m); }
     }
 
@@ -1511,8 +1518,13 @@ const QuickParser = (() => {
     if (time === null) {
       m = s.match(R(String.raw`(?:\b(?:at|kl\.?|klockan|from)|@)\s*(\d{1,2})(?:[:.](\d{2}))?(?:\s*(am|pm))?(?!\w)`))
         || s.match(R(String.raw`\b(\d{1,2}):(\d{2})(?:\s*(am|pm))?(?!\w)`))
+        || s.match(R(String.raw`(?<![\d/.])\b(\d{1,2})\.(\d{2})\s*(am|pm)\b`))       // 9.30pm
         || s.match(R(String.raw`\b(\d{1,2})()\s*(am|pm)\b`));
-      if (m) { const t = mkTime(m[1], m[2], m[3]); if (t !== null) { time = t; s = cut(s, m); } }
+      if (m) {
+        let t = mkTime(m[1], m[2], m[3]);
+        if (t !== null && evening && !m[3] && t < 12 * 60) t += 12 * 60;      // "kl 8 ikväll" / "at 8 tonight" is 20:00
+        if (t !== null) { time = t; s = cut(s, m); }
+      }
     }
     if (time === null) {
       m = s.match(R(String.raw`\b(?:at\s+)?(?:noon|midday)\b`));
@@ -1540,7 +1552,7 @@ const QuickParser = (() => {
     }
     if (time === null) {
       m = s.match(R(String.raw`(?<![\d/.])\b([01]?\d|2[0-3])\.([0-5]\d)\b(?![/.]\d)`));
-      if (m) { time = mkTime(m[1], m[2], ''); s = cut(s, m); }
+      if (m) { time = mkTime(m[1], m[2], ''); if (evening && time !== null && time < 12 * 60) time += 12 * 60; s = cut(s, m); }
     }
 
     // combine
@@ -1969,7 +1981,7 @@ const Sug = (() => {
   const TOKEN = /(?<![\w\p{L}\p{N}`$.\/\\@#~:-])(?:[A-Za-z]:\\[^\s`'"()<>]*[^\s`'"()<>.,;:!?]|~?\/[\w.-]+(?:\/[\w.-]*)+|[A-Za-z_$][\w$]*(?:(?:\.|::)[A-Za-z_$][\w$]*)*(?:\([^()\n]{0,40}\))?)(?![\w\p{L}\p{N}`])/gu;
   const MASKS = [/`[^`\n]*`?/g, /!?\[[^\[\]\n]*\]\([^)\n]*\)/g, /\b(?:https?|ftp):\/\/\S+|\bwww\.\S+/gi, /(?<![\w.+-])[\w.+-]+@[\w-]+(?:\.[\w-]+)+/g,
     /(^|\s)#[\p{L}_][\p{L}\p{N}_\-/]*/gu, /\*\*[^*\n]+\*\*|__[^_\n]+__/g, /(?<![*\w])\*[^*\s][^*\n]*\*/g, /(?<!\w)_[^_\s][^_\n]*_(?!\w)/g, /~~[^~\n]+~~/g];
-  const FENCE_OPEN_RE = /^\s*```\s*[\w+#.-]*\s*$/, FENCE_CLOSE_RE = /^\s*```\s*$/;
+  const FENCE_OPEN_RE = /^\s*```\s*[\w+#.-]*(?:\s+[^`]*)?$/, FENCE_CLOSE_RE = /^\s*```\s*$/;
   const DENY = new Set('iphone ipad ipod imac ios macos watchos tvos ipados icloud ebay itunes'.split(' '));
   const TLD = /\.(?:com|se|org|net|io|nu|dk|no|fi|eu|gov|edu|info|biz|co|uk|de|app|dev)$/i;
   const info = tok => { const base = tok.replace(/\([^()]*\)$/, ''); return { base, call: base !== tok, plain: /^[A-Za-z]+$/.test(base), lower: base.toLowerCase() }; };
@@ -2505,7 +2517,7 @@ const T = {
     hideNever: 'Never, it stays until I respond', hideAfter: n => 'After ' + (n < 60 ? n + ' seconds' : (n / 60 === 1 ? '1 minute' : n / 60 + ' minutes')),
     color_red: 'Red', color_orange: 'Orange', color_yellow: 'Yellow', color_green: 'Green', color_blue: 'Blue', color_purple: 'Purple', color_pink: 'Pink',
     colorTheme: 'Theme colour', colorDefault: 'Default', mute: 'Silence',
-    trashBtn: n => '🗑 Trash' + (n ? ` (${n})` : ''), noteTrashed: 'Note moved to the trash', trashedAt: (w, d) => `Deleted ${w} · removed in ${d} days`,
+    trashBtn: n => '🗑 Trash' + (n ? ` (${n})` : ''), noteTrashed: 'Note moved to the trash', emptyTrashed: 'The note you emptied is in the trash, with its last text', trashedAt: (w, d) => `Deleted ${w} · removed in ${d} days`,
     restore: 'Restore', deleteForever: 'Delete forever', trashEmpty: 'The trash is empty.', noteRestored: 'The note is back',
     confirmPurge: x => `Delete “${x}” forever? This can’t be undone.`, confirmEmptyTrash: n => `Delete ${n} notes forever? This can’t be undone.`, trashEmptied: 'Trash emptied',
     histNow: 'Current version', histSize: (len, d) => `${len} characters · ${d >= 0 ? '+' : '−'}${Math.abs(d)} compared with now`,
@@ -2541,7 +2553,7 @@ const T = {
     pipOpen: 'Keep Ping on top', pipClose: 'Close the small window', pipOpenMain: 'Open Ping', pipNext: 'Coming up', pipNothing: 'No upcoming reminders',
     pipUnsupported: b => `${b} can’t keep Ping on top of other windows. It works in Chrome and Edge.`, pipFailed: e => 'Couldn’t open the small window: ' + e,
     noteDeleted: 'Note deleted', testTitle: 'This is a test reminder', testNotes: 'If you can see this, reminders work.',
-    backupDone: 'Backup downloaded', restored: n => 'Restored ' + n + ' items', nothingNew: 'Nothing new in that backup', notBackup: 'That file is not a Ping backup',
+    backupDone: 'Backup downloaded', restored: n => 'Restored ' + n + ' items', nothingNew: 'Nothing new in that backup', restoreFailed: 'That backup is damaged and could not be restored. Nothing was changed.', dataUnreadable: 'Your saved data could not be read, so Ping started empty. A copy of it was kept: Settings → Your data → Restore from backup can bring back a backup file.', notBackup: 'That file is not a Ping backup',
     noLink: 'No link in this reminder'
   },
   sv: {
@@ -2618,7 +2630,7 @@ const T = {
     hideNever: 'Aldrig, den ligger kvar tills jag svarar', hideAfter: n => 'Efter ' + (n < 60 ? n + ' sekunder' : (n / 60 === 1 ? '1 minut' : n / 60 + ' minuter')),
     color_red: 'Röd', color_orange: 'Orange', color_yellow: 'Gul', color_green: 'Grön', color_blue: 'Blå', color_purple: 'Lila', color_pink: 'Rosa',
     colorTheme: 'Temafärg', colorDefault: 'Standard', mute: 'Tysta',
-    trashBtn: n => '🗑 Papperskorg' + (n ? ` (${n})` : ''), noteTrashed: 'Anteckningen flyttades till papperskorgen', trashedAt: (w, d) => `Borttagen ${w} · tas bort om ${d} dagar`,
+    trashBtn: n => '🗑 Papperskorg' + (n ? ` (${n})` : ''), noteTrashed: 'Anteckningen flyttades till papperskorgen', emptyTrashed: 'Anteckningen du tömde ligger i papperskorgen, med sin senaste text', trashedAt: (w, d) => `Borttagen ${w} · tas bort om ${d} dagar`,
     restore: 'Återställ', deleteForever: 'Ta bort för alltid', trashEmpty: 'Papperskorgen är tom.', noteRestored: 'Anteckningen är tillbaka',
     confirmPurge: x => `Ta bort ”${x}” för alltid? Det går inte att ångra.`, confirmEmptyTrash: n => `Ta bort ${n} anteckningar för alltid? Det går inte att ångra.`, trashEmptied: 'Papperskorgen är tömd',
     histNow: 'Nuvarande version', histSize: (len, d) => `${len} tecken · ${d >= 0 ? '+' : '−'}${Math.abs(d)} jämfört med nu`,
@@ -2656,7 +2668,7 @@ const T = {
     pipOpen: 'Håll Ping ovanpå', pipClose: 'Stäng det lilla fönstret', pipOpenMain: 'Öppna Ping', pipNext: 'Härnäst', pipNothing: 'Inga kommande påminnelser',
     pipUnsupported: b => `${b} kan inte hålla Ping ovanpå andra fönster. Det fungerar i Chrome och Edge.`, pipFailed: e => 'Kunde inte öppna det lilla fönstret: ' + e,
     noteDeleted: 'Anteckningen togs bort',testTitle: 'Det här är en testpåminnelse', testNotes: 'Ser du det här fungerar påminnelserna.',
-    backupDone: 'Säkerhetskopian har laddats ner', restored: n => 'Återställde ' + n + ' objekt', nothingNew: 'Inget nytt i den säkerhetskopian', notBackup: 'Den filen är inte en säkerhetskopia från Ping',
+    backupDone: 'Säkerhetskopian har laddats ner', restored: n => 'Återställde ' + n + ' objekt', nothingNew: 'Inget nytt i den säkerhetskopian', restoreFailed: 'Säkerhetskopian är skadad och kunde inte återställas. Inget ändrades.', dataUnreadable: 'Dina sparade data gick inte att läsa, så Ping startade tomt. En kopia har sparats: Inställningar → Dina data → Återställ från säkerhetskopia kan hämta tillbaka en säkerhetskopia.', notBackup: 'Den filen är inte en säkerhetskopia från Ping',
     noLink: 'Ingen länk i den här påminnelsen'
   }
 };
@@ -2759,8 +2771,19 @@ function normalize(j) {
   if (!Array.isArray(j.reminders)) j.reminders = [];
   if (!Array.isArray(j.notes)) j.notes = [];
   if (!j.deleted || typeof j.deleted !== 'object') j.deleted = {};
-  j.reminders.forEach(r => { if (!Array.isArray(r.tags)) r.tags = []; r.priority = r.priority || 0; });
-  j.notes.forEach(n => { n.pinned = !!n.pinned; });
+  // Damaged or hand-edited data (a backup, the save file): entries that aren't items are dropped and wrong types are
+  // repaired, so one bad entry can't stop the app from showing everything else.
+  const item = x => x && typeof x === 'object' && !Array.isArray(x) && (typeof x.id === 'string' || typeof x.id === 'number');
+  const str = v => typeof v === 'string' ? v : v == null ? '' : String(v);
+  j.reminders = j.reminders.filter(item);
+  j.notes = j.notes.filter(item);
+  j.reminders.forEach(r => {
+    r.id = String(r.id); r.title = str(r.title); r.notes = str(r.notes);
+    if (typeof r.due !== 'number' || !isFinite(r.due)) r.due = Number(r.due) || Date.now();
+    if (!Array.isArray(r.tags)) r.tags = []; r.tags = r.tags.map(str).filter(Boolean);
+    r.priority = r.priority || 0;
+  });
+  j.notes.forEach(n => { n.id = String(n.id); n.text = str(n.text); n.pinned = !!n.pinned; if (n.history != null && !Array.isArray(n.history)) n.history = []; });
   j.settings = Object.assign({ sound: true, icsOnSave: false, bannerHidden: false, theme: 'system', palette: 'lagoon', mono: true, utcClock: true, lang: 'sv' }, j.settings || {});
   j.settings.alert = Object.assign({}, ALERT_DEFAULTS, j.settings.alert || {});
   return j;
@@ -2858,10 +2881,14 @@ async function restoreSnapshot() {
 }
 
 // Undo for destructive actions: remember the whole state, offer "Undo" for a few seconds.
-function undoable(message, fn) {
-  const before = JSON.stringify(S);
+// Do something with an Undo button in the toast. With undoFn, Undo puts back just what fn changed (a deleted note or
+// reminder), so edits made in the seconds before Undo is pressed are kept. Without it, Undo restores all the data as
+// it was (for whole-data actions like restoring a backup).
+function undoable(message, fn, undoFn) {
+  const before = undoFn ? null : JSON.stringify(S);
   fn();
   toast(message, t('undo'), () => {
+    if (undoFn) { undoFn(); toast(t('undone')); return; }
     S = normalize(JSON.parse(before)); curNote = null;
     save(); renderAll();
     if (currentTab() === 'notes') loadNote(sortedNotes()[0] || null);
@@ -2898,10 +2925,15 @@ const kv = (() => {
   return { get: k => run('readonly', s => s.get(k)), set: (k, v) => run('readwrite', s => s.put(v, k)), del: k => run('readwrite', s => s.delete(k)), keys: () => run('readonly', s => s.getAllKeys()) };
 })();
 // Browser data that couldn't be read at start is copied into the database before the first save replaces it.
+// It's kept once (the same text read again later isn't stored twice), and you're told, instead of finding Ping empty.
+let unreadableKept = null;
 function keepUnreadable() {
   if (!unreadableRaw) return;
   const raw = unreadableRaw; unreadableRaw = null;
+  if (raw === unreadableKept) return;
+  unreadableKept = raw;
   kv.set('unreadable-' + Date.now(), raw).catch(() => { });
+  setTimeout(() => toast(t('dataUnreadable')), 500);
 }
 keepUnreadable();
 function scheduleFileSave() {
@@ -2953,7 +2985,7 @@ function applyMerged(m) {
   save();                                 // stamps only what was kept from the typing above
   renderAll();
   if (!typing) {
-    noteText.value = curNote ? curNote.text : '';
+    keepCaret(curNote ? curNote.text : '');
     paintPreview();
     updateNoteStatus();
   }
@@ -3085,13 +3117,16 @@ function nextAfter(r, fromMs, nowMs) {
   // next occurrence strictly after nowMs, following the schedule anchored at fromMs
   if (r.repeat === 'cron') { try { return Cron.next(r.cron, nowMs); } catch (e) { return null; } }
   if (r.repeat === 'interval') { const step = (r.every || 60) * 60000; return fromMs + (Math.floor((nowMs - fromMs) / step) + 1) * step; }
+  // Day-based repeats keep the clock time they were set for (r.wall, [hours, minutes]). On the spring night that has no
+  // 02:30, a 02:30 reminder comes at 03:30 that once, and is back at 02:30 the next time instead of staying at 03:30.
+  const a = new Date(fromMs), [wh, wm] = Array.isArray(r.wall) ? r.wall : [a.getHours(), a.getMinutes()];
   if (r.repeat === 'monthly' || r.repeat === 'yearly') {
     // Keep the chosen day (r.monthDay): the 31st goes to the 30th or 28th in shorter months and back to the 31st after,
     // instead of sliding into the next month and staying there.
-    const a = new Date(fromMs), want = r.monthDay || a.getDate(), step = r.repeat === 'monthly' ? 1 : 12;
+    const want = r.monthDay || a.getDate(), step = r.repeat === 'monthly' ? 1 : 12;
     for (let k = 1; k < 100000; k++) {
       const m = a.getMonth() + k * step, y = a.getFullYear() + Math.floor(m / 12), mm = m % 12;
-      const d = new Date(y, mm, Math.min(want, new Date(y, mm + 1, 0).getDate()), a.getHours(), a.getMinutes(), a.getSeconds(), a.getMilliseconds());
+      const d = new Date(y, mm, Math.min(want, new Date(y, mm + 1, 0).getDate()), wh, wm, a.getSeconds(), a.getMilliseconds());
       if (d.getTime() > nowMs) return d.getTime();
     }
     return null;
@@ -3102,10 +3137,9 @@ function nextAfter(r, fromMs, nowMs) {
       case 'daily': d.setDate(d.getDate() + 1); break;
       case 'weekdays': do { d.setDate(d.getDate() + 1); } while (d.getDay() === 0 || d.getDay() === 6); break;
       case 'weekly': d.setDate(d.getDate() + 7); break;
-      case 'monthly': d.setMonth(d.getMonth() + 1); break;
-      case 'yearly': d.setFullYear(d.getFullYear() + 1); break;
       default: return fromMs;
     }
+    d.setHours(wh, wm, a.getSeconds(), a.getMilliseconds());
   }
   return d.getTime();
 }
@@ -3118,7 +3152,9 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': 
 const prioName = p => t('prioNames')[p] || '';
 
 // ---------------------------------------------------------------- links, markdown
-const URL_RE = /\bhttps?:\/\/[^\s<>"'`)\]]+[^\s<>"'`)\].,;:!?]/g;
+// A bare web address. It never swallows the placeholders \u0000-\u0003 (they stand for code, links and pictures in
+// inlineMd; swallowing one put a link's HTML inside another link's href), and it keeps balanced (...) as in Wikipedia.
+const URL_RE = /\bhttps?:\/\/(?:[^\s<>"'`()[\]\u0000-\u0003]|\([^\s<>"'`()\u0000-\u0003]*\))*(?:[^\s<>"'`()[\]\u0000-\u0003.,;:!?]|\([^\s<>"'`()\u0000-\u0003]*\))/g;
 // Escapes text, then turns web addresses into links.
 function linkify(text) {
   const parts = []; let last = 0; const src = String(text ?? '');
@@ -3132,11 +3168,14 @@ function firstLink(text) {
 }
 function inlineMd(text) {
   const codes = [];
-  let s = String(text).replace(/[\u0000-\u0003]/g, '').replace(/`([^`]+)`/g, (_, c) => { codes.push(c); return `\u0000${codes.length - 1}\u0000`; });
+  let s = String(text).replace(/[\u0000-\u0004]/g, '').replace(/`([^`]+)`/g, (_, c) => { codes.push(c); return `\u0000${codes.length - 1}\u0000`; });
+  // backslash escapes outside code: \* \_ \# \[ … show the character itself instead of formatting
+  const escs = [];
+  s = s.replace(/\\([\\`*_{}[\]()#+\-.!|~<>])/g, (_, c) => { escs.push(c); return `\u0004${escs.length - 1}\u0004`; });
   const imgs = [];
-  s = s.replace(/!\[([^\]]*)\]\((ping-img:[\w-]+|https?:\/\/[^)\s]+)\)/g, (_, a, u) => { imgs.push([a, u]); return `\u0002${imgs.length - 1}\u0002`; });
+  s = s.replace(/!\[([^\]]*)\]\((ping-img:[\w-]+|https?:\/\/(?:[^()\s\u0000-\u0003]|\([^()\s\u0000-\u0003]*\))+)\)/g, (_, a, u) => { imgs.push([a, u]); return `\u0002${imgs.length - 1}\u0002`; });
   const links = [];
-  s = s.replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, (_, t, u) => { links.push([t, u]); return `\u0001${links.length - 1}\u0001`; });
+  s = s.replace(/\[([^\]]+)\]\((https?:\/\/(?:[^()\s\u0000-\u0003]|\([^()\s\u0000-\u0003]*\))+)\)/g, (_, t, u) => { links.push([t, u]); return `\u0001${links.length - 1}\u0001`; });
   // Bare web addresses are set aside too, so _ * ~ # inside an address never turn into formatting inside the link.
   const urls = [];
   s = s.replace(URL_RE, u => { urls.push(u); return `\u0003${urls.length - 1}\u0003`; });
@@ -3147,10 +3186,11 @@ function inlineMd(text) {
   s = s.replace(/\u0003(\d+)\u0003/g, (_, i) => `<a href="${esc(urls[i])}" target="_blank" rel="noopener">${esc(urls[i])}</a>`);
   s = s.replace(/\u0001(\d+)\u0001/g, (_, i) => `<a href="${esc(links[i][1])}" target="_blank" rel="noopener">${esc(links[i][0])}</a>`);
   s = s.replace(/\u0002(\d+)\u0002/g, (_, i) => {
-    const [alt, u] = imgs[i], src = u.startsWith('ping-img:') ? imgCache.get(u.slice(9)) : u;
+    // alt is an attribute: code in it goes back as plain text, not as <code>
+    const [alt0, u] = imgs[i], alt = alt0.replace(/\u0000(\d+)\u0000/g, (_, k) => codes[k]), src = u.startsWith('ping-img:') ? imgCache.get(u.slice(9)) : u;
     return src ? `<img class="nimg" src="${esc(src)}" alt="${esc(alt)}" loading="lazy">` : `<span class="nimg-missing">🖼 ${esc(alt || t('imgAlt'))}</span>`;
   });
-  return s.replace(/\u0000(\d+)\u0000/g, (_, i) => `<code>${esc(codes[i])}</code>`);
+  return s.replace(/\u0000(\d+)\u0000/g, (_, i) => `<code>${esc(codes[i])}</code>`).replace(/\u0004(\d+)\u0004/g, (_, i) => esc(escs[i]));
 }
 // A code block in the formatted note: language label (click to change), wrap toggle, Copy, line numbers, folding.
 function codeBlockHtml(raw, given, fenceLine) {
@@ -3174,7 +3214,7 @@ function renderMarkdown(src) {
   while (i < lines.length) {
     const line = lines[i];
     let m;
-    if ((m = line.match(/^\s*```\s*([\w+#.-]*)\s*$/))) {
+    if ((m = line.match(/^\s*```\s*([\w+#.-]*)(?:\s+[^`]*)?$/))) {      // ```js, or ```js title="a.js": extra info after the language is allowed
       flushPara(); closeList();
       const fenceLine = i, code = []; i++;
       while (i < lines.length && !/^\s*```\s*$/.test(lines[i])) code.push(lines[i++]);
@@ -3190,8 +3230,8 @@ function renderMarkdown(src) {
       out.push(`<div class="tbl" data-sl="${tl}"><table><thead><tr>${head.map(c => `<th>${inlineMd(c)}</th>`).join('')}</tr></thead><tbody>${rows.map(r => `<tr>${r.map(c => `<td>${inlineMd(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`);
       continue;
     }
-    if ((m = line.match(/^(#{1,4})\s+(.*)$/))) { flushPara(); closeList(); out.push(`<h${m[1].length} data-sl="${i}">${inlineMd(m[2])}</h${m[1].length}>`); i++; continue; }
-    if (/^\s*(-{3,}|\*{3,})\s*$/.test(line)) { flushPara(); closeList(); out.push(`<hr data-sl="${i}">`); i++; continue; }
+    if ((m = line.match(/^(#{1,6})\s+(.*)$/))) { flushPara(); closeList(); out.push(`<h${m[1].length} data-sl="${i}">${inlineMd(m[2])}</h${m[1].length}>`); i++; continue; }
+    if (/^\s*([-*_])(?:\s*\1){2,}\s*$/.test(line)) { flushPara(); closeList(); out.push(`<hr data-sl="${i}">`); i++; continue; }   // ---, ***, ___, * * *
     if ((m = line.match(/^>\s?(.*)$/))) { flushPara(); closeList(); out.push(`<blockquote data-sl="${i}">${inlineMd(m[1])}</blockquote>`); i++; continue; }
     if ((m = line.match(/^\s*[-*+]\s+\[([ xX])\]\s+(.*)$/))) {
       flushPara(); if (list !== 'ul') { closeList(); out.push('<ul>'); list = 'ul'; }
@@ -3200,7 +3240,10 @@ function renderMarkdown(src) {
       i++; continue;
     }
     if ((m = line.match(/^\s*[-*+]\s+(.*)$/))) { flushPara(); if (list !== 'ul') { closeList(); out.push('<ul>'); list = 'ul'; } out.push(`<li data-sl="${i}">${inlineMd(m[1])}</li>`); i++; continue; }
-    if ((m = line.match(/^\s*\d+[.)]\s+(.*)$/))) { flushPara(); if (list !== 'ol') { closeList(); out.push('<ol>'); list = 'ol'; } out.push(`<li data-sl="${i}">${inlineMd(m[1])}</li>`); i++; continue; }
+    if ((m = line.match(/^\s*(\d{1,9})[.)]\s+(.*)$/))) {       // a numbered list starts at its first number ("3. three" shows 3.)
+      flushPara(); if (list !== 'ol') { closeList(); const n = +m[1]; out.push(n === 1 ? '<ol>' : `<ol start="${n}">`); list = 'ol'; }
+      out.push(`<li data-sl="${i}">${inlineMd(m[2])}</li>`); i++; continue;
+    }
     if (!line.trim()) { flushPara(); closeList(); i++; continue; }
     closeList(); if (!para.length) paraStart = i; para.push(line); i++;
   }
@@ -3261,12 +3304,24 @@ const find = id => S.reminders.find(r => r.id === id);
 function changed() { save(); renderReminders(); updateTitle(); }
 function complete(r) { if (r.repeat === 'none') { r.done = true; r.completedAt = Date.now(); tickNoteTask(r); } r.snoozeUntil = null; closeAlert(r.id); changed(); }
 function stopRepeating(r) { r.done = true; r.completedAt = Date.now(); r.snoozeUntil = null; closeAlert(r.id); changed(); }
-function reopen(r) { r.done = false; r.completedAt = null; r.fired = r.due <= Date.now(); changed(); }
+// Reopening: a one-off reminder whose time has passed shows as overdue. A repeating one moves on to its next time
+// (it would otherwise count as already gone off and never come again).
+function reopen(r) {
+  r.done = false; r.completedAt = null;
+  const now = Date.now();
+  if (r.repeat !== 'none' && r.due <= now) { const n = nextAfter(r, r.due, now); if (n != null) r.due = n; }
+  r.fired = r.due <= now;
+  changed();
+}
 function snooze(r, until) {
   // Snoozing a one-off reminder before it went off moves it: it must not still pop up at the original time as well.
   if (r.repeat === 'none' && !r.fired && until >= r.due) r.fired = true;
   r.snoozeUntil = until; r.done = false; closeAlert(r.id); changed(); toast(t('snoozedUntil', fmtWhen(new Date(until)))); }
-function remove(r) { undoable(t('reminderDeleted'), () => { S.reminders = S.reminders.filter(x => x !== r); closeAlert(r.id); changed(); }); }
+function remove(r) {
+  const at = S.reminders.indexOf(r);
+  undoable(t('reminderDeleted'), () => { S.reminders = S.reminders.filter(x => x !== r); closeAlert(r.id); changed(); },
+    () => { if (!S.reminders.includes(r)) S.reminders.splice(Math.min(at, S.reminders.length), 0, r); changed(); });
+}
 function newReminder(fields) {
   return Object.assign({ id: uid(), title: '', notes: '', due: defaultDue(), repeat: 'none', every: null, cron: null, tags: [], priority: 0,
     done: false, fired: false, snoozeUntil: null, created: Date.now(), completedAt: null, sound: '', loop: '', color: '', noteId: null, noteTask: null }, fields);
@@ -3544,15 +3599,20 @@ $('editForm').addEventListener('submit', e => {
   }
   if (isNaN(due)) { $('edWhen').focus(); toast(t('pickDate')); return; }
   const { r, isNew, onSaved } = edCtx;
+  // The editor shows minutes, so an unchanged time compares to the minute (quick add keeps seconds): editing only the
+  // title must not ask about a past time, clear a snooze, or make a reminder that already went off go off again.
+  if (!isNew && Math.floor(due / 60000) === Math.floor(r.due / 60000)) due = r.due;
   if (due <= Date.now() && repeat === 'none' && due !== r.due &&
       !confirm(t('confirmPast'))) return;
-  const tags = [...new Set($('edTags').value.split(/[\s,]+/).map(t => t.replace(/^#/, '').toLowerCase()).filter(Boolean))];
-  const timing = due !== r.due || repeat !== r.repeat || every !== r.every || cron !== r.cron;
+  // tags as quick add reads them: no leading #s, no trailing punctuation ("#b." is "b")
+  const tags = [...new Set($('edTags').value.split(/[\s,]+/).map(t => t.replace(/^#+/, '').replace(/[.,;:!?/-]+$/, '').toLowerCase()).filter(Boolean))];
+  // "every"/"cron" left out of a stored reminder (quick add, or after a reload) count the same as empty
+  const timing = due !== r.due || repeat !== r.repeat || (every ?? null) !== (r.every ?? null) || (cron ?? null) !== (r.cron ?? null);
   Object.assign(r, { title, notes, due, repeat, every, cron, tags, priority: +$('edPrio').value,
     sound: $('edSound').value, loop: $('edLoop').value, color: swatchValue($('edColor')) });
   if (isNew) { r.fired = false; r.done = false; r.snoozeUntil = null; S.reminders.push(r); }
   else if (timing) { r.fired = false; r.snoozeUntil = null; r.done = false; r.completedAt = null; closeAlert(r.id); }
-  if (timing || isNew) r.monthDay = null;   // the day of the month is taken from the new time when it first repeats
+  if (timing || isNew) { r.monthDay = null; r.wall = null; }   // the day of the month and the clock time are taken from the new time when it first repeats
   const ics = $('edIcs').checked;
   closeEditor(); changed();
   if (ics) downloadIcs(r);
@@ -3606,7 +3666,8 @@ function downloadIcs(r) {
   toast(t(r.repeat === 'cron' ? 'icsCron' : 'icsDone'));
 }
 function exportCsv() {
-  const q = v => { v = String(v ?? ''); return /[",\n\r]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+  // a cell starting with = + - @ would run as a formula in Excel or Sheets: a leading ' makes it plain text
+  const q = v => { v = String(v ?? ''); if (/^[=+\-@\t\r]/.test(v)) v = "'" + v; return /[",\n\r]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
   const iso = ms => ms ? new Date(ms).toISOString() : '';
   const head = ['id', 'title', 'next_alert_utc', 'due_utc', 'repeat', 'every_min', 'cron', 'tags', 'priority', 'done', 'completed_at_utc', 'created_utc', 'notes'];
   const rows = S.reminders.map(r => [r.id, r.title, iso(nextAlert(r)), iso(r.due), r.repeat, r.every ?? '', r.cron ?? '', r.tags.join(' '), r.priority, r.done, iso(r.completedAt), iso(r.created), r.notes]);
@@ -3825,6 +3886,7 @@ function check() {
       const occ = r.due;
       if (r.repeat !== 'none') {
         if ((r.repeat === 'monthly' || r.repeat === 'yearly') && !r.monthDay) r.monthDay = new Date(r.due).getDate();
+        if (/^(daily|weekdays|weekly|monthly|yearly)$/.test(r.repeat) && !Array.isArray(r.wall)) { const a = new Date(r.due); r.wall = [a.getHours(), a.getMinutes()]; }
         const n = nextAfter(r, r.due, now);
         if (n == null) r.fired = true; else r.due = n;
       } else r.fired = true;
@@ -3848,7 +3910,7 @@ setInterval(() => {
 // ---------------------------------------------------------------- notes
 let curNote = null, noteTimer = null;
 const noteText = $('noteText');
-const noteTitle = n => { const l = (n.text || '').split('\n').map(x => x.trim()).filter(Boolean); return l[0] ? l[0].replace(/^#+\s*/, '').slice(0, 80) : t('noteEmpty'); };
+const noteTitle = n => { const l = (n.text || '').split('\n').map(x => x.trim().replace(/^#+\s*/, '')).filter(Boolean); return l[0] ? l[0].slice(0, 80) : t('noteEmpty'); };
 const notePreviewText = n => { const l = (n.text || '').split('\n').map(x => x.trim()).filter(Boolean); return (l[1] || '').replace(/^[#>*\-\s]+/, ''); };
 // Notes in the trash (n.trashed) and saved templates (n.template) stay in S.notes so they sync like any edit.
 const isLive = n => !n.trashed && !n.template;
@@ -3878,6 +3940,17 @@ const liveEd = $('liveEd');
 let live = null;            // { a, b }: the note lines [a, b) shown in the editor window; null while all of it is formatted
 let liveUnits = [], liveRows = 0, liveTimer = null;
 const liveOpen = () => !!live && !liveEd.hidden;
+// The cursor in the note, as Ping remembers it. While the editor doesn't have the keyboard focus, the browser may
+// quietly reset its cursor to the start (Edge does after a checkbox is ticked), and the open part follows the cursor,
+// so the note would jump to its beginning. So the cursor is tracked while you work and put back when you return.
+let liveSel = [0, 0];
+const edHasFocus = () => document.activeElement === noteText;
+const selNow = () => edHasFocus() ? [noteText.selectionStart, noteText.selectionEnd] : liveSel;
+function setSel(a, b = a) { liveSel = [a, b]; noteText.setSelectionRange(a, b); }
+const trackSel = () => { if (edHasFocus()) liveSel = [noteText.selectionStart, noteText.selectionEnd]; };
+['select', 'keyup', 'mouseup', 'input', 'selectionchange'].forEach(ev => noteText.addEventListener(ev, trackSel));
+document.addEventListener('selectionchange', trackSel);
+noteText.addEventListener('focus', () => { const n = noteText.value.length; noteText.setSelectionRange(Math.min(liveSel[0], n), Math.min(liveSel[1], n)); });
 function lineAt(pos) { const v = noteText.value; let n = 0; for (let i = 0; i < pos && i < v.length; i++) if (v.charCodeAt(i) === 10) n++; return n; }
 function lineStart(rows, l) { let p = 0; for (let k = 0; k < l && k < rows.length; k++) p += rows[k].length + 1; return p; }
 // The lines of the part that line L belongs to. Blank lines belong to the part above them, but are shown only when
@@ -3905,7 +3978,8 @@ function paintPreview() {
   }
   liveUnits.sort((x, y) => x.start - y.start);
   if (!text.trim()) live = { a: 0, b: rows.length };           // an empty note is always open for writing
-  else if (live) live = liveRangeFor(lineAt(noteText.selectionEnd), rows);
+  else if (live && live.all && liveAllSelected()) live = { a: 0, b: rows.length, all: true };   // Ctrl+A twice: all of it
+  else if (live) live = liveRangeFor(lineAt(selNow()[1]), rows);
   const where = start => !live || start < live.a ? 'before' : start < live.b ? null : 'after';
   const parts = { before: document.createDocumentFragment(), after: document.createDocumentFragment() };
   for (const el of [...tpl.content.children]) {
@@ -3916,7 +3990,7 @@ function paintPreview() {
         n++;
         const place = li.dataset.sl != null ? where(+li.dataset.sl) : curPlace || 'before';
         if (!place) { cur = null; curPlace = null; continue; }
-        if (!cur || place !== curPlace) { cur = el.cloneNode(false); if (el.tagName === 'OL' && n > 1) cur.start = n; parts[place].append(cur); curPlace = place; }
+        if (!cur || place !== curPlace) { cur = el.cloneNode(false); if (el.tagName === 'OL' && n > 1) cur.start = (el.start || 1) + n - 1; parts[place].append(cur); curPlace = place; }
         cur.append(li);
       }
     } else {
@@ -3933,14 +4007,18 @@ function paintPreview() {
   if (keep != null) { const now = caretRect().top; if (Math.abs(now - keep) > 1) scrollBy(0, now - keep); }
   refreshSugs(text); updateSugBar();
 }
-// Size the window to its lines, measured in the invisible copy of the editor text.
+// Size the window to its lines, measured in the invisible copy of the editor text. Where the window starts only
+// changes when the text above it does, so while you type in it, only its own lines are measured (fast in long notes).
+let liveTopCache = null;
 function liveFit() {
   if (!liveOpen()) return;
-  const meas = $('noteMeasure'), rows = noteText.value.split('\n'), a = Math.min(live.a, rows.length - 1), b = Math.min(Math.max(live.b, a + 1), rows.length);
-  meas.innerHTML = rows.map((r, i) => (i === a ? '<span data-a></span>' : '') + (i === b ? '<span data-b></span>' : '') + esc(r)).join('\n') + (b >= rows.length ? '\n<span data-b></span>' : '');
-  const A = meas.querySelector('[data-a]'), B = meas.querySelector('[data-b]');
-  const top = A ? A.offsetTop : 0, pad = 8;
-  let h = B ? B.offsetTop - top : 24;
+  const meas = $('noteMeasure'), v = noteText.value, rows = v.split('\n'), a = Math.min(live.a, rows.length - 1), b = Math.min(Math.max(live.b, a + 1), rows.length);
+  const prefix = lineStart(rows, a), key = [a, prefix, meas.clientWidth, meas.className].join('|'), pad = 8;
+  let top;
+  if (liveTopCache && liveTopCache.key === key) top = liveTopCache.top;
+  else { meas.innerHTML = esc(v.slice(0, prefix)) + '<span data-a></span>'; top = meas.querySelector('[data-a]').offsetTop; liveTopCache = { key, top }; }
+  meas.innerHTML = '<span data-a></span>' + esc(rows.slice(a, b).join('\n')) + '\n<span data-b></span>';
+  let h = meas.querySelector('[data-b]').offsetTop - meas.querySelector('[data-a]').offsetTop;
   meas.textContent = '';
   if (!noteText.value) h = Math.max(h, 110);                     // room for the hint in an empty note
   $('noteWrap').style.top = (pad - top) + 'px';
@@ -3953,19 +4031,46 @@ function liveOnInput() {
   liveRows = rows;
   clearTimeout(liveTimer); liveTimer = setTimeout(paintPreview, 450);
 }
-// The cursor moved: if it left the window, open the part it is in now.
+// The cursor moved: if it left the window, open the part it is in now (right away, even while typing is still
+// pending a repaint, so the cursor is never out of sight).
 function liveSync() {
-  if (!liveOpen() || liveTimer) return;
+  if (!liveOpen()) return;
+  if (live.all) { if (!liveAllSelected()) { live.all = false; paintPreview(); queueCaretCheck(); } return; }
   const L = lineAt(noteText.selectionEnd);
   if (L >= live.a && L < live.b) return;
   paintPreview(); queueCaretCheck();
 }
+const liveAllSelected = () => { const [a, b] = selNow(); return a === 0 && b === noteText.value.length && b > 0; };
+// Ctrl+A selects the open part first; pressed again, it selects the whole note and opens all of it, so what is
+// selected is what you see (and what typing would replace).
+noteText.addEventListener('keydown', e => {
+  if (!(e.ctrlKey || e.metaKey) || e.altKey || e.shiftKey || e.key.toLowerCase() !== 'a' || !liveOpen()) return;
+  const rows = noteText.value.split('\n'), s = lineStart(rows, live.a), end = Math.min(lineStart(rows, live.b) - 1, noteText.value.length);
+  e.preventDefault();
+  const partSelected = noteText.selectionStart === s && noteText.selectionEnd === end;
+  if (!live.all && !partSelected) { setSel(s, end); return; }
+  setSel(0, noteText.value.length);
+  live = { a: 0, b: rows.length, all: true };
+  paintPreview();
+});
+// A click in the thin margin above or below the open part's text would land on the hidden line next to it and
+// open the neighbouring part; put the cursor at the start or end of this part instead.
+noteText.addEventListener('mousedown', e => {
+  if (!liveOpen() || e.button !== 0 || live.all) return;
+  const r = liveEd.getBoundingClientRect(), pad = 8, rows = noteText.value.split('\n');
+  let p = null;
+  if (e.clientY < r.top + pad) p = lineStart(rows, live.a);
+  else if (e.clientY > r.bottom - pad) p = Math.min(lineStart(rows, live.b) - 1, noteText.value.length);
+  if (p == null) return;
+  e.preventDefault();
+  setSel(p); noteText.focus({ preventScroll: true });
+});
 document.addEventListener('selectionchange', () => { if (document.activeElement === noteText) liveSync(); });
 noteText.addEventListener('selectionchange', liveSync);
 noteText.addEventListener('keyup', liveSync);
 // Open the part at text position pos and put the cursor there.
 function liveFocus(pos) {
-  noteText.setSelectionRange(pos, pos);
+  setSel(pos);
   if (!live) live = { a: 0, b: 0 };
   paintPreview();
   noteText.focus({ preventScroll: true });
@@ -3978,7 +4083,7 @@ function liveEnsure() {
 }
 // Show the part at pos without moving the keyboard (find uses this while you type in the find box).
 function liveShow(pos) {
-  noteText.setSelectionRange(pos, pos);
+  setSel(pos);
   const L = lineAt(pos);
   if (liveOpen() && L >= live.a && L < live.b) return;
   if (!live) live = { a: 0, b: 0 };
@@ -4085,8 +4190,7 @@ $('notePreview').addEventListener('click', e => {
   if (cb && curNote) {
     const lines = curNote.text.replace(/\r\n/g, '\n').split('\n'), i = +cb.dataset.line;
     lines[i] = lines[i].replace(/\[([ xX])\]/, (_, c) => c === ' ' ? '[x]' : '[ ]');
-    curNote.text = noteText.value = lines.join('\n'); curNote.modified = Date.now(); save();
-    paintPreview(); renderNotes();
+    setNoteText(lines.join('\n'));
     return;
   }
   const sgEl = e.target.closest('.sug');
@@ -4112,13 +4216,34 @@ function setFenceLang(line, id) {
   const lines = curNote.text.replace(/\r\n/g, '\n').split('\n');
   if (!/^\s*```/.test(lines[line] || '')) return;
   lines[line] = lines[line].replace(/```\s*[\w+#.-]*/, '```' + id);
-  curNote.text = noteText.value = lines.join('\n'); curNote.modified = Date.now(); save();
+  setNoteText(lines.join('\n'));
+}
+// Put new text in the editor without moving its cursor. Replacing a textarea's whole text moves its cursor (Edge
+// even resets it to the start a moment later when the editor isn't focused), and the open part of the note follows
+// the cursor, so it would jump away from where you were. So only the characters that differ are replaced, which
+// keeps the cursor where it is (for a ticked box that is one letter).
+function keepCaret(text) {
+  const old = noteText.value;
+  if (old === text) return;
+  const max = Math.min(old.length, text.length);
+  let s = 0; while (s < max && old.charCodeAt(s) === text.charCodeAt(s)) s++;
+  let e = 0; while (e < max - s && old.charCodeAt(old.length - 1 - e) === text.charCodeAt(text.length - 1 - e)) e++;
+  noteText.setRangeText(text.slice(s, text.length - e), s, old.length - e, 'preserve');
+  const end = old.length - e, d = text.length - old.length, move = p => p <= s ? p : p >= end ? p + d : Math.min(p, text.length - e);
+  liveSel = liveSel.map(move);              // Ping's own copy of the cursor moves along the same way
+  noteOverlay.schedule();
+}
+// Change the open note from outside the editor (ticking a box, picking a code language) and save it.
+function setNoteText(text) {
+  keepCaret(text);
+  curNote.text = text; curNote.modified = Date.now(); save();
   paintPreview(); renderNotes();
 }
 function loadNote(n) {
   flushNote();
   curNote = n || null;
   noteText.value = curNote ? curNote.text : '';
+  liveSel = [noteText.value.length, noteText.value.length];
   updateNoteStatus();
   live = null; paintPreview();          // a note opens fully formatted (an empty one opens for writing)
   renderNotes();
@@ -4128,7 +4253,13 @@ function updateNoteStatus() {
 }
 function flushNote() {
   if (noteTimer) { clearTimeout(noteTimer); noteTimer = null; save(); }
-  if (curNote && !curNote.text.trim()) { S.notes = S.notes.filter(n => n !== curNote); curNote = null; save(); }
+  // A note left empty is tidied away. One that had text goes to the trash with its last text, so it can be got back.
+  if (curNote && !curNote.text.trim()) {
+    const kept = (Array.isArray(curNote.history) ? curNote.history : []).filter(h => (h.text || '').trim());
+    if (kept.length) { curNote.text = kept[kept.length - 1].text; curNote.modified = curNote.trashed = Date.now(); toast(t('emptyTrashed')); }
+    else S.notes = S.notes.filter(n => n !== curNote);
+    curNote = null; save();
+  }
 }
 noteText.addEventListener('input', () => {
   if (!curNote) { curNote = { id: uid(), text: '', created: Date.now(), modified: Date.now(), pinned: false }; S.notes.unshift(curNote); }
@@ -4140,7 +4271,7 @@ noteText.addEventListener('input', () => {
   noteTimer = setTimeout(() => { noteTimer = null; save(); $('noteStatus').textContent = t('savedAt', fmtTime(new Date())); renderNotes(); }, 250);
 });
 // ---------------------------------------------------------------- code in notes: colours while typing
-const FENCE_OPEN = /^\s*```\s*([\w+#.-]*)\s*$/, FENCE_CLOSE = /^\s*```\s*$/;
+const FENCE_OPEN = /^\s*```\s*([\w+#.-]*)(?:\s+[^`]*)?$/, FENCE_CLOSE = /^\s*```\s*$/;
 // The note's text as coloured HTML: code blocks coloured by language, ``` lines and headings tinted, the rest plain.
 // One line of ordinary note text for the editor layer: heading tint, picture lines, #tags and code suggestions.
 function proseHl(line, sugs) {
@@ -4467,7 +4598,18 @@ function saveAsTemplate() {
 // ---------------------------------------------------------------- notes: formatting toolbar
 function wrapSel(ta, mk, placeholder) {
   const v = ta.value, s = ta.selectionStart, e = ta.selectionEnd, sel = v.slice(s, e);
-  if (sel.length > 2 * mk.length && sel.startsWith(mk) && sel.endsWith(mk)) {       // already wrapped: unwrap
+  // Several lines: formatting only works within a line, so each line gets its own marks (after any list or heading sign).
+  if (sel.includes('\n')) {
+    const out = sel.split('\n').map(l => {
+      const pre = (l.match(LINE_MARK) || l.match(/^\s*/))[0], body = l.slice(pre.length), text = body.replace(/\s+$/, '');
+      return text ? pre + mk + text + mk + body.slice(text.length) : l;
+    }).join('\n');
+    edInsert(ta, out, s, e); ta.setSelectionRange(s, s + out.length); return;
+  }
+  // "*" next to "**" is bold, not italic: **bold** selected + Italic adds italic instead of turning bold into italic
+  const wrapped = sel.length > 2 * mk.length && sel.startsWith(mk) && sel.endsWith(mk)
+    && (mk !== '*' || !/^\*\*[^*]|[^*]\*\*$/.test(sel));
+  if (wrapped) {       // already wrapped: unwrap
     const inner = sel.slice(mk.length, -mk.length); edInsert(ta, inner, s, e); ta.setSelectionRange(s, s + inner.length); return;
   }
   if (v.slice(s - mk.length, s) === mk && v.slice(e, e + mk.length) === mk && (mk !== '*' || (v[s - 2] !== '*' && v[e + 1] !== '*'))) {
@@ -4578,12 +4720,12 @@ function remindFromLine(lineIdx) {
 function tickNoteTask(r) {
   if (!r.noteId || !r.noteTask) return;
   const n = S.notes.find(x => x.id === r.noteId); if (!n) return;
-  const lines = n.text.split('\n');
+  const lines = n.text.replace(/\r\n/g, '\n').split('\n');     // text imported from Windows files may have CRLF line ends
   const i = lines.findIndex(l => { const m = l.match(/^\s*[-*+]\s\[ \]\s+(.*)$/); return m && m[1].trim() === r.noteTask; });
   if (i < 0) return;
   lines[i] = lines[i].replace('[ ]', '[x]');
   n.text = lines.join('\n'); n.modified = Date.now();
-  if (curNote === n && document.activeElement !== noteText) { noteText.value = n.text; paintPreview(); }
+  if (curNote === n && document.activeElement !== noteText) { keepCaret(n.text); paintPreview(); }
 }
 
 // ---------------------------------------------------------------- notes: sharing
@@ -4646,16 +4788,21 @@ const fileSafe = x => x.replace(/[\\/:*?"<>|]+/g, ' ').trim().slice(0, 60) || 'n
 function downloadNote() { downloadFile(fileSafe(noteTitle(curNote)) + '.md', curNote.text, 'text/markdown'); toast(t('noteDownloaded')); }
 
 // ---------------------------------------------------------------- notes: find in the note (Ctrl+F)
-let findHits = [], findCur = 0;
+let findHits = [], findLens = [], findCur = 0;
 function renderFind() {
   const layer = $('noteFind'), q = $('findBar').hidden ? '' : $('findInput').value, v = noteText.value;
-  findHits = [];
-  if (q) { const lv = v.toLowerCase(), lq = q.toLowerCase(); let i = lv.indexOf(lq); while (i >= 0 && findHits.length < 5000) { findHits.push(i); i = lv.indexOf(lq, i + lq.length); } }
+  findHits = []; findLens = [];
+  // Matched on the text itself, ignoring case: searching a lower-cased copy goes wrong after letters whose lower
+  // case is longer (İ), so every highlight after one would be shifted.
+  if (q) {
+    const re = new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'giu');
+    let m; while ((m = re.exec(v)) && findHits.length < 5000) { findHits.push(m.index); findLens.push(m[0].length); }
+  }
   if (findCur >= findHits.length) findCur = 0;
   if (!findHits.length) layer.textContent = '';
   else {
     let html = '', last = 0;
-    findHits.forEach((p, k) => { html += esc(v.slice(last, p)) + `<mark${k === findCur ? ' class="cur"' : ''}>${esc(v.slice(p, p + q.length))}</mark>`; last = p + q.length; });
+    findHits.forEach((p, k) => { html += esc(v.slice(last, p)) + `<mark${k === findCur ? ' class="cur"' : ''}>${esc(v.slice(p, p + findLens[k]))}</mark>`; last = p + findLens[k]; });
     layer.innerHTML = html + esc(v.slice(last));
   }
   $('findCount').textContent = q ? (findHits.length ? t('findCount', findCur + 1, findHits.length) : t('findNone')) : '';
@@ -4670,7 +4817,7 @@ function findStep(d) {
 }
 function openFind() {
   if (currentTab() !== 'notes') showTab('notes');
-  const sel = noteText.value.slice(noteText.selectionStart, noteText.selectionEnd), from = noteText.selectionStart;
+  const [ss, se] = selNow(), sel = noteText.value.slice(ss, se), from = ss;
   $('findBar').hidden = false;
   if (sel && !sel.includes('\n')) $('findInput').value = sel;
   $('findInput').focus(); $('findInput').select();
@@ -4679,9 +4826,9 @@ function openFind() {
 }
 function closeFind(select) {
   if ($('findBar').hidden) return;
-  const q = $('findInput').value, p = findHits[findCur];
+  const q = $('findInput').value, p = findHits[findCur], len = findLens[findCur];
   $('findBar').hidden = true; renderFind();
-  if (select && p != null && q) { noteText.focus(); noteText.setSelectionRange(p, p + q.length); }
+  if (select && p != null && q) { setSel(p, p + len); noteText.focus(); }
 }
 $('findInput').addEventListener('input', () => { findCur = 0; renderFind(); findStep(0); });
 $('findInput').addEventListener('keydown', e => {
@@ -5150,8 +5297,10 @@ function wbWrap(c, text, maxW) {
       if (line.trim() && word.trim() && c.measureText(test).width > maxW) { out.push(line.trimEnd()); line = word; }
       else line = test;
       while (c.measureText(line).width > maxW && line.length > 1) {       // one very long word: break it
-        let k = line.length - 1; while (k > 1 && c.measureText(line.slice(0, k)).width > maxW) k--;
-        out.push(line.slice(0, k)); line = line.slice(k);
+        // the longest piece that fits, found by halving (trying one letter at a time froze the page on a long URL)
+        let lo = 1, hi = line.length - 1;
+        while (lo < hi) { const mid = (lo + hi + 1) >> 1; if (c.measureText(line.slice(0, mid)).width > maxW) hi = mid - 1; else lo = mid; }
+        out.push(line.slice(0, lo)); line = line.slice(lo);
       }
     }
     out.push(line);
@@ -5546,15 +5695,7 @@ cv.addEventListener('pointerdown', e => {
       const ids = [...wb.sel].filter(id => items[id] && !items[id].locked && wbEditable(items[id]));
       if (ids.length) {
         const orig = {};
-        for (const id of ids) {
-          const l = items[id];
-          if (Board.isLine(l)) {                         // a line moved without the items it's tied to comes loose
-            const [a, b] = Board.ends(l, items);
-            if (l.from && !wb.sel.has(l.from)) { l.x1 = a[0]; l.y1 = a[1]; }
-            if (l.to && !wb.sel.has(l.to)) { l.x2 = b[0]; l.y2 = b[1]; }
-          }
-          orig[id] = Board.clone(items[id]);
-        }
+        for (const id of ids) orig[id] = Board.clone(items[id]);   // as they were, for Undo and Esc (lines still tied)
         wb.act = { k: 'move', last: p, orig, moved: false };
       }
     } else {
@@ -5603,6 +5744,16 @@ cv.addEventListener('pointermove', e => {
     }
     case 'pan': wb.view.x = a.v[0] - (sx - a.s[0]) / wb.view.z; wb.view.y = a.v[1] - (sy - a.s[1]) / wb.view.z; wbViewChanged(); return;
     case 'move': {
+      if (!a.moved) {
+        // A line moved without the items it's tied to comes loose: its ends become plain points (only once it
+        // really moves, so a click on a tied arrow leaves it tied).
+        for (const id of Object.keys(a.orig)) {
+          const l = items[id]; if (!l || !Board.isLine(l)) continue;
+          const [e1, e2] = Board.ends(l, items);
+          if (l.from && !wb.sel.has(l.from)) { l.x1 = e1[0]; l.y1 = e1[1]; delete l.from; }
+          if (l.to && !wb.sel.has(l.to)) { l.x2 = e2[0]; l.y2 = e2[1]; delete l.to; }
+        }
+      }
       const dx = p[0] - a.last[0], dy = p[1] - a.last[1]; a.last = p; a.moved = true;
       for (const id of Object.keys(a.orig)) if (items[id]) Board.moveItem(items[id], dx, dy);
       wbLive(Object.keys(a.orig)); break;
@@ -5626,7 +5777,10 @@ cv.addEventListener('pointermove', e => {
       const it = items[a.id]; if (!it) break;
       const last = it.pts[it.pts.length - 1];
       if (Math.hypot(p[0] - last[0], p[1] - last[1]) * wb.view.z < 1.5) return;
-      it.pts.push([+p[0].toFixed(1), +p[1].toFixed(1)]); wbLive([it.id]); break;
+      // a board keeps at most 20,000 points per stroke (more is refused when the board loads), so a very long
+      // stroke stops growing there instead of vanishing after a reload
+      if (it.pts.length < 20000) it.pts.push([+p[0].toFixed(1), +p[1].toFixed(1)]);
+      wbLive([it.id]); break;
     }
     case 'shape': {
       const it = items[a.id]; if (!it) break;
@@ -6038,16 +6192,37 @@ async function wbAllBoards() {
   return out;
 }
 // Restoring a backup brings back its boards: missing ones are added; "replace" also overwrites boards with the same id.
+// Boards from a backup. Returns what each written board was before (its stored text, or null if it was new), so the
+// restore can be undone. The open board is saved first, and if it was replaced, the restored one is shown: the old
+// copy left in memory would otherwise be written back over it on the next save.
 async function wbRestoreBoards(list, replace) {
-  let n = 0;
+  await wbSaveNow();
+  const prev = new Map();
   for (const raw of Array.isArray(list) ? list : []) {
-    const b = wbNormalize(raw); if (typeof raw.id !== 'string') continue;
-    b.id = raw.id;
-    if (!replace && await kv.get('board-' + b.id)) continue;
-    await kv.set('board-' + b.id, JSON.stringify(b)); n++;
+    if (!raw || typeof raw !== 'object' || typeof raw.id !== 'string') continue;
+    const b = wbNormalize(raw); b.id = raw.id;
+    const old = await kv.get('board-' + b.id);
+    if (!replace && old) continue;
+    prev.set(b.id, old || null);
+    await kv.set('board-' + b.id, JSON.stringify(b));
   }
-  if (n) await wbLoadList();
-  return n;
+  await wbReloadOpen(prev);
+  return prev;
+}
+// Put boards back as they were before a restore (prev from wbRestoreBoards).
+async function wbUnrestoreBoards(prev) {
+  for (const [id, old] of prev) { if (old) await kv.set('board-' + id, old); else await kv.del('board-' + id); }
+  await wbReloadOpen(prev);
+}
+async function wbReloadOpen(changedIds) {
+  if (!changedIds.size) return;
+  const b = wb.board;
+  if (b && changedIds.has(b.id) && !wbGuest() && !wbHosting()) {
+    clearTimeout(wb.saveTimer); wb.saveTimer = null;
+    const txt = await kv.get('board-' + b.id);
+    if (txt) wbLoadBoard(wbNormalize(JSON.parse(txt))); else { wb.board = null; wbStarted = false; if (currentTab() === 'board') await wbShow(); }
+  }
+  await wbLoadList();
 }
 async function wbExportFile(id) {
   await wbSaveNow();
@@ -6784,7 +6959,8 @@ document.addEventListener('click', e => {
       if (curNote) {
         const gone = curNote;
         clearTimeout(noteTimer); noteTimer = null;
-        undoable(t('noteTrashed'), () => { gone.trashed = Date.now(); curNote = null; save(); loadNote(null); });
+        undoable(t('noteTrashed'), () => { gone.trashed = Date.now(); curNote = null; save(); loadNote(null); },
+          () => { gone.trashed = null; gone.modified = Date.now(); save(); if (currentTab() === 'notes') loadNote(gone); else renderNotes(); });
       }
       break;
     case 'note-pin': if (curNote) { curNote.pinned = !curNote.pinned; save(); renderNotes(); } break;
@@ -7000,17 +7176,24 @@ async function doRestore() {
   $('restoreDlg').hidden = true;
   if (!raw) return;
   const replace = document.querySelector('input[name=restoreMode]:checked').value === 'replace';
+  try {
   const data = normalize(JSON.parse(JSON.stringify(raw)));
   delete data.images; delete data.boards;
   if (raw.images) await pullImages(raw.images);
-  if (raw.boards) await wbRestoreBoards(raw.boards, replace);
+  const before = JSON.stringify(S);
+  const prevBoards = raw.boards ? await wbRestoreBoards(raw.boards, replace) : new Map();
   if (replace) {
     const keep = S.settings, ns = Object.assign({}, keep);
     if (raw.settings) for (const k of SHARED_SETTINGS) if (raw.settings[k] !== undefined) ns[k] = raw.settings[k];
+    // Undo puts back everything the restore replaced: reminders, notes and settings, and the boards too
     undoable(t('restoredAll'), () => {
       data.settings = normalize({ settings: ns }).settings;
       S = data; curNote = null; save(); renderAll();
       if (currentTab() === 'notes') loadNote(sortedNotes()[0] || null);
+    }, async () => {
+      S = normalize(JSON.parse(before)); curNote = null; save(); renderAll();
+      if (currentTab() === 'notes') loadNote(sortedNotes()[0] || null);
+      await wbUnrestoreBoards(prevBoards);
     });
     return;
   }
@@ -7019,6 +7202,7 @@ async function doRestore() {
   for (const n of data.notes) if (!S.notes.some(x => x.id === n.id)) { S.notes.push(n); added++; }
   save(); changed(); renderNotes();
   toast(added ? t('restored', added) : t('nothingNew'));
+  } catch (e) { console.warn(e); toast(t('restoreFailed')); }      // a damaged backup must not fail silently halfway
 }
 
 $('setSound').addEventListener('change', e => { S.settings.sound = e.target.checked; save(); if (e.target.checked) { const a = alertCfg(); playSound(a.sound, a.volume); } });
@@ -7039,6 +7223,7 @@ document.addEventListener('keydown', e => {
     else if (!$('findBar').hidden) closeFind(false);
     else if (!$('keysDlg').hidden) $('keysDlg').hidden = true;
     else if (!$('startupDlg').hidden) $('startupDlg').hidden = true;
+    else if (!$('wbShareDlg').hidden) $('wbShareDlg').hidden = true;
     else if (!$('editor').hidden) closeEditor();
     return;
   }
@@ -7054,7 +7239,8 @@ document.addEventListener('keydown', e => {
   if (e.key === '2') return showTab('notes');
   if (e.key === '3') return showTab('settings');
   if (currentTab() !== 'reminders') return;
-  const r = selId && find(selId);
+  // only a reminder you can see: one hidden by a filter or search must not be marked done or deleted by a key
+  const r = selId && document.querySelector(`.rem[data-id="${CSS.escape(selId)}"]`) && find(selId);
   switch (e.key) {
     case '/': e.preventDefault(); $('search').focus(); break;
     case 'n': case 'c': e.preventDefault(); quickInput.focus(); break;

@@ -237,3 +237,34 @@ describe('short day names only count as days after on/next/every', () => {
     eqWhen('x this sun 10:00', L(2026, 11, 29, 10));
   });
 });
+
+describe('found in the edge-case hunt', () => {
+  test('an earlier hour with "tonight"/"ikväll" means the evening', () => {
+    eqWhen('x kl 8 ikväll', L(2026, 11, 23, 20));
+    eqWhen('x at 8 tonight', L(2026, 11, 23, 20));
+    eqWhen('x tonight 9.30', L(2026, 11, 23, 21, 30));
+  });
+  test('"fri" is Friday only where it reads as a day; "monday.com" is not a day', () => {
+    for (const s of ['Boka fri tid', 'fri parkering vid kontoret', 'monday.com review']) assert.equal(P(s).when, null, s);
+    assert.equal(P('Boka fri tid').title, 'Boka fri tid');
+    eqWhen('standup fri', L(2026, 11, 27, 9));
+    eqWhen('standup fri 10:00', L(2026, 11, 27, 10));
+    eqWhen('x on fri', L(2026, 11, 27, 9));
+    assert.equal(P('x every fri at 9').repeat, 'weekly');
+  });
+  test('dotted times with am/pm', () => {
+    eqWhen('call 9.30pm', L(2026, 11, 23, 21, 30));
+    assert.equal(P('call 9.30pm').title, 'Call');
+    eqWhen('x 11.45pm', L(2026, 11, 23, 23, 45));
+  });
+  test('cron never goes backwards when the clocks go back (2026-10-25)', () => {
+    const z = s => Date.UTC(2026, 9, 25, ...s);
+    for (const [expr, from] of [['0 * * * *', z([1, 0])], ['*/30 * * * *', z([1, 0])], ['*/30 * * * *', z([0, 30])], ['15 2 * * *', z([0, 20])]]) {
+      let t = from;
+      for (let k = 0; k < 6; k++) { const n = Cron.next(expr, t); assert.ok(n > t, `${expr} after ${new Date(t).toISOString()} gave ${new Date(n).toISOString()}`); t = n; }
+    }
+    // the hourly job runs at every real hour, including the second 02:00 (01:00 UTC)
+    const runs = []; let t = z([-1, 30]); for (let k = 0; k < 5; k++) { t = Cron.next('0 * * * *', t); runs.push(new Date(t).toISOString().slice(11, 16)); }
+    assert.deepEqual(runs, ['00:00', '01:00', '02:00', '03:00', '04:00']);   // UTC: 01:00Z is the second 02:00 local
+  });
+});

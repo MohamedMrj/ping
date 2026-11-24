@@ -629,7 +629,7 @@ test("notes: checkboxes tick, links don't navigate on a plain click, toolbar and
   assert.equal((await liveState(page)).open, true);
   await page.keyboard.press('Escape');
   // the toolbar works with nothing open: it opens the part at the cursor
-  await page.evaluate(() => { const k = noteText.value.indexOf('Sista'); noteText.setSelectionRange(k, k + 5); });
+  await page.evaluate(() => { const k = noteText.value.indexOf('Sista'); setSel(k, k + 5); });
   await page.click('#noteTools [data-fmt="bold"]');
   assert.match(await page.evaluate(() => noteText.value), /\*\*Sista\*\* raden\./);
   assert.equal((await liveState(page)).open, true);
@@ -689,6 +689,225 @@ test('notes: dragging selects formatted text for copying (also across parts); a 
   assert.match(copied, /Plan[\s\S]*fetstil[\s\S]*## Lista[\s\S]*Ring Anna/, 'copied: ' + copied);
   assert.doesNotMatch(copied, /⏰/, 'no button icons in the copy');
   assert.match(copied, /Ring Anna\n/, 'one line per list item');
+  assert.deepEqual(errors, []);
+  await ctx.close();
+});
+
+test('notes: ticking a checkbox keeps the open part and the page where they are (real-speed clicks)', async () => {
+  const text = ['# Lång', '', ...Array.from({ length: 20 }, (_, i) => `Stycke ${i + 1}.\n`), ...Array.from({ length: 6 }, (_, i) => `- [ ] Uppgift ${i + 1}`)].join('\n');
+  const { ctx, page, errors } = await open({ seed: { reminders: [], notes: [{ id: 'a', text, created: 1, modified: 1 }] } });
+  await page.setViewportSize({ width: 1280, height: 700 });
+  await tab(page, 'notes');
+  // like Edge on Windows: a clicked checkbox takes the keyboard focus
+  await page.evaluate(() => document.addEventListener('mousedown', e => { if (e.target.matches('input[type=checkbox]')) e.target.focus(); }, true));
+  await page.locator('#notePreview > p', { hasText: 'Stycke 18.' }).click();
+  const before = await page.evaluate(() => ({ live: { ...live }, sel: noteText.selectionStart }));
+  await page.locator('#notePreview li.task input').nth(2).scrollIntoViewIfNeeded();
+  const y = await page.evaluate(() => scrollY);
+  for (const k of [2, 3]) await page.locator('#notePreview li.task input').nth(k).click({ delay: 120 });
+  await page.waitForTimeout(100);       // Edge resets an unfocused editor's cursor on the next frame: Ping must not follow it
+  const after = await page.evaluate(() => ({ live: live && { a: live.a, b: live.b }, sel: selNow()[0], y: scrollY, text: noteText.value }));
+  assert.match(after.text, /- \[x\] Uppgift 3\n- \[x\] Uppgift 4/);
+  assert.deepEqual(after.live, before.live, 'the open part stays open where it was');
+  assert.equal(after.sel, before.sel, 'Ping still has the cursor where it was');
+  assert.equal(after.y, y, 'the page did not scroll');
+  // carrying on typing (here via the toolbar, which doesn't move the mouse) writes where the cursor was
+  await page.click('#noteTools [data-fmt="bold"]');
+  assert.match(await page.evaluate(() => noteText.value), /Stycke 18\.\*\*/, 'bold went in at the old cursor, not at the start');
+  assert.deepEqual(await page.evaluate(() => ({ a: live.a, b: live.b })), before.live);
+  assert.deepEqual(errors, []);
+  await ctx.close();
+});
+
+test('notes: Ctrl+A selects the open part, then everything; margin clicks and quick arrow keys stay in sight', async () => {
+  const T = ['# Titel', '', 'Första stycket här.', '', 'Andra stycket här.', '', 'Tredje stycket här.'].join('\n');
+  const { ctx, page, errors } = await open({ seed: { reminders: [], notes: [{ id: 'a', text: T, created: 1, modified: 1 }] } });
+  await tab(page, 'notes');
+  const st = () => page.evaluate(() => ({ live: live && { ...live }, sel: noteText.value.slice(noteText.selectionStart, noteText.selectionEnd), line: lineAt(noteText.selectionStart) }));
+  await page.locator('#notePreview > p', { hasText: 'Andra' }).click();
+  await page.keyboard.press('Control+a');
+  assert.equal((await st()).sel, 'Andra stycket här.', 'first Ctrl+A: just the open part');
+  await page.keyboard.press('Control+a');
+  let s = await st();
+  assert.equal(s.sel, T, 'second Ctrl+A: the whole note');
+  assert.deepEqual(s.live, { a: 0, b: 7, all: true }, 'and all of it is open, so you see what is selected');
+  await page.keyboard.press('Control+z').catch(() => {});
+  await page.keyboard.press('Escape');
+  // a click in the margin just above or below the open text stays in that part
+  await page.locator('#notePreview > p', { hasText: 'Andra' }).click();
+  for (const edge of ['top', 'bottom']) {
+    const b = await page.locator('#liveEd').boundingBox();
+    await page.mouse.click(b.x + 100, edge === 'top' ? b.y + 2 : b.y + b.height - 2);
+    s = await st();
+    assert.equal(s.line, 4, `a click in the ${edge} margin stays on the part's line`);
+    assert.deepEqual(s.live, { a: 4, b: 5 });
+  }
+  // arrow keys straight after typing: the cursor's part opens at once
+  await page.keyboard.type('x'); await page.keyboard.press('ArrowDown'); await page.keyboard.press('ArrowDown');
+  const v = await page.evaluate(() => { const r = caretRect(), e = liveEd.getBoundingClientRect(); return { line: lineAt(noteText.selectionStart), inside: r.top >= e.top - 1 && r.bottom <= e.bottom + 1 }; });
+  assert.equal(v.line, 6); assert.equal(v.inside, true, 'the cursor is inside the open window');
+  assert.deepEqual(errors, []);
+  await ctx.close();
+});
+
+// ------------------------------------------------------------------ found in the edge-case hunt
+test('hunt: a link right after a web address cannot inject attributes; addresses with (brackets) work; CSV cells are not formulas', async () => {
+  const text = 'Hover: https://a.com/[click me](https://b.com/onmouseover=window.PWNED=2//) end\n\n[wiki](https://en.wikipedia.org/wiki/Foo_(bar)) and https://en.wikipedia.org/wiki/Baz_(qux).';
+  const { ctx, page, errors } = await open({ seed: { reminders: [{ id: 'f', title: '=HYPERLINK("http://x","y")', notes: '+cmd', due: Date.now() + 3600e3, repeat: 'none', tags: [], fired: false }], notes: [{ id: 'a', text, created: 1, modified: 1 }] } });
+  await tab(page, 'notes');
+  const r = await page.evaluate(() => ({ attrs: [...document.querySelectorAll('#notePreview a')].map(a => a.getAttributeNames().join(',')), hrefs: [...document.querySelectorAll('#notePreview a')].map(a => a.getAttribute('href')) }));
+  for (const names of r.attrs) assert.equal(names, 'href,target,rel', 'only the link attributes we write');
+  assert.ok(r.hrefs.includes('https://en.wikipedia.org/wiki/Foo_(bar)'), JSON.stringify(r.hrefs));
+  assert.ok(r.hrefs.includes('https://en.wikipedia.org/wiki/Baz_(qux)'), JSON.stringify(r.hrefs));
+  for (const a of await page.locator('#notePreview a').all()) await a.hover();
+  assert.equal(await page.evaluate(() => window.PWNED), undefined);
+  const csv = await page.evaluate(() => { let out = ''; const dl = window.downloadFile; window.downloadFile = (n, c) => { out = c; }; exportCsv(); window.downloadFile = dl; return out; });
+  assert.ok(csv.includes(`"'=HYPERLINK(""http://x"",""y"")"`), 'formula cell neutralised: ' + csv.split('\n')[1]);
+  assert.ok(csv.includes(`,'+cmd`), 'notes cell neutralised');
+  assert.deepEqual(errors, []);
+  await ctx.close();
+});
+
+test('hunt: undo of a deleted note keeps later edits; an emptied note goes to the trash with its text', async () => {
+  const { ctx, page, errors } = await open({ seed: { reminders: [], notes: [{ id: 'a', text: 'Note A', created: 2, modified: 2 }, { id: 'b', text: 'Note B', created: 1, modified: 1, history: [{ t: 1, text: 'Note B old' }] }] } });
+  await tab(page, 'notes');
+  await page.click('#noteList li[data-id="a"]');
+  await page.click('[data-act="del-note"]');
+  await page.evaluate(() => { loadNote(S.notes.find(n => n.id === 'b')); liveFocus(noteText.value.length); });
+  await page.keyboard.type(' plus edit');
+  await page.waitForTimeout(400);
+  await page.click('#toastAct');               // Undo the delete
+  let d = await stored(page);
+  assert.ok(!d.notes.find(n => n.id === 'a').trashed, 'A is back');
+  assert.equal(d.notes.find(n => n.id === 'b').text, 'Note B plus edit', 'the edit to B is kept');
+  // empty B completely and switch away: it goes to the trash with its last saved text
+  await page.evaluate(() => { loadNote(S.notes.find(n => n.id === 'b')); liveFocus(0); });
+  await page.keyboard.press('Control+a'); await page.keyboard.press('Control+a'); await page.keyboard.press('Delete');
+  await page.waitForTimeout(400);
+  await page.click('#noteList li[data-id="a"]');
+  d = await stored(page);
+  const b = d.notes.find(n => n.id === 'b');
+  assert.ok(b && b.trashed, 'B is in the trash, not gone');
+  assert.ok(b.text.startsWith('Note B'), 'with its last text: ' + (b && b.text));
+  assert.deepEqual(errors, []);
+  await ctx.close();
+});
+
+test('hunt: Markdown: fence info, list numbers, backslash escapes, h5/h6, * * *, bold/italic buttons, find with İ', async () => {
+  const text = ['```js title="a.js"', 'const x = 1;', '```', '# After', '', '3. three', '4. four', '', String.raw`\*not italic\* and a\_b`, '', '##### five', '###### six', '', '* * *', '', 'İİİ prefix target here; target again'].join('\n');
+  const { ctx, page, errors } = await open({ seed: { reminders: [], notes: [{ id: 'a', text, created: 1, modified: 1 }] } });
+  await tab(page, 'notes');
+  const r = await page.evaluate(() => ({
+    code: [...document.querySelectorAll('#notePreview .code .ln')].map(l => l.textContent).join('|'),
+    h1: document.querySelector('#notePreview h1')?.textContent, ol: document.querySelector('#notePreview ol')?.start,
+    p: [...document.querySelectorAll('#notePreview p')].map(p => p.textContent), h5: document.querySelector('#notePreview h5')?.textContent,
+    h6: document.querySelector('#notePreview h6')?.textContent, hr: document.querySelectorAll('#notePreview hr').length, em: document.querySelectorAll('#notePreview p em').length }));
+  assert.equal(r.code, 'const x = 1;'); assert.equal(r.h1, 'After');
+  assert.equal(r.ol, 3, 'the list starts at 3');
+  assert.ok(r.p.includes('*not italic* and a_b'), JSON.stringify(r.p)); assert.equal(r.em, 0, 'escaped stars are not italic');
+  assert.equal(r.h5, 'five'); assert.equal(r.h6, 'six'); assert.equal(r.hr, 1);
+  // find: highlights cover "target", even after letters whose lower case is longer
+  await page.evaluate(() => liveFocus(0));
+  await page.keyboard.press('Control+f'); await page.keyboard.type('target');
+  assert.deepEqual(await page.evaluate(() => findHits.map((p, k) => noteText.value.slice(p, p + findLens[k]))), ['target', 'target']);
+  await page.keyboard.press('Escape');
+  // bold on two lines marks each line; italic on **bold** adds italic
+  const fmt = (val, a, b, kind) => page.evaluate(([val, a, b, kind]) => { noteText.value = val; live = null; liveFocus(0); setSel(a, b); applyFmt(kind); return noteText.value; }, [val, a, b, kind]);
+  assert.equal(await fmt('line1\nline2', 0, 11, 'bold'), '**line1**\n**line2**');
+  assert.equal(await fmt('- a\n- b', 0, 7, 'bold'), '- **a**\n- **b**');
+  assert.equal(await fmt('**bold**', 0, 8, 'italic'), '***bold***');
+  assert.deepEqual(errors, []);
+  await ctx.close();
+});
+
+test('hunt: reminders: title-only edit keeps the snooze, reopened repeats come back, keys skip hidden rows, dialogs sit above alerts', async () => {
+  const now = Date.now(), snoozed = now + 86400e3;
+  const { ctx, page, errors } = await open({ seed: { reminders: [
+    { id: 's', title: 'Tea', due: now + 7200e3 + 37000, repeat: 'none', tags: [], fired: true, snoozeUntil: snoozed },
+    { id: 'd', title: 'Daily', due: now - 7200e3, repeat: 'daily', tags: [], fired: true, done: true, completedAt: now - 3600e3 },
+    { id: 'k1', title: 'Repeating', due: now + 3600e3, repeat: 'daily', tags: [], fired: false },
+    { id: 'k2', title: 'One-off', due: now + 3600e3, repeat: 'none', tags: [], fired: false }], notes: [] }, lang: 'en' });
+  // edit only the title
+  await page.evaluate(() => openEditor(find('s'), false));
+  await page.fill('#edTitle', 'Green tea');
+  await page.evaluate(() => $('editForm').requestSubmit());
+  let r = await page.evaluate(() => find('s'));
+  assert.equal(r.title, 'Green tea'); assert.equal(r.snoozeUntil, snoozed, 'still snoozed'); assert.equal(r.fired, true);
+  // reopen a done daily reminder whose time has passed: it moves to its next time and will go off
+  await page.evaluate(() => reopen(find('d')));
+  r = await page.evaluate(() => find('d'));
+  assert.ok(r.due > Date.now(), 'moved to the next day'); assert.equal(r.fired, false);
+  // a key acts only on a reminder you can see: select k2, hide it with a search, press x
+  await page.evaluate(() => { selId = 'k2'; $('search').value = 'Repeating'; renderReminders(); });
+  assert.equal(await page.locator('.rem[data-id="k2"]').count(), 0, 'k2 is hidden');
+  await page.evaluate(() => document.activeElement.blur());
+  await page.keyboard.press('x');
+  assert.ok(!(await page.evaluate(() => find('k2'))).done, 'the hidden reminder was not marked done');
+  // the editor is above a reminder alert
+  const z = await page.evaluate(() => [getComputedStyle($('editor')).zIndex, getComputedStyle(document.querySelector('.alerts')).zIndex].map(Number));
+  assert.ok(z[0] > z[1], 'editor ' + z[0] + ' over alerts ' + z[1]);
+  assert.deepEqual(errors, []);
+  await ctx.close();
+});
+
+test('hunt: daily 02:30 comes back to 02:30 after the spring clock change', async () => {
+  const { ctx, page } = await open();
+  const runs = await page.evaluate(() => {
+    const r = { repeat: 'daily', due: new Date(2026, 2, 28, 2, 30).getTime(), wall: [2, 30] }, out = [];
+    for (let k = 0; k < 3; k++) { r.due = nextAfter(r, r.due, r.due); const d = new Date(r.due); out.push(`${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2, '0')}`); }
+    return out;
+  });
+  assert.deepEqual(runs, ['29 3:30', '30 2:30', '31 2:30']);
+  await ctx.close();
+});
+
+test('hunt: damaged backups are refused cleanly; Replace on the open board shows it, and Undo brings boards back', async () => {
+  const { ctx, page, errors } = await open({ seed: { reminders: [], notes: [{ id: 'g', text: 'Good note', created: 1, modified: 1 }] }, lang: 'en' });
+  // a damaged entry is dropped, the rest restores
+  await page.evaluate(() => { pendingRestore = { reminders: [null, { id: 'r', title: 'Kept', due: Date.now() + 1e6, repeat: 'none' }], notes: [null, { id: 'n', text: 12345 }] }; document.querySelector('input[name=restoreMode][value=add]').checked = true; });
+  await page.evaluate(() => doRestore());
+  await tab(page, 'notes');
+  const d = await stored(page);
+  assert.ok(d.reminders.some(r => r.id === 'r'), 'the good reminder was added');
+  assert.equal(d.notes.find(n => n.id === 'n').text, '12345', 'a number as text is repaired');
+  assert.equal(await page.locator('#noteList li[data-id="g"]').count(), 1, 'the note list still works');
+  // boards: Replace while the board is open
+  await tab(page, 'board'); await page.waitForFunction(() => wb.board);
+  const id = await page.evaluate(() => { wb.board.items.x = { id: 'x', type: 'sticky', x: 0, y: 0, w: 100, h: 100, text: 'OLD', z: 1, author: 'a' }; wbChanged(); return wb.board.id; });
+  await page.evaluate(() => wbSaveNow());
+  await page.evaluate(id => { pendingRestore = { reminders: [], notes: [], boards: [{ id, title: 'B', items: { y: { id: 'y', type: 'sticky', x: 0, y: 0, w: 100, h: 100, text: 'FROM BACKUP', z: 1, author: 'a' } } }] }; document.querySelector('input[name=restoreMode][value=replace]').checked = true; }, id);
+  await page.evaluate(() => doRestore());
+  assert.deepEqual(await page.evaluate(() => Object.values(wb.board.items).map(i => i.text)), ['FROM BACKUP'], 'the open board shows the restored one');
+  await page.evaluate(() => wbSaveNow());
+  assert.match(await page.evaluate(id => kv.get('board-' + id), id), /FROM BACKUP/, 'and storage keeps it');
+  await page.click('#toastAct');               // Undo
+  await page.waitForFunction(() => wb.board && Object.values(wb.board.items).some(i => i.text === 'OLD'));
+  assert.match(await page.evaluate(id => kv.get('board-' + id), id), /OLD/, 'Undo put the board back');
+  assert.deepEqual(errors, []);
+  await ctx.close();
+});
+
+test('hunt: whiteboard: a long unbroken word wraps fast; dragging a tied arrow moves it loose and Undo ties it again', async () => {
+  const { ctx, page, errors } = await open({ lang: 'en' });
+  await tab(page, 'board'); await page.waitForFunction(() => wb.board);
+  const ms = await page.evaluate(() => { const t0 = performance.now(); wbFitCache.clear(); wbStickyFs({ text: 'x'.repeat(4000), w: 200, h: 200 }); return performance.now() - t0; });
+  assert.ok(ms < 1500, `a 4000-letter word took ${Math.round(ms)} ms`);
+  await page.evaluate(() => {
+    const it = wb.board.items;
+    it.a = { id: 'a', type: 'rect', x: 0, y: 0, w: 100, h: 60, z: 1, author: wb.me.cid };
+    it.b = { id: 'b', type: 'rect', x: 400, y: 0, w: 100, h: 60, z: 2, author: wb.me.cid };
+    it.l = { id: 'l', type: 'arrow', x1: 0, y1: 0, x2: 0, y2: 0, from: 'a', to: 'b', z: 3, author: wb.me.cid };
+    wbCenterOn(250, 30, 1); wbDraw();
+  });
+  const box = await page.locator('#wbCanvas').boundingBox();
+  const mid = await page.evaluate(() => { const [p, q] = Board.ends(wb.board.items.l, wb.board.items); return wbToScreen((p[0] + q[0]) / 2, (p[1] + q[1]) / 2); });
+  await page.mouse.move(box.x + mid[0], box.y + mid[1]); await page.mouse.down();
+  await page.mouse.move(box.x + mid[0], box.y + mid[1] + 120, { steps: 6 }); await page.mouse.up();
+  let l = await page.evaluate(() => wb.board.items.l);
+  assert.ok(!l.from && !l.to, 'the arrow came loose'); assert.ok(l.y1 > 60, 'and moved down: ' + l.y1);
+  await page.keyboard.press('Control+z');
+  l = await page.evaluate(() => wb.board.items.l);
+  assert.equal(l.from, 'a'); assert.equal(l.to, 'b');
   assert.deepEqual(errors, []);
   await ctx.close();
 });

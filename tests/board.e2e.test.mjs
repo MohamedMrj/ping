@@ -80,7 +80,8 @@ test('the whiteboard opens, saves boards on this computer and keeps them after a
   await s.host.keyboard.type('Remember me');
   await s.host.keyboard.press('Escape');
   await s.host.fill('#wbTitle', 'Planning');
-  await s.host.waitForTimeout(700);
+  await s.host.waitForFunction(() => !wb.saveTimer);   // the board has been written (saving waits 400 ms after the last change)
+  await s.host.waitForTimeout(150);
   await s.host.reload();
   await s.host.click('.tabs [data-tab="board"]');
   await s.host.waitForFunction(() => wb.board && Object.keys(wb.board.items).length);
