@@ -15,6 +15,7 @@
   --bg: #f4f7f6; --surface: #ffffff; --surface-2: #eef3f2; --ink: #10201e; --muted: #5a6c69; --line: #dbe4e2;
   --accent: #0d7c72; --accent-ink: #ffffff; --accent-soft: #dcefec;
   --danger: #c2352b; --danger-soft: #fbe7e5; --warn: #a96200; --warn-soft: #fbefdc; --ok: #1d7a43; --code-bg: #eef3f2;
+  --wb-bg: #fbfbf8; --wb-dot: #d3dad8;
   --shadow: 0 10px 30px rgba(16, 32, 30, .14), 0 2px 6px rgba(16, 32, 30, .08);
   --font: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, sans-serif;
   --font-display: "Segoe UI Variable Display", "Segoe UI", system-ui, sans-serif;
@@ -26,7 +27,7 @@
   :root:not([data-theme="light"]) {
     --bg: #0d1413; --surface: #141f1d; --surface-2: #1a2725; --ink: #e2ecea; --muted: #93a7a3; --line: #263533;
     --accent: #3cb5a6; --accent-ink: #062320; --accent-soft: #173a36;
-    --danger: #f07a70; --danger-soft: #3a1d1b; --warn: #e5a54b; --warn-soft: #362817; --ok: #5cc98a; --code-bg: #0f1918;
+    --danger: #f07a70; --danger-soft: #3a1d1b; --warn: #e5a54b; --warn-soft: #362817; --ok: #5cc98a; --code-bg: #0f1918; --wb-bg: #111a19; --wb-dot: #2a3836;
     --shadow: 0 10px 30px rgba(0, 0, 0, .5), 0 2px 6px rgba(0, 0, 0, .3);
     color-scheme: dark;
   }
@@ -34,7 +35,7 @@
 :root[data-theme="dark"] {
   --bg: #0d1413; --surface: #141f1d; --surface-2: #1a2725; --ink: #e2ecea; --muted: #93a7a3; --line: #263533;
   --accent: #3cb5a6; --accent-ink: #062320; --accent-soft: #173a36;
-  --danger: #f07a70; --danger-soft: #3a1d1b; --warn: #e5a54b; --warn-soft: #362817; --ok: #5cc98a; --code-bg: #0f1918;
+  --danger: #f07a70; --danger-soft: #3a1d1b; --warn: #e5a54b; --warn-soft: #362817; --ok: #5cc98a; --code-bg: #0f1918; --wb-bg: #111a19; --wb-dot: #2a3836;
   --shadow: 0 10px 30px rgba(0, 0, 0, .5), 0 2px 6px rgba(0, 0, 0, .3);
   color-scheme: dark;
 }
@@ -43,21 +44,21 @@
 :root[data-palette="fjord"] {
   --bg: #f3f5f9; --surface: #ffffff; --surface-2: #e9edf5; --ink: #121826; --muted: #586174; --line: #d9dfea;
   --accent: #2457c5; --accent-ink: #ffffff; --accent-soft: #e1e9fb;
-  --danger: #c43b3b; --danger-soft: #fbe6e6; --warn: #a35f00; --warn-soft: #fbefda; --ok: #1f7a4a; --code-bg: #eef1f7;
+  --danger: #c43b3b; --danger-soft: #fbe6e6; --warn: #a35f00; --warn-soft: #fbefda; --ok: #1f7a4a; --code-bg: #eef1f7; --wb-bg: #fbfcfe; --wb-dot: #d3d9e5;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
   :root[data-palette="fjord"]:not([data-theme="light"]) {
     --bg: #0c111b; --surface: #131a27; --surface-2: #1a2333; --ink: #e3e8f2; --muted: #96a1b8; --line: #263046;
     --accent: #7ea6ff; --accent-ink: #0b1530; --accent-soft: #1c2a4a;
-    --danger: #f2827a; --danger-soft: #3b1f22; --warn: #e8ad57; --warn-soft: #372a17; --ok: #63cf95; --code-bg: #0f1522;
+    --danger: #f2827a; --danger-soft: #3b1f22; --warn: #e8ad57; --warn-soft: #372a17; --ok: #63cf95; --code-bg: #0f1522; --wb-bg: #0f1520; --wb-dot: #263046;
     color-scheme: dark;
   }
 }
 :root[data-palette="fjord"][data-theme="dark"] {
   --bg: #0c111b; --surface: #131a27; --surface-2: #1a2333; --ink: #e3e8f2; --muted: #96a1b8; --line: #263046;
   --accent: #7ea6ff; --accent-ink: #0b1530; --accent-soft: #1c2a4a;
-  --danger: #f2827a; --danger-soft: #3b1f22; --warn: #e8ad57; --warn-soft: #372a17; --ok: #63cf95; --code-bg: #0f1522;
+  --danger: #f2827a; --danger-soft: #3b1f22; --warn: #e8ad57; --warn-soft: #372a17; --ok: #63cf95; --code-bg: #0f1522; --wb-bg: #0f1520; --wb-dot: #263046;
   color-scheme: dark;
 }
 
@@ -65,21 +66,21 @@
 :root[data-palette="solarized"] {
   --bg: #eee8d5; --surface: #fdf6e3; --surface-2: #f5eedb; --ink: #073642; --muted: #657b83; --line: #ddd5bc;
   --accent: #268bd2; --accent-ink: #fdf6e3; --accent-soft: #dce8ea;
-  --danger: #dc322f; --danger-soft: #f6dccf; --warn: #a77f00; --warn-soft: #f1e5c0; --ok: #6f8000; --code-bg: #eee8d5;
+  --danger: #dc322f; --danger-soft: #f6dccf; --warn: #a77f00; --warn-soft: #f1e5c0; --ok: #6f8000; --code-bg: #eee8d5; --wb-bg: #fdf8ea; --wb-dot: #ddd5bc;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
   :root[data-palette="solarized"]:not([data-theme="light"]) {
     --bg: #002b36; --surface: #073642; --surface-2: #0b3d4a; --ink: #e9e2cd; --muted: #93a1a1; --line: #164452;
     --accent: #4aa3df; --accent-ink: #002b36; --accent-soft: #0e4658;
-    --danger: #f0605d; --danger-soft: #3a2224; --warn: #d0a215; --warn-soft: #33321a; --ok: #a3b81a; --code-bg: #00212b;
+    --danger: #f0605d; --danger-soft: #3a2224; --warn: #d0a215; --warn-soft: #33321a; --ok: #a3b81a; --code-bg: #00212b; --wb-bg: #00303c; --wb-dot: #164452;
     color-scheme: dark;
   }
 }
 :root[data-palette="solarized"][data-theme="dark"] {
   --bg: #002b36; --surface: #073642; --surface-2: #0b3d4a; --ink: #e9e2cd; --muted: #93a1a1; --line: #164452;
   --accent: #4aa3df; --accent-ink: #002b36; --accent-soft: #0e4658;
-  --danger: #f0605d; --danger-soft: #3a2224; --warn: #d0a215; --warn-soft: #33321a; --ok: #a3b81a; --code-bg: #00212b;
+  --danger: #f0605d; --danger-soft: #3a2224; --warn: #d0a215; --warn-soft: #33321a; --ok: #a3b81a; --code-bg: #00212b; --wb-bg: #00303c; --wb-dot: #164452;
   color-scheme: dark;
 }
 
@@ -97,6 +98,135 @@
 .tk-fn { color: var(--tk-fn); } .tk-type { color: var(--tk-type); } .tk-var { color: var(--tk-var); } .tk-op { color: var(--tk-op); }
 .tk-tag { color: var(--tk-tag); } .tk-attr { color: var(--tk-attr); } .tk-prop { color: var(--tk-prop); } .tk-meta { color: var(--tk-meta); }
 .tk-lit { color: var(--tk-lit); } .tk-ins { color: var(--tk-ins); } .tk-del { color: var(--tk-del); }
+
+/* Fun themes. Each one is a single block: light-dark(light value, dark value) follows the light/dark mode, which the
+   rules above set through color-scheme. A browser without light-dark() skips the block and shows Lagoon instead.
+   Decorations sit behind everything on the page background: --deco is painted as is, and --deco-fg is painted
+   through --deco-mask (inline SVG shapes such as stars, pines, mountains and dunes). Cards and the whiteboard
+   cover them, so text never sits on top of a busy pattern. */
+:root {
+  --deco: none; --deco-fg: transparent; --deco-mask: none;
+  --svg-stars: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cg%3E%3Ccircle cx='12' cy='18' r='1'/%3E%3Ccircle cx='64' cy='42' r='1.4'/%3E%3Ccircle cx='150' cy='12' r='.8'/%3E%3Ccircle cx='182' cy='76' r='1.2'/%3E%3Ccircle cx='98' cy='96' r='.7'/%3E%3Ccircle cx='30' cy='130' r='1.3'/%3E%3Ccircle cx='132' cy='150' r='1'/%3E%3Ccircle cx='76' cy='176' r='.8'/%3E%3Ccircle cx='170' cy='188' r='1.5'/%3E%3Ccircle cx='6' cy='84' r='.7'/%3E%3C/g%3E%3C/svg%3E");
+  --svg-pines: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='90'%3E%3Cpath d='M24 8 38 46h-8l14 44H4l14-44h-8z'/%3E%3Cpath d='M86 30l11 28h-6l11 32H70l11-32h-6z' fill-opacity='.6'/%3E%3C/svg%3E");
+  --svg-confetti: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Ccircle cx='20' cy='24' r='3'/%3E%3Ccircle cx='110' cy='18' r='2'/%3E%3Crect x='70' y='60' width='6' height='6' rx='1.5' transform='rotate(30 73 63)'/%3E%3Ccircle cx='140' cy='90' r='3.5' fill-opacity='.7'/%3E%3Ccircle cx='40' cy='110' r='2.5' fill-opacity='.8'/%3E%3Crect x='96' y='130' width='7' height='4' rx='2' transform='rotate(-25 99 132)'/%3E%3Ccircle cx='8' cy='150' r='2'/%3E%3C/svg%3E");
+  --svg-leaves: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cellipse cx='30' cy='40' rx='9' ry='4' transform='rotate(-35 30 40)'/%3E%3Cellipse cx='140' cy='120' rx='10' ry='4' transform='rotate(25 140 120)'/%3E%3Cg transform='translate(110 45)' opacity='.8'%3E%3Ccircle cy='-5' r='3.2'/%3E%3Ccircle cx='4.8' cy='-1.5' r='3.2'/%3E%3Ccircle cx='3' cy='4' r='3.2'/%3E%3Ccircle cx='-3' cy='4' r='3.2'/%3E%3Ccircle cx='-4.8' cy='-1.5' r='3.2'/%3E%3C/g%3E%3Ccircle cx='50' cy='140' r='2'/%3E%3C/svg%3E");
+  --svg-mountains: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 240' preserveAspectRatio='none'%3E%3Cpath d='M0 240V150l90-60 70 40 110-100 90 80 60-30 120 90 100-110 120 100 80-40 110 70 90-60 90 50 70-30V240z' fill-opacity='.45'/%3E%3Cpath d='M0 240v-50l120-60 90 50 130-90 120 100 90-40 140 80 120-70 110 60 100-50 100 40 80-20V240z'/%3E%3C/svg%3E");
+  --svg-dunes: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 200' preserveAspectRatio='none'%3E%3Cpath d='M0 120C200 60 360 60 560 110S900 150 1200 80V200H0z' fill-opacity='.45'/%3E%3Cpath d='M0 170C180 120 420 130 620 160S980 190 1200 140V200H0z'/%3E%3C/svg%3E");
+}
+body::before, body::after { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; }
+body::before { background: var(--deco); }
+body::after { background: var(--deco-fg); -webkit-mask: var(--deco-mask); mask: var(--deco-mask); }
+@media print { body::before, body::after { display: none; } }
+@supports (color: light-dark(#000, #fff)) {
+  :root[data-palette="sunset"] {
+    --bg: light-dark(#fbf1ec, #1b1017); --surface: light-dark(#ffffff, #25151e); --surface-2: light-dark(#f7e5dc, #301c28);
+    --ink: light-dark(#2b1620, #f6e6e4); --muted: light-dark(#7a5360, #c39ca7); --line: light-dark(#efd6cb, #3f2634);
+    --accent: light-dark(#c03a4f, #ff7d6e); --accent-ink: light-dark(#ffffff, #2a0d0f); --accent-soft: light-dark(#fbdfe0, #4a2129);
+    --danger: light-dark(#b42318, #ff8a7c); --danger-soft: light-dark(#fde3df, #46201f); --warn: light-dark(#a05800, #f2b25c); --warn-soft: light-dark(#fcebd5, #3d2a17);
+    --ok: light-dark(#2e7d4f, #6fd39a); --code-bg: light-dark(#f8ebe4, #1f1219); --wb-bg: light-dark(#fffaf7, #1f131a); --wb-dot: light-dark(#ecd3c7, #3e2934);
+    --tk-kw: var(--accent); --tk-tag: var(--accent);
+    --deco: radial-gradient(circle at 50% calc(100% + 40px), light-dark(rgba(255, 150, 100, .30), rgba(255, 120, 90, .26)) 0 150px, transparent 151px),
+      radial-gradient(circle at 50% 100%, light-dark(rgba(255, 180, 130, .34), rgba(255, 100, 80, .18)), transparent 520px),
+      linear-gradient(180deg, light-dark(rgba(255, 200, 170, .25), rgba(140, 40, 110, .28)), transparent 45%);
+  }
+  :root[data-palette="forest"] {
+    --bg: light-dark(#f1f4ec, #0e140f); --surface: light-dark(#fdfdf8, #152017); --surface-2: light-dark(#e6ecdd, #1c2a1e);
+    --ink: light-dark(#1a2416, #e2ecdc); --muted: light-dark(#566550, #9aae93); --line: light-dark(#d5dcc9, #27362a);
+    --accent: light-dark(#2f6b3a, #7cc489); --accent-ink: light-dark(#ffffff, #0b2412); --accent-soft: light-dark(#dbeadb, #1f3a25);
+    --danger: light-dark(#b3261e, #f08a7e); --danger-soft: light-dark(#f8e1dc, #3b1f1b); --warn: light-dark(#965a00, #e0b05a); --warn-soft: light-dark(#f5e9d0, #34291a);
+    --ok: light-dark(#2f7d45, #7fd49a); --code-bg: light-dark(#e9eee1, #0b110c); --wb-bg: light-dark(#fbfcf6, #111912); --wb-dot: light-dark(#d0d9c4, #263528);
+    --tk-kw: var(--accent); --tk-tag: var(--accent);
+    --deco: radial-gradient(ellipse at 50% 120%, light-dark(rgba(47, 107, 58, .12), rgba(124, 196, 137, .08)), transparent 60%);
+    --deco-fg: light-dark(rgba(47, 107, 58, .10), rgba(124, 196, 137, .08));
+    --deco-mask: var(--svg-pines) left bottom / 180px 135px repeat-x, var(--svg-pines) 60px bottom / 120px 90px repeat-x;
+  }
+  :root[data-palette="candy"] {
+    --bg: light-dark(#fff4f9, #1a1120); --surface: light-dark(#ffffff, #23172b); --surface-2: light-dark(#fbe6f1, #2d1f37);
+    --ink: light-dark(#2a1830, #f8e9f6); --muted: light-dark(#7c5a80, #c5a5c8); --line: light-dark(#f2d4e5, #3b2a46);
+    --accent: light-dark(#c2347f, #ff8cc6); --accent-ink: light-dark(#ffffff, #3a0a24); --accent-soft: light-dark(#fbdbeb, #4a2141);
+    --danger: light-dark(#c0262d, #ff8a8f); --danger-soft: light-dark(#fde1e3, #45202a); --warn: light-dark(#985c00, #f2be6a); --warn-soft: light-dark(#fdedd5, #3a2c1b);
+    --ok: light-dark(#1f7f68, #7fe0c4); --code-bg: light-dark(#fbedf5, #170e1c); --wb-bg: light-dark(#fffafd, #1d1325); --wb-dot: light-dark(#f0d1e2, #3b2b46);
+    --tk-kw: var(--accent); --tk-tag: var(--accent);
+    --deco: radial-gradient(circle, light-dark(rgba(31, 170, 140, .22), rgba(127, 224, 196, .16)) 0 2.5px, transparent 3px) 30px 50px / 97px 97px,
+      radial-gradient(circle, light-dark(rgba(150, 100, 230, .20), rgba(190, 150, 255, .15)) 0 2px, transparent 2.5px) 0 0 / 71px 71px;
+    --deco-fg: light-dark(rgba(194, 52, 127, .18), rgba(255, 140, 198, .15));
+    --deco-mask: var(--svg-confetti) 0 0 / 160px 160px;
+  }
+  :root[data-palette="neon"] {
+    --bg: light-dark(#f6f3fe, #0c0918); --surface: light-dark(#ffffff, #140f25); --surface-2: light-dark(#ece5fc, #1c1533);
+    --ink: light-dark(#1d1433, #ede7ff); --muted: light-dark(#625883, #a99ecb); --line: light-dark(#ddd3f6, #2c2249);
+    --accent: light-dark(#7b2ff2, #22d3ee); --accent-ink: light-dark(#ffffff, #03222b); --accent-soft: light-dark(#e9dcfe, #10394a);
+    --danger: light-dark(#c3245a, #ff6b9a); --danger-soft: light-dark(#fde0ea, #3e1428); --warn: light-dark(#985a00, #ffc857); --warn-soft: light-dark(#fbebd5, #3a2d14);
+    --ok: light-dark(#0f7f74, #5ef2a8); --code-bg: light-dark(#efe9fc, #090714); --wb-bg: light-dark(#fcfbff, #100c1f); --wb-dot: light-dark(#dcd3f4, #2d2449);
+    --tk-kw: light-dark(#7b2ff2, #ff6bd6); --tk-tag: light-dark(#7b2ff2, #ff6bd6); --tk-fn: light-dark(#0b7d92, #22d3ee);
+    --deco: radial-gradient(ellipse 70% 40% at 50% 74%, light-dark(rgba(255, 60, 200, .12), rgba(255, 60, 200, .20)), transparent 70%),
+      radial-gradient(ellipse 60% 35% at 50% -5%, light-dark(rgba(0, 200, 240, .10), rgba(34, 211, 238, .16)), transparent 70%);
+    --deco-fg: repeating-linear-gradient(0deg, light-dark(rgba(123, 47, 242, .14), rgba(34, 211, 238, .22)) 0 1px, transparent 1px 28px),
+      repeating-linear-gradient(90deg, light-dark(rgba(123, 47, 242, .12), rgba(255, 60, 200, .20)) 0 1px, transparent 1px 56px);
+    --deco-mask: linear-gradient(to top, #000, transparent 32vh);
+  }
+  :root[data-palette="space"] {
+    --bg: light-dark(#f0f2fa, #090c1d); --surface: light-dark(#ffffff, #10142a); --surface-2: light-dark(#e5e8f6, #171c37);
+    --ink: light-dark(#141a33, #e4e7fb); --muted: light-dark(#585f82, #9ba2c7); --line: light-dark(#d6dbef, #242a4c);
+    --accent: light-dark(#4a4fd6, #a493ff); --accent-ink: light-dark(#ffffff, #150f3c); --accent-soft: light-dark(#e0e1fa, #272357);
+    --danger: light-dark(#c2352b, #ff8178); --danger-soft: light-dark(#fbe5e3, #3a1c22); --warn: light-dark(#9a5c00, #f3bd62); --warn-soft: light-dark(#fbecd6, #352a18);
+    --ok: light-dark(#1f7a50, #6fd8a0); --code-bg: light-dark(#eaedf8, #070917); --wb-bg: light-dark(#fbfbff, #0d1125); --wb-dot: light-dark(#d4d9ee, #252b4c);
+    --tk-kw: var(--accent); --tk-tag: var(--accent);
+    --deco: radial-gradient(circle at 90% 84%, light-dark(rgba(74, 79, 214, .14), rgba(164, 147, 255, .30)) 0 30px, transparent 31px),
+      radial-gradient(ellipse at 15% 10%, light-dark(rgba(74, 79, 214, .10), rgba(120, 90, 255, .20)), transparent 50%),
+      radial-gradient(ellipse at 90% 85%, light-dark(rgba(214, 74, 180, .07), rgba(220, 80, 200, .12)), transparent 45%);
+    --deco-fg: light-dark(rgba(74, 79, 214, .30), rgba(255, 255, 255, .5));
+    --deco-mask: var(--svg-stars) 0 0 / 200px 200px, var(--svg-stars) 90px 40px / 330px 330px;
+  }
+  :root[data-palette="interstellar"] {
+    --bg: light-dark(#f6f1e8, #08080a); --surface: light-dark(#fffdf8, #121214); --surface-2: light-dark(#eee6d8, #1a1a1d);
+    --ink: light-dark(#1f1a14, #ece6da); --muted: light-dark(#6a5f50, #a59c8c); --line: light-dark(#e0d6c4, #2a292c);
+    --accent: light-dark(#915606, #f0a83a); --accent-ink: light-dark(#ffffff, #2a1800); --accent-soft: light-dark(#f3e2c6, #3a2a12);
+    --danger: light-dark(#b3261e, #ff8070); --danger-soft: light-dark(#f8e1dc, #3a1a17); --warn: light-dark(#8a5a00, #ffd27a); --warn-soft: light-dark(#f5e6cc, #33291a);
+    --ok: light-dark(#2f7a46, #78d09a); --code-bg: light-dark(#efe8dc, #060607); --wb-bg: light-dark(#fffcf5, #0e0e10); --wb-dot: light-dark(#e0d5c1, #2a292d);
+    --tk-kw: var(--accent); --tk-tag: var(--accent);
+    --deco: radial-gradient(circle at 86% 80%, transparent 0 46px, light-dark(rgba(145, 86, 6, .24), rgba(240, 168, 58, .55)) 48px,
+      light-dark(rgba(145, 86, 6, .06), rgba(240, 168, 58, .10)) 72px, transparent 180px);
+    --deco-fg: light-dark(rgba(145, 86, 6, .24), rgba(255, 236, 200, .42));
+    --deco-mask: var(--svg-stars) 40px 0 / 260px 260px, var(--svg-stars) 0 120px / 420px 420px;
+  }
+  :root[data-palette="nature"] {
+    --bg: light-dark(#f0f7f1, #0c1510); --surface: light-dark(#ffffff, #121f18); --surface-2: light-dark(#e2f0e5, #19291f);
+    --ink: light-dark(#15251b, #e0efe5); --muted: light-dark(#51675a, #93ae9f); --line: light-dark(#cfe4d4, #23372b);
+    --accent: light-dark(#1b7d44, #5fd08b); --accent-ink: light-dark(#ffffff, #07261a); --accent-soft: light-dark(#d5efdd, #1b3d2a);
+    --danger: light-dark(#c0392b, #f58b80); --danger-soft: light-dark(#fbe3df, #3c1f1c); --warn: light-dark(#985c00, #e9b85f); --warn-soft: light-dark(#fbedd5, #34291a);
+    --ok: light-dark(#1b7d44, #5fd08b); --code-bg: light-dark(#e8f3eb, #09110c); --wb-bg: light-dark(#fbfefb, #0f1a14); --wb-dot: light-dark(#cde2d2, #23362b);
+    --tk-kw: var(--accent); --tk-tag: var(--accent); --tk-fn: light-dark(#1c6fb3, #7cc4f2);
+    --deco: radial-gradient(circle at 8% 82%, light-dark(rgba(255, 210, 90, .38), rgba(230, 240, 200, .16)) 0 34px, transparent 35px),
+      linear-gradient(180deg, light-dark(rgba(120, 190, 240, .22), rgba(40, 70, 120, .35)), transparent 40%);
+    --deco-fg: light-dark(rgba(27, 125, 68, .15), rgba(200, 240, 120, .22));
+    --deco-mask: var(--svg-leaves) 0 0 / 180px 180px;
+  }
+  :root[data-palette="mountain"] {
+    --bg: light-dark(#edf1f5, #0d1217); --surface: light-dark(#ffffff, #141b22); --surface-2: light-dark(#e1e7ee, #1b242d);
+    --ink: light-dark(#17212b, #e2e9ef); --muted: light-dark(#55626f, #98a6b3); --line: light-dark(#d2dae3, #26313c);
+    --accent: light-dark(#3a6a8e, #8cb8d9); --accent-ink: light-dark(#ffffff, #0d2233); --accent-soft: light-dark(#dae6f0, #1f3447);
+    --danger: light-dark(#b8322a, #f2877c); --danger-soft: light-dark(#f9e2df, #3a1e1c); --warn: light-dark(#915f00, #e6b35c); --warn-soft: light-dark(#f6ebd3, #33291a);
+    --ok: light-dark(#2b7a4b, #72cc95); --code-bg: light-dark(#e7ecf1, #0a0f14); --wb-bg: light-dark(#fafcfd, #10161c); --wb-dot: light-dark(#cfd8e1, #26313b);
+    --tk-kw: var(--accent); --tk-tag: var(--accent);
+    --deco: radial-gradient(circle at 84% calc(100% - 290px), light-dark(rgba(255, 255, 255, .7), rgba(230, 236, 245, .22)) 0 24px, transparent 25px),
+      linear-gradient(180deg, light-dark(rgba(120, 160, 200, .18), rgba(60, 90, 140, .22)), transparent 45%);
+    --deco-fg: light-dark(rgba(58, 106, 142, .13), rgba(140, 184, 217, .10));
+    --deco-mask: var(--svg-mountains) left bottom / 100% 260px no-repeat;
+  }
+  :root[data-palette="desert"] {
+    --bg: light-dark(#f9f2e5, #16110b); --surface: light-dark(#fffdf6, #1f1810); --surface-2: light-dark(#f2e7d2, #292015);
+    --ink: light-dark(#2a1f12, #f3e8d6); --muted: light-dark(#73624a, #b9a585); --line: light-dark(#e9d9bc, #3a2e1f);
+    --accent: light-dark(#a94f28, #e8935f); --accent-ink: light-dark(#ffffff, #2c1306); --accent-soft: light-dark(#f5ddcd, #45291a);
+    --danger: light-dark(#b3261e, #ff8a7a); --danger-soft: light-dark(#f8e1dc, #3e1e19); --warn: light-dark(#8a5b00, #f1c060); --warn-soft: light-dark(#f4e6ca, #382c17);
+    --ok: light-dark(#3c7a3a, #8fcf7f); --code-bg: light-dark(#f3e9d5, #110d08); --wb-bg: light-dark(#fffbf2, #19130c); --wb-dot: light-dark(#e6d5b6, #3a2f21);
+    --tk-kw: var(--accent); --tk-tag: var(--accent);
+    --deco: radial-gradient(circle at 82% calc(100% - 200px), light-dark(rgba(232, 150, 60, .30), rgba(240, 230, 200, .16)) 0 48px, transparent 49px),
+      radial-gradient(circle at 82% calc(100% - 200px), light-dark(rgba(255, 190, 110, .26), rgba(240, 200, 140, .06)), transparent 300px);
+    --deco-fg: light-dark(rgba(169, 79, 40, .11), rgba(232, 147, 95, .09));
+    --deco-mask: var(--svg-dunes) left bottom / 100% 200px no-repeat;
+  }
+}
 
 * { box-sizing: border-box; }
 html, body { height: 100%; }
@@ -118,6 +248,10 @@ header { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
 .tabs { display: flex; gap: 2px; background: var(--surface-2); padding: 3px; border-radius: 9px; }
 .tabs button { border: 0; background: transparent; padding: 6px 14px; border-radius: 7px; cursor: pointer; color: var(--muted); font-weight: 600; }
 .tabs button[aria-selected="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+.tabs .tab-icon { padding: 6px 9px; display: grid; place-items: center; }
+.tabs .tab-icon svg { display: block; transition: transform .3s; }
+.tabs .tab-icon:hover svg, .tabs .tab-icon[aria-selected="true"] svg { transform: rotate(45deg); }
+@media (prefers-reduced-motion: reduce) { .tabs .tab-icon svg { transition: none; } }
 .chip { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--muted); cursor: pointer; }
 .chip .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); }
 .chip.on .dot { background: var(--ok); }
@@ -189,8 +323,8 @@ kbd { font-size: 11.5px; line-height: 1; padding: 2px 5px; border: 1px solid var
 .prio { font: 700 10.5px/1 var(--mono); padding: 3px 5px; border-radius: 4px; flex: none; }
 .prio.p3 { background: var(--danger); color: var(--surface); }
 .prio.p2 { background: var(--warn); color: var(--surface); }
-.palettes { display: flex; gap: 10px; flex-wrap: wrap; }
-.palettes button { display: grid; gap: 8px; justify-items: start; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); cursor: pointer; min-width: 150px; font-weight: 600; }
+.palettes { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(165px, 1fr)); }
+.palettes button { display: grid; gap: 8px; justify-items: start; align-content: start; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); cursor: pointer; font-weight: 600; text-align: left; }
 .palettes button[aria-pressed="true"] { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); }
 .palettes .sw { display: flex; gap: 4px; }
 .palettes .sw i { width: 18px; height: 18px; border-radius: 50%; border: 1px solid rgba(0, 0, 0, .12); }
@@ -423,7 +557,8 @@ a.btn { color: var(--ink); text-decoration: none; }
 .drive-steps li::marker { font-weight: 700; color: var(--accent); }
 .drive-steps a { color: var(--accent); }
 
-/* Whiteboard: a sheet of paper that stays light in every theme, so a shared board looks the same for everyone */
+/* Whiteboard: the paper and toolbars follow the theme and light/dark mode. Drawings are stored in their light colours
+   and shown in matching dark colours in dark mode (wbCol), so a shared board has the same content for everyone. */
 .app:has(#view-board:not([hidden])) { max-width: none; }
 .wb { display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 12px; height: calc(100vh - 118px); min-height: 420px; }
 .wb.side-hidden { grid-template-columns: minmax(0, 1fr); }
@@ -448,47 +583,47 @@ a.btn { color: var(--ink); text-decoration: none; }
 .wb-people { display: flex; padding-left: 6px; }
 .av { width: 28px; height: 28px; border-radius: 50%; display: inline-grid; place-items: center; background: var(--pc, #868e96); color: #fff; font: 700 11px var(--font); border: 2px solid var(--surface); margin-left: -6px; cursor: pointer; padding: 0; }
 .av.viewer { opacity: .75; }
-.wb-stage { position: relative; flex: 1; min-height: 0; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: #fbfbf8; touch-action: none; outline: none; color: #1e1e1e; }
+.wb-stage { position: relative; flex: 1; min-height: 0; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: var(--wb-bg); touch-action: none; outline: none; color: var(--ink); }
 .wb-stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 .wb-stage[data-tool="hand"] canvas, .wb-stage[data-pan] canvas { cursor: grab; }
 .wb-stage[data-tool="pen"] canvas, .wb-stage[data-tool="marker"] canvas, .wb-stage[data-tool="rect"] canvas, .wb-stage[data-tool="ellipse"] canvas, .wb-stage[data-tool="diamond"] canvas,
 .wb-stage[data-tool="triangle"] canvas, .wb-stage[data-tool="line"] canvas, .wb-stage[data-tool="arrow"] canvas, .wb-stage[data-tool="sticky"] canvas, .wb-stage[data-tool="laser"] canvas { cursor: crosshair; }
 .wb-stage[data-tool="text"] canvas { cursor: text; }
 .wb-stage[data-tool="eraser"] canvas { cursor: cell; }
-.wb-panel { position: absolute; z-index: 3; background: #fff; border: 1px solid #dde3e1; border-radius: 12px; box-shadow: 0 4px 16px rgba(16, 32, 30, .12); }
+.wb-panel { position: absolute; z-index: 3; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 4px 16px rgba(16, 32, 30, .12); color: var(--ink); }
 .wb-tools { left: 10px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 1px; padding: 5px; max-height: calc(100% - 20px); overflow: auto; }
-.wb-tools button { width: 36px; height: 34px; border: 0; border-radius: 8px; background: transparent; cursor: pointer; color: #24302e; display: grid; place-items: center; flex: none; }
-.wb-tools button:hover { background: #eef3f2; }
-.wb-tools button[aria-pressed="true"] { background: #d7efe9; color: #0b5e57; }
+.wb-tools button { width: 36px; height: 34px; border: 0; border-radius: 8px; background: transparent; cursor: pointer; color: var(--ink); display: grid; place-items: center; flex: none; }
+.wb-tools button:hover { background: var(--surface-2); }
+.wb-tools button[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent); }
 .wb-tools button:disabled { opacity: .3; cursor: default; }
-.wb-tools hr { border: 0; border-top: 1px solid #e3e8e6; margin: 3px 4px; width: auto; }
-.wb-style { left: 50%; bottom: 12px; transform: translateX(-50%); display: flex; gap: 10px; align-items: center; padding: 6px 10px; flex-wrap: wrap; justify-content: center; max-width: calc(100% - 130px); color: #24302e; }
+.wb-tools hr { border: 0; border-top: 1px solid var(--line); margin: 3px 4px; width: auto; }
+.wb-style { left: 50%; bottom: 12px; transform: translateX(-50%); display: flex; gap: 10px; align-items: center; padding: 6px 10px; flex-wrap: wrap; justify-content: center; max-width: calc(100% - 130px); }
 .wb-grp { display: flex; gap: 4px; align-items: center; }
-.wb-grp + .wb-grp { border-left: 1px solid #e3e8e6; padding-left: 10px; }
-.wb-lbl { font-size: 12px; color: #5a6c69; }
-.wb-sw { width: 22px; height: 22px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 1px #c9d1cf; background: var(--sw); cursor: pointer; padding: 0; }
-.wb-sw[data-v="none"] { background: linear-gradient(135deg, #fff 45%, #e03131 46%, #e03131 54%, #fff 55%); }
-.wb-sw[aria-pressed="true"] { box-shadow: 0 0 0 2px #0d7c72; }
-.wb-style .seg { border-color: #dde3e1; }
-.wb-style .seg button { color: #5a6c69; background: #fff; }
-.wb-style .seg button[aria-pressed="true"] { background: #10201e; color: #fff; }
-.wb-style .btn { color: #24302e; }
-.wb-style .btn:hover { background: #eef3f2; }
+.wb-grp + .wb-grp { border-left: 1px solid var(--line); padding-left: 10px; }
+.wb-lbl { font-size: 12px; color: var(--muted); }
+.wb-sw { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--surface); box-shadow: 0 0 0 1px var(--line); background: var(--sw); cursor: pointer; padding: 0; }
+.wb-sw[data-v="none"] { background: linear-gradient(135deg, var(--surface) 45%, #e03131 46%, #e03131 54%, var(--surface) 55%); }
+.wb-sw[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--accent); }
+.wb-style .seg { border-color: var(--line); }
+.wb-style .seg button { color: var(--muted); background: var(--surface); }
+.wb-style .seg button[aria-pressed="true"] { background: var(--ink); color: var(--surface); }
+.wb-style .btn { color: var(--ink); }
+.wb-style .btn:hover { background: var(--surface-2); }
 .wb-zoom { right: 10px; bottom: 12px; display: flex; align-items: center; padding: 3px; }
-.wb-zoom button { border: 0; background: transparent; min-width: 30px; height: 28px; border-radius: 7px; cursor: pointer; color: #24302e; font-weight: 600; }
-.wb-zoom button:hover { background: #eef3f2; }
-.wb-banner { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); z-index: 4; background: #10201e; color: #fff; padding: 6px 14px; border-radius: 999px; font-weight: 600; font-size: 13px; display: flex; gap: 12px; align-items: center; max-width: calc(100% - 24px); flex-wrap: wrap; justify-content: center; }
-.wb-banner .btn { color: #10201e; background: #fff; }
+.wb-zoom button { border: 0; background: transparent; min-width: 30px; height: 28px; border-radius: 7px; cursor: pointer; color: var(--ink); font-weight: 600; }
+.wb-zoom button:hover { background: var(--surface-2); }
+.wb-banner { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); z-index: 4; background: var(--ink); color: var(--surface); padding: 6px 14px; border-radius: 999px; font-weight: 600; font-size: 13px; display: flex; gap: 12px; align-items: center; max-width: calc(100% - 24px); flex-wrap: wrap; justify-content: center; }
+.wb-banner .btn { color: var(--ink); background: var(--surface); }
 .wb-requests { position: absolute; top: 10px; right: 10px; z-index: 5; display: grid; gap: 6px; }
-.wb-req { display: flex; gap: 8px; align-items: center; background: #fff; border: 1px solid #dde3e1; border-radius: 10px; padding: 8px 10px; box-shadow: 0 4px 16px rgba(16, 32, 30, .14); font-size: 13.5px; color: #10201e; }
-.wb-empty { position: absolute; top: 42%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: #7a8987; pointer-events: none; max-width: min(440px, 80%); }
-.wb-empty h3 { margin: 0 0 6px; font: 600 18px var(--font-display); color: #4a5c59; }
+.wb-req { display: flex; gap: 8px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; box-shadow: 0 4px 16px rgba(16, 32, 30, .14); font-size: 13.5px; color: var(--ink); }
+.wb-empty { position: absolute; top: 42%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: var(--muted); pointer-events: none; max-width: min(440px, 80%); }
+.wb-empty h3 { margin: 0 0 6px; font: 600 18px var(--font-display); color: var(--ink); opacity: .8; }
 .wb-empty p { margin: 0; }
-.wb-edit { position: absolute; z-index: 4; border: 0; outline: 1.5px dashed #0d7c72; outline-offset: 2px; background: transparent; resize: none; padding: 0; overflow: hidden; color: #1e1e1e; line-height: 1.25; white-space: pre-wrap; }
+.wb-edit { position: absolute; z-index: 4; border: 0; outline: 1.5px dashed var(--accent); outline-offset: 2px; background: transparent; resize: none; padding: 0; overflow: hidden; color: #1e1e1e; line-height: 1.25; white-space: pre-wrap; }
 .wb-cursors { position: absolute; inset: 0; pointer-events: none; z-index: 2; overflow: hidden; }
 .wb-cursor { position: absolute; left: 0; top: 0; transition: transform 60ms linear; display: flex; align-items: flex-start; gap: 2px; }
 .wb-cursor span { margin-top: 12px; color: #fff; font: 600 11.5px var(--font); padding: 2px 7px; border-radius: 6px; white-space: nowrap; }
-.wb-join { position: absolute; inset: 0; z-index: 8; display: grid; place-items: center; background: rgba(251, 251, 248, .94); padding: 16px; }
+.wb-join { position: absolute; inset: 0; z-index: 8; display: grid; place-items: center; background: color-mix(in srgb, var(--wb-bg) 94%, transparent); padding: 16px; }
 .wb-join .card { width: min(440px, 100%); color: var(--ink); }
 .wb-join .err { color: var(--danger); }
 .wb-perm { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
@@ -510,6 +645,23 @@ body.wb-guest .wb-side { display: none; }
   .wb:not(.side-shown) .wb-side { display: none; }
   .wb.side-shown .wb-side { display: flex; max-height: 200px; }
   .wb-style { max-width: calc(100% - 64px); left: 56px; right: 8px; transform: none; top: 8px; bottom: auto; justify-content: flex-start; }
+}
+.wb-side-head { display: flex; align-items: center; gap: 6px; }
+.wb-side-head .row { flex: 1; min-width: 0; }
+.wb-top .icon-btn svg { display: block; margin: auto; }
+.wb-top .icon-btn[aria-pressed="true"] { color: var(--accent); border-color: var(--accent); }
+/* Fullscreen: the board covers the whole window (and the whole screen where the browser allows it). The list of
+   boards is hidden until asked for. Dialogs, menus, reminders and toasts have a higher z-index, so they still show. */
+body.wb-full { overflow: hidden; }
+body.wb-full .wb { position: fixed; inset: 0; z-index: 40; height: auto !important; min-height: 0; background: var(--bg);
+  padding: max(10px, env(safe-area-inset-top, 0px)) max(10px, env(safe-area-inset-right, 0px)) max(10px, env(safe-area-inset-bottom, 0px)) max(10px, env(safe-area-inset-left, 0px));
+  grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); }
+body.wb-full .wb:not(.full-side) .wb-side { display: none; }
+body.wb-full .wb.full-side { grid-template-columns: 230px minmax(0, 1fr); }
+body.wb-full .wb.full-side .wb-side { display: flex; max-height: none; }
+@media (max-width: 720px) {
+  body.wb-full .wb.full-side { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); }
+  body.wb-full .wb.full-side .wb-side { max-height: 200px; }
 }
 
 @media (max-width: 720px) {
@@ -535,7 +687,7 @@ body.wb-guest .wb-side { display: none; }
       <button role="tab" data-tab="reminders" aria-selected="true" type="button" data-i18n="tabReminders">Påminnelser</button>
       <button role="tab" data-tab="notes" aria-selected="false" type="button" data-i18n="tabNotes">Anteckningar</button>
       <button role="tab" data-tab="board" aria-selected="false" type="button" data-i18n="tabBoard">Tavla</button>
-      <button role="tab" data-tab="settings" aria-selected="false" type="button" data-i18n="tabSettings">Inställningar</button>
+      <button role="tab" data-tab="settings" aria-selected="false" type="button" class="tab-icon" title="Inställningar" aria-label="Inställningar" data-i18n-title="tabSettings" data-i18n-aria="tabSettings"><svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
     </nav>
     <button class="icon-btn" type="button" data-act="pip-toggle" id="pipBtn" hidden aria-pressed="false" title="Håll Ping ovanpå andra fönster" aria-label="Håll Ping ovanpå andra fönster" data-i18n-title="alSecPip" data-i18n-aria="alSecPip"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" style="vertical-align:-3px"><rect x="2.5" y="4.5" width="19" height="15" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><rect x="12" y="11" width="7" height="6" rx="1" fill="currentColor"/></svg></button>
     <button class="icon-btn" type="button" data-act="keys" title="Kortkommandon (?)" aria-label="Kortkommandon" data-i18n-title="keysBtnTitle" data-i18n-aria="keysH">?</button>
@@ -663,9 +815,12 @@ body.wb-guest .wb-side { display: none; }
   <section id="view-board" hidden>
     <div class="wb" id="wb">
       <aside class="wb-side">
-        <div class="row">
-          <button class="btn primary sm" type="button" data-act="wb-new" data-i18n="wbNew">Ny tavla</button>
-          <button class="btn sm" type="button" data-act="wb-new-tpl" data-i18n="wbFromTpl">Från mall ▾</button>
+        <div class="wb-side-head">
+          <div class="row">
+            <button class="btn primary sm" type="button" data-act="wb-new" data-i18n="wbNew">Ny tavla</button>
+            <button class="btn sm" type="button" data-act="wb-new-tpl" data-i18n="wbFromTpl">Från mall ▾</button>
+          </div>
+          <button class="icon-btn" type="button" id="wbSideHide" data-act="wb-side" title="Göm dina tavlor (B)" aria-label="Göm dina tavlor">«</button>
         </div>
         <ul class="wb-list" id="wbList"></ul>
         <div><button class="btn ghost sm" type="button" data-act="wb-import" data-i18n="wbImportBtn">Öppna en tavelfil…</button></div>
@@ -674,7 +829,7 @@ body.wb-guest .wb-side { display: none; }
       </aside>
       <div class="wb-main">
         <div class="wb-top">
-          <button class="icon-btn" type="button" id="wbSideBtn" data-act="wb-side" title="Visa eller dölj dina tavlor" aria-label="Visa eller dölj dina tavlor" data-i18n-title="wbSideTitle" data-i18n-aria="wbSideTitle">☰</button>
+          <button class="icon-btn" type="button" id="wbSideBtn" data-act="wb-side" title="Visa eller göm dina tavlor (B)" aria-label="Visa eller göm dina tavlor"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/></svg></button>
           <input class="input wb-title" id="wbTitle" maxlength="120" placeholder="Tavlans namn" aria-label="Tavlans namn" data-i18n-ph="wbTitlePh" data-i18n-aria="wbTitlePh">
           <span class="wb-live" id="wbLive" hidden data-i18n="wbLiveTag">● Live</span>
           <span class="wb-timer" id="wbTimer" hidden></span>
@@ -686,6 +841,7 @@ body.wb-guest .wb-side { display: none; }
           <button class="btn sm" type="button" id="wbExportBtn" data-act="wb-export" data-i18n="wbExportBtn">Exportera ▾</button>
           <button class="btn primary sm" type="button" id="wbShareBtn" data-act="wb-share">Dela</button>
           <button class="btn sm danger" type="button" id="wbLeaveBtn" data-act="wb-leave" hidden data-i18n="wbLeave">Lämna</button>
+          <button class="icon-btn" type="button" id="wbFullBtn" data-act="wb-full" aria-pressed="false" title="Helskärm (F)" aria-label="Helskärm"></button>
         </div>
         <div class="wb-stage" id="wbStage" tabindex="0" data-tool="select">
           <canvas id="wbCanvas"></canvas>
@@ -785,6 +941,15 @@ body.wb-guest .wb-side { display: none; }
           <button type="button" data-palette-set="lagoon" aria-pressed="true"><span class="sw"><i style="background:#0d7c72"></i><i style="background:#f4f7f6"></i><i style="background:#141f1d"></i></span>Lagoon<small data-i18n="palLagoon">Lugn turkos, standard</small></button>
           <button type="button" data-palette-set="fjord" aria-pressed="false"><span class="sw"><i style="background:#2457c5"></i><i style="background:#f3f5f9"></i><i style="background:#131a27"></i></span>Fjord<small data-i18n="palFjord">Sval blå och skiffergrå</small></button>
           <button type="button" data-palette-set="solarized" aria-pressed="false"><span class="sw"><i style="background:#268bd2"></i><i style="background:#fdf6e3"></i><i style="background:#002b36"></i></span>Solarized<small data-i18n="palSolarized">Den klassiska editorpaletten</small></button>
+          <button type="button" data-palette-set="sunset" data-ld aria-pressed="false"><span class="sw"><i style="background:#c03a4f"></i><i style="background:#fbf1ec"></i><i style="background:#1b1017"></i></span><span data-i18n="palSunsetN">Solnedgång</span><small data-i18n="palSunset">Varm korall, persika och plommon</small></button>
+          <button type="button" data-palette-set="forest" data-ld aria-pressed="false"><span class="sw"><i style="background:#2f6b3a"></i><i style="background:#f1f4ec"></i><i style="background:#0e140f"></i></span><span data-i18n="palForestN">Skog</span><small data-i18n="palForest">Mossa, granar och bark</small></button>
+          <button type="button" data-palette-set="candy" data-ld aria-pressed="false"><span class="sw"><i style="background:#c2347f"></i><i style="background:#7fe0c4"></i><i style="background:#fff4f9"></i></span><span data-i18n="palCandyN">Godis</span><small data-i18n="palCandy">Lekfull rosa, lila och mint</small></button>
+          <button type="button" data-palette-set="neon" data-ld aria-pressed="false"><span class="sw"><i style="background:#7b2ff2"></i><i style="background:#22d3ee"></i><i style="background:#0c0918"></i></span>Neon<small data-i18n="palNeon">Elektrisk lila och cyan, bäst i mörkt läge</small></button>
+          <button type="button" data-palette-set="space" data-ld aria-pressed="false"><span class="sw"><i style="background:#4a4fd6"></i><i style="background:#a493ff"></i><i style="background:#090c1d"></i></span><span data-i18n="palSpaceN">Rymd</span><small data-i18n="palSpace">Djupblått, violett och stjärnor</small></button>
+          <button type="button" data-palette-set="interstellar" data-ld aria-pressed="false"><span class="sw"><i style="background:#f0a83a"></i><i style="background:#f6f1e8"></i><i style="background:#08080a"></i></span>Interstellar<small data-i18n="palInterstellar">Svart rymd med ett varmt guldsken</small></button>
+          <button type="button" data-palette-set="nature" data-ld aria-pressed="false"><span class="sw"><i style="background:#1b7d44"></i><i style="background:#78bef0"></i><i style="background:#f0f7f1"></i></span><span data-i18n="palNatureN">Natur</span><small data-i18n="palNature">Vårgrönt, himmelsblått och blommor</small></button>
+          <button type="button" data-palette-set="mountain" data-ld aria-pressed="false"><span class="sw"><i style="background:#3a6a8e"></i><i style="background:#edf1f5"></i><i style="background:#0d1217"></i></span><span data-i18n="palMountainN">Fjäll</span><small data-i18n="palMountain">Skiffer, is och bergstoppar</small></button>
+          <button type="button" data-palette-set="desert" data-ld aria-pressed="false"><span class="sw"><i style="background:#a94f28"></i><i style="background:#f9f2e5"></i><i style="background:#16110b"></i></span><span data-i18n="palDesertN">Öken</span><small data-i18n="palDesert">Terrakotta, sand och sanddyner</small></button>
         </div>
         <div class="row">
           <span class="count" data-i18n="mode">Läge</span>
@@ -923,7 +1088,7 @@ body.wb-guest .wb-side { display: none; }
       <kbd>Ctrl B / I</kbd><span data-i18n="k15">Anteckningar: fetstil / kursiv</span>
       <kbd>Ctrl F</kbd><span data-i18n="k16">Anteckningar: sök i anteckningen</span>
       <kbd>Ctrl Shift L</kbd><span data-i18n="k18">Anteckningar: visa eller dölj listan med anteckningar</span>
-      <kbd>V P S</kbd><span data-i18n="wbKeysBoard">Tavla: verktygen <kbd>V H P M E R O D G L A T S K</kbd>, <kbd>Tab</kbd> ny gren i tankekartan, <kbd>Mellanslag</kbd> dra för att flytta runt</span>
+      <kbd>V P S</kbd><span data-i18n="wbKeysBoard">Tavla: verktygen <kbd>V H P M E R O D G L A T S K</kbd>, <kbd>Tab</kbd> ny gren i tankekartan, <kbd>Mellanslag</kbd> dra för att flytta runt, <kbd>F</kbd> helskärm, <kbd>B</kbd> visa eller göm listan med tavlor</span>
       <kbd>Ctrl Shift M</kbd><span data-i18n="k17">Anteckningar: gör alla kodförslag till kod</span>
       <kbd>Ctrl /</kbd><span data-i18n="k13">Anteckningar: kommentera eller avkommentera kodrader</span>
       <kbd>Shift Tab</kbd><span data-i18n="k14">Anteckningar: dra in (Tab) eller ut (Shift Tab) markerade rader</span>
@@ -2158,6 +2323,11 @@ const T = {
     notePh: '# Title\n\nWrite anything. Markdown works: **bold**, `code`, ```sql blocks```, - [ ] tasks, | tables |', noteAria: 'Note text',
     notifications: 'Notifications', testAlert: 'Send a test reminder', soundLabel: 'Play a sound when a reminder is due',
     lookH: 'Look and feel', themeAria: 'Theme', palLagoon: 'Calm teal, the default', palFjord: 'Cool blue and slate', palSolarized: 'The classic editor palette',
+    palSunsetN: 'Sunset', palSunset: 'Warm coral, peach and plum', palForestN: 'Forest', palForest: 'Moss, pines and bark',
+    palCandyN: 'Candy', palCandy: 'Playful pink, lilac and mint', palNeon: 'Electric purple and cyan, best in dark mode',
+    palSpaceN: 'Space', palSpace: 'Deep navy, violet and stars', palInterstellar: 'Black space with a warm golden glow',
+    palNatureN: 'Nature', palNature: 'Spring green, sky blue and flowers', palMountainN: 'Mountain', palMountain: 'Slate, ice and mountain peaks',
+    palDesertN: 'Desert', palDesert: 'Terracotta, sand and dunes',
     mode: 'Mode', modeAria: 'Light or dark mode', light: 'Light', dark: 'Dark',
     monoLabel: 'Monospace font in the note editor', utcLabel: 'Show the UTC clock next to the name',
     outlookP: 'Every reminder has an “Outlook” action. It downloads a calendar file; open it and click <em>Save &amp; Close</em> in Outlook. Outlook then reminds you on this PC and your phone, even when Ping is closed. Interval repeats are included; for cron schedules Outlook gets the next run only.',
@@ -4588,12 +4758,12 @@ noteText.addEventListener('drop', e => { const files = imageFiles(e.dataTransfer
 
 // Whiteboard texts. Static markup keys only need English (the Swedish is in the markup); everything read through t() has both.
 Object.assign(T.en, {
-  tabBoard: 'Whiteboard', wbNew: 'New board', wbFromTpl: 'From template ▾', wbImportBtn: 'Open a board file…', wbTitlePh: 'Name of the board', wbSideTitle: 'Show or hide your boards',
+  tabBoard: 'Whiteboard', wbNew: 'New board', wbFromTpl: 'From template ▾', wbImportBtn: 'Open a board file…', wbTitlePh: 'Name of the board',
   wbLeave: 'Leave', wbTimerBtn: '⏱ Timer', wbVoteBtn: 'Dot voting', wbExportBtn: 'Export ▾', wbLiveTag: '● Live',
   wbZoomIn: 'Zoom in (+)', wbZoomOut: 'Zoom out (−)', wbZoomFit: 'Show everything (Shift+1)',
   wbEmptyH: 'An empty board', wbEmptyP: 'Draw with P, add a sticky note with S, or press Tab on a note to grow a mind map. Paste or drop pictures. Rough circles, boxes and arrows turn into clean shapes.',
   wbJoinH: 'Join the whiteboard', wbJoinP: 'Someone shared a whiteboard with you. Enter the name the others will see next to your pointer.', wbJoinName: 'Your name', wbJoinBtn: 'Join',
-  wbJoinRetry: 'Try again', wbShareH: 'Share this board', wbKeysBoard: 'Whiteboard: tools <kbd>V H P M E R O D G L A T S K</kbd>, <kbd>Tab</kbd> new mind-map branch, <kbd>Space</kbd> drag to move around',
+  wbJoinRetry: 'Try again', wbShareH: 'Share this board', wbKeysBoard: 'Whiteboard: tools <kbd>V H P M E R O D G L A T S K</kbd>, <kbd>Tab</kbd> new mind-map branch, <kbd>Space</kbd> drag to move around, <kbd>F</kbd> fullscreen, <kbd>B</kbd> show or hide the list of boards',
 });
 const WB_T = {
   en: {
@@ -4645,6 +4815,7 @@ const WB_T = {
     wbHowP: 'Your browser becomes the meeting place. A free public service (PeerJS) only helps the browsers find each other; the drawings then go directly between the browsers, encrypted. If a network blocks direct connections, the encrypted data passes through a relay that can’t read it. Nothing is stored anywhere else: the board lives on your computer, and it is live only while you have it open here. Anyone with the link can ask to join, so share it only with the people you want, use the waiting room, or make a new link to shut old ones out.',
     wbStop: 'Stop sharing', wbNewLink: 'Make a new link', close: 'Close',
     wbExportPng: 'Download as a picture (PNG)', wbExportPdf: 'Print or save as PDF', wbSaveCopy: 'Save a copy in my boards',
+    wbFull: 'Fullscreen', wbFullExit: 'Exit fullscreen', wbSideHide: 'Hide your boards', wbSideShow: 'Show your boards',
   },
   sv: {
     wbLedByHost: 'Värden leder: din vy följer värdens.', wbViewOnly: 'Du kan titta men inte ändra tavlan. Värden bestämmer vem som får redigera.',
@@ -4696,6 +4867,7 @@ const WB_T = {
     wbStop: 'Sluta dela', wbNewLink: 'Skapa en ny länk', close: 'Stäng',
     wbExportPng: 'Ladda ner som bild (PNG)', wbExportPdf: 'Skriv ut eller spara som PDF', wbSaveCopy: 'Spara en kopia bland mina tavlor',
     tabBoard: 'Tavla', wbTitlePh: 'Tavlans namn',
+    wbFull: 'Helskärm', wbFullExit: 'Avsluta helskärm', wbSideHide: 'Göm dina tavlor', wbSideShow: 'Visa dina tavlor',
   },
 };
 Object.assign(T.en, WB_T.en);
@@ -4735,6 +4907,36 @@ const stage = $('wbStage'), cv = $('wbCanvas'), wctx = cv.getContext('2d');
 const wbHosting = () => wb.role === 'host' && !!wb.net;
 const wbGuest = () => wb.role === 'guest';
 const wbItems = () => wb.board ? wb.board.items : {};
+
+// ---------------------------------------------------------------- theme: paper colour and dark mode
+// Items always store their light-mode colours (so files, exports and shared boards stay the same for everyone).
+// On a dark board they are shown in matching colours that read well on dark paper: the palette colours have
+// hand-picked partners (ink gets lighter, sticky notes deeper and softer), any other colour gets its lightness flipped.
+const WB_DARK = { '#1e1e1e': '#e9ecef', '#e03131': '#ff6b6b', '#f08c00': '#ffa94d', '#2f9e44': '#69db7c', '#1971c2': '#4dabf7', '#9c36b5': '#da77f2', '#868e96': '#adb5bd',
+  '#fff3a3': '#5f5524', '#ffd1e1': '#5f2c40', '#c9f2c7': '#2c5531', '#cfe5ff': '#284868', '#ffd8a8': '#66442a', '#e5d4ff': '#47365f' };
+function wbCol(c, dark) {
+  if (!dark || typeof c !== 'string') return c;
+  const k = c.toLowerCase();
+  if (WB_DARK[k]) return WB_DARK[k];
+  const m = /^#([0-9a-f]{6})$/.exec(k); if (!m) return c;
+  const n = parseInt(m[1], 16), r = (n >> 16) / 255, g = (n >> 8 & 255) / 255, b = (n & 255) / 255;
+  const max = Math.max(r, g, b), min = Math.min(r, g, b), l = (max + min) / 2, d = max - min;
+  let h = 0, s = 0;
+  if (d) { s = d / (1 - Math.abs(2 * l - 1)); h = 60 * (max === r ? ((g - b) / d + 6) % 6 : max === g ? (b - r) / d + 2 : (r - g) / d + 4); }
+  return `hsl(${Math.round(h)} ${Math.round(s * 100)}% ${Math.round((0.12 + (1 - l) * 0.8) * 100)}%)`;
+}
+// The board's colours come from the theme (CSS variables, which may hold light-dark() values): read them resolved
+// through a hidden probe element, and again whenever the theme or the system's light/dark mode changes.
+let wbPalCache = null;
+function wbPal() {
+  if (wbPalCache) return wbPalCache;
+  let probe = $('wbProbe');
+  if (!probe) { probe = document.createElement('i'); probe.id = 'wbProbe'; probe.hidden = true; document.body.append(probe); }
+  const col = v => { probe.style.color = `var(${v})`; return getComputedStyle(probe).color; };
+  const dark = /dark/.test(getComputedStyle(document.documentElement).colorScheme);
+  return wbPalCache = { dark, bg: col('--wb-bg'), dot: col('--wb-dot'), sel: col('--accent') };
+}
+function wbThemeChanged() { wbPalCache = null; if (wb.board) { wbRenderStyle(); wbPlaceEditor(); wbDraw(); } }
 
 // ---------------------------------------------------------------- view: world ↔ screen
 const wbToWorld = (sx, sy) => [sx / wb.view.z + wb.view.x, sy / wb.view.z + wb.view.y];
@@ -4838,11 +5040,12 @@ function wbVotesShown(it) {
 }
 function wbDrawItem(c, it, items, o = {}) {
   c.save(); c.lineJoin = 'round'; c.lineCap = 'round';
-  const stroke = it.stroke || '#1e1e1e', sw = it.sw || 2, hideText = o.editing === it.id;
+  const dk = !!o.dark, ink = wbCol('#1e1e1e', dk);
+  const stroke = wbCol(it.stroke || '#1e1e1e', dk), sw = it.sw || 2, hideText = o.editing === it.id;
   if (it.type === 'stroke') {
     const P = it.pts;
     c.strokeStyle = stroke; c.fillStyle = stroke; c.lineWidth = sw;
-    if (it.hl) { c.globalAlpha = 0.35; c.globalCompositeOperation = 'multiply'; }
+    if (it.hl) { c.globalAlpha = dk ? 0.5 : 0.35; c.globalCompositeOperation = dk ? 'screen' : 'multiply'; }
     c.beginPath();
     if (P.length === 1) { c.arc(P[0][0], P[0][1], sw / 2, 0, Math.PI * 2); c.fill(); }
     else {
@@ -4861,19 +5064,19 @@ function wbDrawItem(c, it, items, o = {}) {
     if (it.text) {
       const mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2;
       c.font = `14px ${WB_FONT}`; const w = c.measureText(it.text).width + 10;
-      c.fillStyle = '#fbfbf8'; c.fillRect(mx - w / 2, my - 10, w, 20);
-      c.fillStyle = '#1e1e1e'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(it.text, mx, my);
+      c.fillStyle = o.bg || '#fbfbf8'; c.fillRect(mx - w / 2, my - 10, w, 20);
+      c.fillStyle = ink; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(it.text, mx, my);
     }
   } else if (Board.SHAPES.has(it.type)) {
     wbShapePath(c, it);
-    if (it.fill && it.fill !== 'none') { c.fillStyle = it.fill; c.fill(); }
+    if (it.fill && it.fill !== 'none') { c.fillStyle = wbCol(it.fill, dk); c.fill(); }
     if (stroke !== 'none') { c.strokeStyle = stroke; c.lineWidth = sw; c.stroke(); }
-    if (it.text && !hideText) wbText(c, it, it.fs || 18, '#1e1e1e', it.align === 'top' ? 'title' : '');
+    if (it.text && !hideText) wbText(c, it, it.fs || 18, ink, it.align === 'top' ? 'title' : '');
   } else if (it.type === 'sticky') {
-    c.shadowColor = 'rgba(0,0,0,.16)'; c.shadowBlur = 12; c.shadowOffsetY = 4;
-    c.fillStyle = it.fill || WB_NOTE[0]; c.fillRect(it.x, it.y, it.w, it.h);
+    c.shadowColor = dk ? 'rgba(0,0,0,.45)' : 'rgba(0,0,0,.16)'; c.shadowBlur = 12; c.shadowOffsetY = 4;
+    c.fillStyle = wbCol(it.fill || WB_NOTE[0], dk); c.fillRect(it.x, it.y, it.w, it.h);
     c.shadowColor = 'transparent';
-    if (it.text && !hideText) wbText(c, it, wbStickyFs(it), '#1e1e1e', '');
+    if (it.text && !hideText) wbText(c, it, wbStickyFs(it), ink, '');
     const v = wbVotesShown(it);
     if (v.n && o.votes !== false) {
       const r = 14, cx = it.x + it.w - 4, cy = it.y + 4;
@@ -4884,7 +5087,7 @@ function wbDrawItem(c, it, items, o = {}) {
     if (!hideText) wbText(c, it, it.fs || 20, stroke, '');
   } else if (it.type === 'image') {
     const img = wbImage(it.src);
-    if (img) c.drawImage(img, it.x, it.y, it.w, it.h); else { c.fillStyle = '#e9ecef'; c.fillRect(it.x, it.y, it.w, it.h); }
+    if (img) c.drawImage(img, it.x, it.y, it.w, it.h); else { c.fillStyle = dk ? '#2b3035' : '#e9ecef'; c.fillRect(it.x, it.y, it.w, it.h); }
   }
   c.restore();
 }
@@ -4903,15 +5106,15 @@ function wbHandles() {
 function wbRender() {
   wbQueued = false;
   if ($('view-board').hidden || !wb.board) return;
-  const box = $('wb'), want = Math.max(420, Math.round(innerHeight - box.getBoundingClientRect().top - 14)) + 'px';
+  const box = $('wb'), want = wbFull() ? '' : Math.max(420, Math.round(innerHeight - box.getBoundingClientRect().top - 14)) + 'px';
   if (box.style.height !== want) box.style.height = want;
   const dpr = devicePixelRatio || 1, W = stage.clientWidth, H = stage.clientHeight;
   if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
-  const c = wctx, v = wb.view, items = wbItems();
+  const c = wctx, v = wb.view, items = wbItems(), P = wbPal();
   c.setTransform(dpr, 0, 0, dpr, 0, 0);
-  c.fillStyle = '#fbfbf8'; c.fillRect(0, 0, W, H);
+  c.fillStyle = P.bg; c.fillRect(0, 0, W, H);
   let step = 24 * v.z; while (step < 14) step *= 2;
-  c.fillStyle = '#d3dad8';
+  c.fillStyle = P.dot;
   for (let x = ((-v.x * v.z) % step + step) % step; x < W; x += step) for (let y = ((-v.y * v.z) % step + step) % step; y < H; y += step) c.fillRect(x - 0.8, y - 0.8, 1.6, 1.6);
   c.setTransform(dpr * v.z, 0, 0, dpr * v.z, -v.x * v.z * dpr, -v.y * v.z * dpr);
   const vx1 = v.x + W / v.z, vy1 = v.y + H / v.z, editing = wb.editing && wb.editing.id;
@@ -4919,22 +5122,22 @@ function wbRender() {
     if (wb.erasing.has(it.id)) continue;
     const b = Board.bounds(it, items);
     if (b.x > vx1 || b.y > vy1 || b.x + b.w < v.x || b.y + b.h < v.y) continue;
-    wbDrawItem(c, it, items, { editing });
+    wbDrawItem(c, it, items, { editing, dark: P.dark, bg: P.bg });
   }
   // the rest is drawn in screen pixels
   c.setTransform(dpr, 0, 0, dpr, 0, 0);
-  if (wb.snap && items[wb.snap]) { const b = Board.bounds(items[wb.snap], items), [x, y] = wbToScreen(b.x, b.y); c.strokeStyle = '#0d7c72'; c.lineWidth = 2; c.setLineDash([]); c.strokeRect(x - 3, y - 3, b.w * v.z + 6, b.h * v.z + 6); }
+  if (wb.snap && items[wb.snap]) { const b = Board.bounds(items[wb.snap], items), [x, y] = wbToScreen(b.x, b.y); c.strokeStyle = P.sel; c.lineWidth = 2; c.setLineDash([]); c.strokeRect(x - 3, y - 3, b.w * v.z + 6, b.h * v.z + 6); }
   const sb = wbSelBounds();
   if (sb && !wb.editing) {
     const [x, y] = wbToScreen(sb.x, sb.y);
-    c.strokeStyle = '#0d7c72'; c.lineWidth = 1.5; c.setLineDash([5, 4]); c.strokeRect(x - 4, y - 4, sb.w * v.z + 8, sb.h * v.z + 8); c.setLineDash([]);
-    for (const h of wbHandles()) { c.fillStyle = '#fff'; c.strokeStyle = '#0d7c72'; c.beginPath(); c.rect(h.p[0] - 5, h.p[1] - 5, 10, 10); c.fill(); c.stroke(); }
+    c.strokeStyle = P.sel; c.lineWidth = 1.5; c.setLineDash([5, 4]); c.strokeRect(x - 4, y - 4, sb.w * v.z + 8, sb.h * v.z + 8); c.setLineDash([]);
+    for (const h of wbHandles()) { c.fillStyle = P.bg; c.strokeStyle = P.sel; c.beginPath(); c.rect(h.p[0] - 5, h.p[1] - 5, 10, 10); c.fill(); c.stroke(); }
     if ([...wb.sel].some(id => items[id] && items[id].locked)) { c.font = `14px ${WB_FONT}`; c.fillText('🔒', x - 4, y - 10); }
   }
   if (wb.act && wb.act.k === 'band') {
     const [a, b] = [wbToScreen(...wb.act.a), wbToScreen(...wb.act.b)];
-    c.fillStyle = 'rgba(13,124,114,.08)'; c.strokeStyle = '#0d7c72'; c.lineWidth = 1;
-    c.fillRect(Math.min(a[0], b[0]), Math.min(a[1], b[1]), Math.abs(a[0] - b[0]), Math.abs(a[1] - b[1]));
+    c.fillStyle = P.sel; c.strokeStyle = P.sel; c.lineWidth = 1;
+    c.globalAlpha = 0.08; c.fillRect(Math.min(a[0], b[0]), Math.min(a[1], b[1]), Math.abs(a[0] - b[0]), Math.abs(a[1] - b[1])); c.globalAlpha = 1;
     c.strokeRect(Math.min(a[0], b[0]), Math.min(a[1], b[1]), Math.abs(a[0] - b[0]), Math.abs(a[1] - b[1]));
   }
   // laser trails fade out over 1.5 s
@@ -5093,13 +5296,13 @@ function wbPlaceEditor() {
   const z = wb.view.z;
   if (Board.isLine(it)) {
     const [a, b] = Board.ends(it, wbItems()), [sx, sy] = wbToScreen((a[0] + b[0]) / 2, (a[1] + b[1]) / 2);
-    Object.assign(ta.style, { left: (sx - 80) + 'px', top: (sy - 12) + 'px', width: '160px', height: '24px', font: `14px ${WB_FONT}`, textAlign: 'center', paddingTop: '0px', color: '#1e1e1e' });
+    Object.assign(ta.style, { left: (sx - 80) + 'px', top: (sy - 12) + 'px', width: '160px', height: '24px', font: `14px ${WB_FONT}`, textAlign: 'center', paddingTop: '0px', color: wbCol('#1e1e1e', wbPal().dark) });
     return;
   }
   const fs = (it.type === 'sticky' ? wbStickyFs(it) : it.fs || (it.type === 'text' ? 20 : 18)) * z;
   const [sx, sy] = wbToScreen(it.x, it.y);
   ta.style.font = `${it.align === 'top' ? '600 ' : ''}${fs}px ${WB_FONT}`; ta.style.lineHeight = '1.25';
-  ta.style.color = it.type === 'text' ? (it.stroke || '#1e1e1e') : '#1e1e1e';
+  ta.style.color = wbCol(it.type === 'text' ? (it.stroke || '#1e1e1e') : '#1e1e1e', wbPal().dark);
   if (it.type === 'text') {
     Object.assign(ta.style, { left: sx + 'px', top: sy + 'px', textAlign: 'left', paddingTop: '0px' });
     ta.style.width = Math.max(40, it.w * z + fs) + 'px'; ta.style.height = Math.max(fs * 1.3, it.h * z) + 'px';
@@ -5420,7 +5623,11 @@ document.addEventListener('keydown', e => {
   }
   if (mod) return;
   if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); wbDelete(sel.map(i => i.id)); return; }
-  if (e.key === 'Escape') { if (wb.act) wbCancelAct(); wb.sel.clear(); wbSetTool('select'); return; }
+  if (e.key === 'Escape') {
+    // Esc first cancels and deselects; with nothing left to cancel, it leaves fullscreen (where the browser didn't already)
+    if (!wb.act && !wb.sel.size && wb.tool === 'select' && popEl.hidden && wbFull()) { wbSetFull(false); return; }
+    if (wb.act) wbCancelAct(); wb.sel.clear(); wbSetTool('select'); return;
+  }
   if (e.key.startsWith('Arrow') && sel.length) {
     e.preventDefault();
     const d = e.shiftKey ? 10 : 1, dx = e.key === 'ArrowLeft' ? -d : e.key === 'ArrowRight' ? d : 0, dy = e.key === 'ArrowUp' ? -d : e.key === 'ArrowDown' ? d : 0, before = {};
@@ -5440,6 +5647,8 @@ document.addEventListener('keydown', e => {
   const keys = { v: 'select', h: 'hand', p: 'pen', m: 'marker', e: 'eraser', r: 'rect', o: 'ellipse', d: 'diamond', g: 'triangle', l: 'line', a: 'arrow', t: 'text', s: 'sticky', k: 'laser' };
   if (keys[k]) { wbSetTool(keys[k]); return; }
   if (k === 'i') { wbPickImage(); return; }
+  if (k === 'f') { wbSetFull(!wbFull()); return; }
+  if (k === 'b') { wbToggleSide(); return; }
 });
 const wbHostViewCenter = () => wbToWorld(stage.clientWidth / 2, stage.clientHeight / 2);
 document.addEventListener('keyup', e => { if (e.key === ' ' && wb.space) { wb.space = false; delete stage.dataset.pan; } });
@@ -5527,13 +5736,13 @@ function wbRenderStyle() {
   const has = (...ts) => ts.some(x => types.has(x));
   const parts = [];
   const sw = (attr, val, color, on, label) => `<button type="button" class="wb-sw" data-wb-style="${attr}" data-v="${val}" style="--sw:${color}" aria-pressed="${on}" title="${esc(label)}" aria-label="${esc(label)}"></button>`;
-  const cur = sel[0];
+  const cur = sel[0], dk = wbPal().dark;   // swatches show the colours as they look on this board
   if (editable && has('stroke', 'line', 'arrow', 'rect', 'ellipse', 'diamond', 'triangle', 'text', 'pen', 'marker'))
-    parts.push(WB_INK.map((c, i) => sw('ink', c, c, (cur ? cur.stroke : wb.ink) === c, t('wbColor') + ' ' + (i + 1))).join(''));
-  if (editable && has('sticky')) parts.push(WB_NOTE.map((c, i) => sw('note', c, c, (cur && cur.type === 'sticky' ? cur.fill : wb.note) === c, t('wbNoteColor') + ' ' + (i + 1))).join(''));
+    parts.push(WB_INK.map((c, i) => sw('ink', c, wbCol(c, dk), (cur ? cur.stroke : wb.ink) === c, t('wbColor') + ' ' + (i + 1))).join(''));
+  if (editable && has('sticky')) parts.push(WB_NOTE.map((c, i) => sw('note', c, wbCol(c, dk), (cur && cur.type === 'sticky' ? cur.fill : wb.note) === c, t('wbNoteColor') + ' ' + (i + 1))).join(''));
   if (editable && has('rect', 'ellipse', 'diamond', 'triangle')) {
     const f = cur && Board.SHAPES.has(cur.type) ? cur.fill || 'none' : wb.fill;
-    parts.push(`<span class="wb-lbl">${esc(t('wbFill'))}</span>` + sw('fill', 'none', 'transparent', f === 'none', t('wbNoFill')) + WB_NOTE.slice(0, 5).map((c, i) => sw('fill', c, c, f === c, t('wbFill') + ' ' + (i + 1))).join(''));
+    parts.push(`<span class="wb-lbl">${esc(t('wbFill'))}</span>` + sw('fill', 'none', 'transparent', f === 'none', t('wbNoFill')) + WB_NOTE.slice(0, 5).map((c, i) => sw('fill', c, wbCol(c, dk), f === c, t('wbFill') + ' ' + (i + 1))).join(''));
   }
   if (editable && has('stroke', 'line', 'arrow', 'rect', 'ellipse', 'diamond', 'triangle', 'pen', 'marker')) {
     const s = cur && cur.sw ? WB_SIZES.findIndex(v => v === cur.sw || v * 4 === cur.sw) : wb.size;
@@ -6137,6 +6346,7 @@ function wbUiTop() {
   $('wbTitle').readOnly = g;
   $('wbTitle').placeholder = g ? '' : t('wbTitlePh');
   $('wbSideBtn').hidden = g;
+  wbSideUi(); wbFullUi();
   $('wbShareBtn').hidden = g;
   $('wbShareBtn').textContent = t(host ? 'wbSharing' : 'wbShare');
   $('wbShareBtn').classList.toggle('live', host);
@@ -6223,14 +6433,58 @@ $('wbShareDlg').addEventListener('change', e => {
   if (k === 'follow' && el.checked && wbHosting()) wb.net.all({ k: 'view', v: wbHostView() });
 });
 
+// ---------------------------------------------------------------- fullscreen and the list of boards
+// Fullscreen = the board covers the window (class wb-full), and also the whole screen where the browser allows it
+// (not on iPhone, for example). The list of boards hides in fullscreen until asked for, without changing the
+// remembered choice for the normal view.
+function wbFull() { return document.body.classList.contains('wb-full'); }
+let wbFsApi = false;   // true while the browser's own fullscreen is on because Ping asked for it
+function wbSideShown() {
+  const el = $('wb');
+  if (wbFull()) return el.classList.contains('full-side');
+  if (innerWidth <= 720) return el.classList.contains('side-shown');
+  return !el.classList.contains('side-hidden');
+}
+function wbToggleSide() {
+  if (wbGuest()) return;
+  const el = $('wb');
+  if (wbFull()) el.classList.toggle('full-side');
+  else if (innerWidth <= 720) el.classList.toggle('side-shown');
+  else { el.classList.toggle('side-hidden'); wbStore('ping.wbSide', el.classList.contains('side-hidden') ? '0' : '1'); }
+  wbSideUi(); requestAnimationFrame(wbDraw);
+}
+function wbSideUi() {
+  const shown = wbSideShown(), b = $('wbSideBtn'), h = $('wbSideHide'), label = t(shown ? 'wbSideHide' : 'wbSideShow');
+  b.title = label + ' (B)'; b.setAttribute('aria-label', label); b.setAttribute('aria-expanded', String(shown));
+  h.title = t('wbSideHide') + ' (B)'; h.setAttribute('aria-label', t('wbSideHide'));
+}
+function wbFullUi() {
+  const on = wbFull(), b = $('wbFullBtn'), label = t(on ? 'wbFullExit' : 'wbFull');
+  b.title = label + (on ? ' (Esc)' : ' (F)'); b.setAttribute('aria-label', label); b.setAttribute('aria-pressed', String(on));
+  b.innerHTML = `<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="${on ? 'M9 4v5H4M20 9h-5V4M15 20v-5h5M4 15h5v5' : 'M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5'}"/></svg>`;
+}
+async function wbSetFull(on) {
+  if (on === wbFull()) return;
+  document.body.classList.toggle('wb-full', on);
+  $('wb').classList.remove('full-side'); $('wb').style.height = '';
+  wbFullUi(); wbSideUi();
+  requestAnimationFrame(() => { wbDraw(); stage.focus({ preventScroll: true }); });
+  try {
+    if (on && document.fullscreenEnabled && !document.fullscreenElement) { await document.documentElement.requestFullscreen({ navigationUI: 'hide' }); wbFsApi = true; }
+    else if (!on && wbFsApi && document.fullscreenElement) { wbFsApi = false; await document.exitFullscreen(); }
+  } catch (e) { wbFsApi = false; }   // the browser said no: the board still fills the window
+}
+// Esc (or the browser's own exit) leaves the screen-wide fullscreen: leave Ping's as well.
+document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement && wbFsApi) { wbFsApi = false; wbSetFull(false); } });
+
 // ---------------------------------------------------------------- buttons, tab and start
 function wbAct(name, b) {
   switch (name) {
     case 'new': wbNewBoard(); break;
     case 'new-tpl': wbTemplateMenu(b, true); break;
     case 'import': $('wbImportFile').click(); break;
-    case 'side': if (innerWidth <= 720) { $('wb').classList.toggle('side-shown'); requestAnimationFrame(wbDraw); break; }
-      $('wb').classList.toggle('side-hidden'); wbStore('ping.wbSide', $('wb').classList.contains('side-hidden') ? '0' : '1'); requestAnimationFrame(wbDraw); break;
+    case 'side': wbToggleSide(); break;
+    case 'full': wbSetFull(!wbFull()); break;
     case 'share': wbOpenShare(); break;
     case 'leave': wbLeave(); break;
     case 'follow': wbGuest() ? wbToggleFollow() : wbSummon(); break;
@@ -6267,7 +6521,7 @@ const wbGuestRoom = (location.hash.match(/^#wb=([a-z0-9]{12,40})$/) || [])[1] ||
 // ---------------------------------------------------------------- tabs, settings & global buttons
 function showTab(name) {
   document.querySelectorAll('.tabs button').forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === name)));
-  if (name !== 'board') wbFinishEdit();
+  if (name !== 'board') { wbFinishEdit(); if (wbFull()) wbSetFull(false); }
   ['reminders', 'notes', 'board', 'settings'].forEach(v => $('view-' + v).hidden = v !== name);
   if (name !== 'notes') flushNote();
   if (name === 'notes') { renderNotes(); if (!curNote && liveNotes().length) loadNote(sortedNotes()[0]); }
@@ -6287,7 +6541,13 @@ function applyTheme() {
   document.querySelectorAll('[data-theme-set]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.themeSet === t)));
   document.querySelectorAll('[data-palette-set]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.paletteSet === p)));
   syncPipTheme();
+  wbThemeChanged();
 }
+// The newer themes need light-dark() (Chrome/Edge 123, Firefox 120, Safari 17.5). Older browsers show Lagoon for them,
+// so their buttons are hidden there.
+if (!(window.CSS && CSS.supports('color', 'light-dark(#000, #fff)'))) document.querySelectorAll('[data-palette-set][data-ld]').forEach(b => b.hidden = true);
+// "System" mode: follow the computer switching between light and dark while Ping is open.
+try { matchMedia('(prefers-color-scheme: dark)').addEventListener('change', wbThemeChanged); } catch (e) { }
 $('themeSeg').addEventListener('click', e => { const b = e.target.closest('[data-theme-set]'); if (!b) return; S.settings.theme = b.dataset.themeSet; save(); applyTheme(); });
 // ---------------------------------------------------------------- Settings → Sound and look
 const opt = (v, label) => `<option value="${esc(v)}">${esc(label)}</option>`;

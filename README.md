@@ -69,7 +69,7 @@ Type in the big box and press **Enter**. English and Swedish both work.
 - **Keep Ping on top** (Chrome and Edge): a small window that floats above your other windows.
 - **Outlook:** the **Outlook** button downloads a calendar entry. Open it and click Save & Close, and Outlook reminds you on your phone too.
 - **Notes:** Markdown with preview, coloured code blocks, `- [ ]` checklists, tables, pictures, templates, version history and a trash that keeps deleted notes for 30 days.
-- **Themes:** Lagoon, Fjord and Solarized, each in light and dark. Swedish or English.
+- **Themes:** twelve themes, each with a light and a dark version that follow the light/dark mode (or your computer's setting): Lagoon, Fjord, Solarized, Sunset, Forest, Candy, Neon, Space, Interstellar, Nature, Mountain and Desert. Most have a subtle decoration on the page background, such as stars, pines, mountains or dunes. The whiteboard follows the theme too. Choose under **Settings** (the gear icon) → Look and feel. Swedish or English.
 - **Your data:** a save file (see above), downloadable backups, restore, CSV export, and an automatic copy each day for the last 14 days.
 
 ## Whiteboard
@@ -79,6 +79,8 @@ The **Whiteboard** tab is an endless canvas you can use alone or with others.
 - **Smart shapes (✨):** a rough circle, box, triangle, diamond, line or arrow drawn with the pen becomes a clean shape. Ctrl+Z brings back what you drew. Lines and arrows snap to shapes and stay attached when the shapes move.
 - **Mind maps:** select a sticky note or shape and press **Tab** for a new branch, **Enter** for a sibling.
 - **Templates:** retrospective, kanban, SWOT, flowchart, mind map and brainstorm.
+- **Fullscreen and more room:** the fullscreen button at the top right (or **F**) gives the board the whole screen. Esc or the button exits. The list of your boards hides in fullscreen. **B**, or the panel button at the top left, shows or hides it any time.
+- **Dark mode:** in dark mode the board turns dark too. Ink becomes lighter and sticky notes deeper and softer, so everything stays readable. The colours are only shown differently: exports and shared boards keep the normal colours, and a guest in light mode sees the board in light.
 - **Export:** a PNG picture, print or save as PDF, or a board file you can open again later. Boards are saved on your computer and included in **Download backup**.
 
 ### Sharing a board live

@@ -432,3 +432,110 @@ test('notes: typing saves, delete goes to the trash with undo, and history keeps
   assert.ok(!d.notes[0].trashed);
   await ctx.close();
 });
+
+// ------------------------------------------------------------------ themes, dark whiteboard, fullscreen
+const THEMES = ['lagoon', 'fjord', 'solarized', 'sunset', 'forest', 'candy', 'neon', 'space', 'interstellar', 'nature', 'mountain', 'desert'];
+
+test('settings is a gear icon with a readable name, in Swedish and English', async () => {
+  for (const [lang, name] of [['sv', 'Inställningar'], ['en', 'Settings']]) {
+    const { ctx, page } = await open({ lang });
+    const b = page.locator('.tabs [data-tab="settings"]');
+    assert.equal((await b.innerText()).trim(), '', 'no text, just the icon');
+    assert.equal(await b.getAttribute('aria-label'), name);
+    assert.equal(await b.getAttribute('title'), name);
+    await b.click();
+    assert.equal(await page.isVisible('#view-settings'), true);
+    await ctx.close();
+  }
+});
+
+test('every theme has its own light and dark colours, and the whiteboard paper follows them', async () => {
+  const { ctx, page, errors } = await open({ lang: 'en' });
+  await tab(page, 'settings');
+  assert.equal(await page.locator('[data-palette-set]:visible').count(), THEMES.length, 'every theme has a button');
+  const seen = new Set();
+  for (const p of THEMES) {
+    await page.click(`[data-palette-set="${p}"]`);
+    for (const mode of ['light', 'dark']) {
+      await page.click(`[data-theme-set="${mode}"]`);
+      const r = await page.evaluate(() => ({ bg: getComputedStyle(document.body).backgroundColor, scheme: getComputedStyle(document.documentElement).colorScheme, pal: wbPal() }));
+      assert.equal(r.scheme, mode, `${p} ${mode}: color-scheme`);
+      assert.equal(r.pal.dark, mode === 'dark', `${p} ${mode}: the board knows the mode`);
+      const lum = Number(/\d+/.exec(r.bg)[0]);   // the red channel is enough to tell light from dark here
+      assert.ok(mode === 'light' ? lum > 200 : lum < 60, `${p} ${mode}: background ${r.bg}`);
+      assert.match(r.pal.bg, /^rgb/, `${p} ${mode}: the board paper colour is resolved`);
+      seen.add(r.bg + '|' + r.pal.bg);
+    }
+    assert.equal((await stored(page)).settings.palette, p, 'the theme is saved');
+  }
+  assert.equal(seen.size, THEMES.length * 2, 'no two themes or modes look the same');
+  assert.deepEqual(errors, []);
+  await ctx.close();
+});
+
+test('dark whiteboard: drawings are shown in dark-mode colours but stored and exported in their own', async () => {
+  const { ctx, page, errors } = await open({ lang: 'en', seed: { reminders: [], notes: [], settings: { theme: 'dark' } } });
+  await tab(page, 'board');
+  await page.waitForFunction(() => wb.board);
+  const r = await page.evaluate(() => {
+    const it = { id: 'n1', type: 'sticky', x: 0, y: 0, w: 100, h: 100, fill: '#fff3a3', text: 'Hej', z: 1, author: wb.me.cid };
+    wb.board.items.n1 = it; wbDraw();
+    const exp = wbCanvasImage(), px = exp.getContext('2d').getImageData(Math.round(exp.width / 2), 5 + Math.round(exp.height / 4), 1, 1).data;
+    return { dark: wbPal().dark, ink: wbCol('#1e1e1e', true), note: wbCol('#fff3a3', true), light: wbCol('#fff3a3', false), odd: wbCol('#123456', true),
+      none: wbCol('none', true), stored: wb.board.items.n1.fill, exportPx: [...px].slice(0, 3) };
+  });
+  assert.equal(r.dark, true);
+  assert.equal(r.ink, '#e9ecef', 'black ink turns light');
+  assert.equal(r.note, '#5f5524', 'yellow notes turn deep and soft');
+  assert.equal(r.light, '#fff3a3', 'light mode leaves colours alone');
+  assert.match(r.odd, /^hsl\(210 65% \d+%\)$/, 'other colours keep their hue');
+  assert.ok(Number(/(\d+)%\)$/.exec(r.odd)[1]) > 60, 'and get lighter when they were dark');
+  assert.equal(r.none, 'none');
+  assert.equal(r.stored, '#fff3a3', 'the board keeps the original colour');
+  assert.deepEqual(r.exportPx, [0xff, 0xf3, 0xa3], 'pictures are exported in light colours');
+  // switching to light mode while the board is open redraws it with the original colours
+  await tab(page, 'settings'); await page.click('[data-theme-set="light"]'); await tab(page, 'board');
+  assert.equal(await page.evaluate(() => wbPal().dark), false);
+  assert.deepEqual(errors, []);
+  await ctx.close();
+});
+
+test('whiteboard fullscreen: F and the button toggle it, the list hides until B, Esc and other tabs leave it', async () => {
+  const { ctx, page, errors } = await open({ lang: 'en' });
+  await tab(page, 'board');
+  await page.waitForFunction(() => wb.board);
+  await page.focus('#wbStage');
+  const state = () => page.evaluate(() => ({ full: wbFull(), side: wbSideShown(), sideVisible: !!$('wb').querySelector('.wb-side').offsetParent,
+    rect: $('wb').getBoundingClientRect().toJSON(), vw: innerWidth, vh: innerHeight, pref: localStorage.getItem('ping.wbSide'), label: $('wbFullBtn').getAttribute('aria-label') }));
+  let s = await state();
+  assert.equal(s.full, false); assert.equal(s.sideVisible, true); assert.equal(s.label, 'Fullscreen');
+  await page.keyboard.press('f');
+  s = await state();
+  assert.equal(s.full, true);
+  assert.equal(s.sideVisible, false, 'the list of boards hides in fullscreen');
+  assert.equal(Math.round(s.rect.width), s.vw); assert.equal(Math.round(s.rect.height), s.vh);
+  assert.equal(s.label, 'Exit fullscreen');
+  await page.keyboard.press('b');
+  s = await state();
+  assert.equal(s.sideVisible, true, 'B shows the list in fullscreen');
+  await page.click('#wbSideHide');
+  assert.equal((await state()).sideVisible, false, 'the « button hides it again');
+  await page.keyboard.press('Escape');
+  s = await state();
+  assert.equal(s.full, false, 'Esc leaves fullscreen');
+  assert.equal(s.sideVisible, true, 'the normal view keeps its own list setting');
+  assert.equal(s.pref, null, 'fullscreen does not change the remembered choice');
+  // the button, and leaving the tab
+  await page.click('#wbFullBtn');
+  assert.equal((await state()).full, true);
+  await page.evaluate(() => showTab('reminders'));   // e.g. Edit on a reminder that pops up while the board is fullscreen
+  assert.equal(await page.evaluate(() => wbFull()), false, 'another tab ends fullscreen');
+  // B in the normal view hides the list and remembers it
+  await tab(page, 'board'); await page.focus('#wbStage');
+  await page.keyboard.press('b');
+  s = await state();
+  assert.equal(s.sideVisible, false); assert.equal(s.pref, '0');
+  assert.equal(await page.getAttribute('#wbSideBtn', 'aria-label'), 'Show your boards');
+  assert.deepEqual(errors, []);
+  await ctx.close();
+});
