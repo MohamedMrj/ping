@@ -515,6 +515,8 @@ test('whiteboard fullscreen: F and the button toggle it, the list hides until B,
   assert.equal(s.sideVisible, false, 'the list of boards hides in fullscreen');
   assert.equal(Math.round(s.rect.width), s.vw); assert.equal(Math.round(s.rect.height), s.vh);
   assert.equal(s.label, 'Exit fullscreen');
+  const look = await page.evaluate(() => [$('wbFullBtn'), $('wbSideBtn')].map(b => getComputedStyle(b).backgroundColor));
+  assert.equal(look[0], look[1], 'the exit button looks like the other buttons, not filled with colour');
   await page.keyboard.press('b');
   s = await state();
   assert.equal(s.sideVisible, true, 'B shows the list in fullscreen');
@@ -536,6 +538,30 @@ test('whiteboard fullscreen: F and the button toggle it, the list hides until B,
   s = await state();
   assert.equal(s.sideVisible, false); assert.equal(s.pref, '0');
   assert.equal(await page.getAttribute('#wbSideBtn', 'aria-label'), 'Show your boards');
+  assert.deepEqual(errors, []);
+  await ctx.close();
+});
+
+test('notes: the list stays in view at the bottom of a long note, and picking a note starts at its top', async () => {
+  const long = '# Lång\n\n' + Array.from({ length: 200 }, (_, i) => `Rad ${i + 1}`).join('\n\n');
+  const notes = [{ id: 'a', text: long, created: 2, modified: 2 }, ...Array.from({ length: 40 }, (_, i) => ({ id: 'n' + i, text: '# Anteckning ' + i, created: 1, modified: 1 }))];
+  const { ctx, page, errors } = await open({ seed: { reminders: [], notes } });
+  await page.setViewportSize({ width: 1280, height: 720 });
+  await tab(page, 'notes');
+  await page.click('#noteList li[data-id="a"]');
+  await page.evaluate(() => setNoteView('preview'));
+  await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));
+  await page.waitForTimeout(100);
+  const r = await page.evaluate(() => ({ y: scrollY, list: $('noteList').getBoundingClientRect().toJSON(), vh: innerHeight, inner: $('noteList').scrollHeight > $('noteList').clientHeight }));
+  assert.ok(r.y > 1000, 'the page really scrolled down: ' + r.y);
+  assert.ok(r.list.top >= 0 && r.list.top < 120 && r.list.bottom <= r.vh, `the list is on screen: ${JSON.stringify(r.list)}`);
+  assert.equal(r.inner, true, 'a long list scrolls inside itself');
+  await page.click('#noteList li[data-id="n3"]');
+  assert.equal(await page.evaluate(() => curNote.id), 'n3');
+  assert.ok(await page.evaluate(() => scrollY) < 200, 'the new note starts at its top');
+  // on a phone the list sits above the note and scrolls away as before
+  await page.setViewportSize({ width: 390, height: 760 });
+  assert.equal(await page.evaluate(() => getComputedStyle(document.querySelector('.note-side')).position), 'static');
   assert.deepEqual(errors, []);
   await ctx.close();
 });

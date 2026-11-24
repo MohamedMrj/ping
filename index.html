@@ -352,8 +352,9 @@ kbd { font-size: 11.5px; line-height: 1; padding: 2px 5px; border: 1px solid var
 .notes.side-hidden { grid-template-columns: minmax(0, 1fr); }
 .notes.side-hidden .note-side { display: none; }
 #sideBtn { font-size: 15px; min-width: 34px; }
-.note-side { display: flex; flex-direction: column; gap: 8px; min-height: 0; }
-.note-side .note-list { flex: 1 1 auto; }
+/* the list of notes stays in view while you scroll through a long note; with many notes, the list scrolls by itself */
+.note-side { display: flex; flex-direction: column; gap: 8px; min-height: 0; position: sticky; top: 8px; align-self: start; max-height: calc(100vh - 16px); max-height: calc(100dvh - 16px); }
+.note-side .note-list { flex: 1 1 auto; min-height: 120px; max-height: none; }
 .note-side .search { width: 100%; margin: 0; }
 .note-list { list-style: none; margin: 0; padding: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow: auto; max-height: 600px; }
 .note-list li { padding: 10px 12px; border-top: 1px solid var(--line); cursor: pointer; }
@@ -649,7 +650,6 @@ body.wb-guest .wb-side { display: none; }
 .wb-side-head { display: flex; align-items: center; gap: 6px; }
 .wb-side-head .row { flex: 1; min-width: 0; }
 .wb-top .icon-btn svg { display: block; margin: auto; }
-.wb-top .icon-btn[aria-pressed="true"] { color: var(--accent); border-color: var(--accent); }
 /* Fullscreen: the board covers the whole window (and the whole screen where the browser allows it). The list of
    boards is hidden until asked for. Dialogs, menus, reminders and toasts have a higher z-index, so they still show. */
 body.wb-full { overflow: hidden; }
@@ -666,7 +666,8 @@ body.wb-full .wb.full-side .wb-side { display: flex; max-height: none; }
 
 @media (max-width: 720px) {
   .notes { grid-template-columns: minmax(0, 1fr); }
-  .note-list { max-height: 220px; }
+  .note-side { position: static; max-height: none; }      /* on a phone the list sits above the note: let it scroll away */
+  .note-side .note-list { max-height: 220px; }
   .rem { grid-template-columns: 70px minmax(0, 1fr); }
   .acts { grid-column: 1 / -1; justify-content: flex-end; }
   .search { margin-left: 0; width: 100%; }
@@ -841,7 +842,7 @@ body.wb-full .wb.full-side .wb-side { display: flex; max-height: none; }
           <button class="btn sm" type="button" id="wbExportBtn" data-act="wb-export" data-i18n="wbExportBtn">Exportera ▾</button>
           <button class="btn primary sm" type="button" id="wbShareBtn" data-act="wb-share">Dela</button>
           <button class="btn sm danger" type="button" id="wbLeaveBtn" data-act="wb-leave" hidden data-i18n="wbLeave">Lämna</button>
-          <button class="icon-btn" type="button" id="wbFullBtn" data-act="wb-full" aria-pressed="false" title="Helskärm (F)" aria-label="Helskärm"></button>
+          <button class="icon-btn" type="button" id="wbFullBtn" data-act="wb-full" title="Helskärm (F)" aria-label="Helskärm"></button>
         </div>
         <div class="wb-stage" id="wbStage" tabindex="0" data-tool="select">
           <canvas id="wbCanvas"></canvas>
@@ -4124,7 +4125,11 @@ $('codeForm').addEventListener('submit', e => {
 });
 $('noteList').addEventListener('click', e => {
   const li = e.target.closest('li[data-id]'); if (!li) return;
+  const same = curNote && curNote.id === li.dataset.id;
   loadNote(S.notes.find(n => n.id === li.dataset.id));
+  // Picked from far down a long note: start the new note at its top, not halfway down.
+  const top = $('view-notes').getBoundingClientRect().top + scrollY - 10;
+  if (!same && scrollY > top) scrollTo({ top, behavior: 'instant' });
 });
 $('noteSearch').addEventListener('input', renderNotes);
 function newNote(text) {
@@ -6460,7 +6465,7 @@ function wbSideUi() {
 }
 function wbFullUi() {
   const on = wbFull(), b = $('wbFullBtn'), label = t(on ? 'wbFullExit' : 'wbFull');
-  b.title = label + (on ? ' (Esc)' : ' (F)'); b.setAttribute('aria-label', label); b.setAttribute('aria-pressed', String(on));
+  b.title = label + (on ? ' (Esc)' : ' (F)'); b.setAttribute('aria-label', label);
   b.innerHTML = `<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="${on ? 'M9 4v5H4M20 9h-5V4M15 20v-5h5M4 15h5v5' : 'M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5'}"/></svg>`;
 }
 async function wbSetFull(on) {
