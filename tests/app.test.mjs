@@ -658,3 +658,37 @@ test('notes: a new note opens ready to write, and finished parts turn formatted 
   assert.deepEqual(errors, []);
   await ctx.close();
 });
+
+test('notes: dragging selects formatted text for copying (also across parts); a plain click still opens a part', async () => {
+  const { ctx, page, errors } = await open({ seed: { reminders: [], notes: [{ id: 'a', text: LIVE_NOTE, created: 1, modified: 1 }] } });
+  await tab(page, 'notes');
+  await page.evaluate(() => document.addEventListener('copy', e => { window.__copied = e.clipboardData.getData('text/plain') || getSelection().toString(); }));
+  const drag = async (from, to, dx = 30) => {
+    const a = await page.locator(from).boundingBox(), b = await page.locator(to).boundingBox();
+    await page.mouse.move(a.x + dx, a.y + a.height / 2); await page.mouse.down();
+    await page.mouse.move(b.x + 60, b.y + b.height / 2, { steps: 8 }); await page.mouse.up();
+  };
+  // from the paragraph down into the list: a normal selection, nothing opens
+  await drag('#notePreview > p >> nth=0', '#notePreview li.task >> nth=1');
+  let s = await liveState(page);
+  assert.equal(s.open, false, 'dragging does not open a part');
+  const picked = await page.evaluate(() => getSelection().toString());
+  assert.match(picked, /fetstil[\s\S]*Lista[\s\S]*Ring Anna/, 'the selection spans the parts: ' + picked);
+  await page.keyboard.press('Control+c');
+  assert.match(await page.evaluate(() => window.__copied), /Lista/);
+  assert.doesNotMatch(picked, /⏰/, 'the reminder buttons are not part of the selection');
+  // a plain click still opens the part
+  await page.locator('#notePreview h2').click();
+  s = await liveState(page);
+  assert.deepEqual(s.live, { a: 4, b: 5 });
+  // with that part open, a selection from the heading above to the list below copies the open part's text too
+  await drag('#notePreview h1', '#notePreview li.task >> nth=1', 1);
+  assert.equal((await liveState(page)).open, true, 'the open part stays while you select');
+  await page.keyboard.press('Control+c');
+  const copied = await page.evaluate(() => window.__copied);
+  assert.match(copied, /Plan[\s\S]*fetstil[\s\S]*## Lista[\s\S]*Ring Anna/, 'copied: ' + copied);
+  assert.doesNotMatch(copied, /⏰/, 'no button icons in the copy');
+  assert.match(copied, /Ring Anna\n/, 'one line per list item');
+  assert.deepEqual(errors, []);
+  await ctx.close();
+});

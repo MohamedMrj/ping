@@ -383,6 +383,8 @@ kbd { font-size: 11.5px; line-height: 1; padding: 2px 5px; border: 1px solid var
 .md.live .live-ed > .ed-wrap { position: absolute; left: 0; right: 0; top: 0; background: transparent; }
 .md.live .ed-wrap > .ed-in, .md.live .ed-wrap > .ed-hl, .md.live .ed-wrap > .ed-find { border-color: transparent; }
 .md.live .ed-wrap > .ed-in { min-height: 0; }
+.md.live .ed-wrap > pre { user-select: none; }
+.md button, .md .code-bar, .md input[type=checkbox] { user-select: none; }   /* copied text never picks up ⏰, Copy or language labels */   /* a selection dragged across the open part skips its colour layers */
 .md.live .ed-wrap > .ed-in:focus { border-color: transparent; box-shadow: none; }
 /* the note's buttons and toolbar stay at the top of the window while you scroll through a long note */
 .note-head { position: sticky; top: 0; z-index: 20; display: flex; flex-direction: column; gap: 8px; padding: 8px 0; margin: -8px 0; background: var(--bg); transition: box-shadow .15s; }
@@ -3987,20 +3989,50 @@ function liveClose() { if (!live || !noteText.value.trim()) return; live = null;
 noteText.addEventListener('blur', () => setTimeout(() => {
   const a = document.activeElement;
   if (!live || a === noteText) return;
+  if (liveDown) return;                 // pressed on the note: wait and see whether it's a click or a selection
   if (a && a !== document.body && (a.closest('#view-notes, .scrim') || popEl.contains(a))) return;
   liveClose();
 }, 0));
 noteText.addEventListener('keydown', e => {
   if (e.key === 'Escape' && popEl.hidden && $('findBar').hidden && noteText.value.trim()) { e.preventDefault(); noteText.blur(); liveClose(); }
 });
-// Clicking a formatted part opens it, with the cursor where you clicked. Checkboxes, buttons, code suggestions and
-// #tags keep their own clicks, and Ctrl+click opens a link.
+// Clicking a formatted part opens it, with the cursor where you clicked. Dragging selects text as usual instead, so
+// any piece of the note can be marked and copied. Checkboxes, buttons, code suggestions and #tags keep their own
+// clicks, and Ctrl+click opens a link.
+let liveDown = null;        // where the mouse went down on the formatted note, until it comes up again
 $('notePreview').addEventListener('mousedown', e => {
-  if (e.button !== 0 || liveEd.contains(e.target)) return;
+  if (e.button !== 0 || e.detail > 1 || liveEd.contains(e.target)) return;
   if (e.target.closest('input, button, select, label, .sug, [data-ntag-click]')) return;
   if (e.target.closest('a[href]') && (e.ctrlKey || e.metaKey)) return;
-  e.preventDefault();
+  liveDown = { x: e.clientX, y: e.clientY };
+});
+addEventListener('mouseup', e => {
+  const d = liveDown; liveDown = null;
+  if (!d || e.button !== 0) return;
+  // Dragged (or Shift+click to extend a selection): text was selected, leave it for copying. A click that didn't
+  // move opens the part, even on text that is still selected from before (the browser clears that a moment later).
+  if (Math.hypot(e.clientX - d.x, e.clientY - d.y) > 4 || e.shiftKey) return;
   liveOpenAt(e);
+}, true);
+// A selection that runs across the open part: copy that part's text too, as it is written.
+document.addEventListener('copy', e => {
+  if (!liveOpen() || document.activeElement === noteText) return;
+  const sel = getSelection(); if (!sel.rangeCount || sel.isCollapsed) return;
+  const r = sel.getRangeAt(0);
+  if (!r.intersectsNode(liveEd) || (liveEd.contains(r.startContainer) && liveEd.contains(r.endContainer))) return;
+  // the text of a piece of the formatted note as the browser would copy it: line breaks between parts, no buttons
+  const part = (from, to) => {
+    const x = document.createRange(); x.setStart(...from); x.setEnd(...to);
+    const box = document.createElement('div'); box.className = 'md'; box.style.cssText = 'position:fixed;left:-9999px;top:0;width:600px';
+    box.append(x.cloneContents()); box.querySelectorAll('button, .code-bar').forEach(b => b.remove());
+    document.body.append(box); const text = box.innerText; box.remove();
+    return text;
+  };
+  const before = liveEd.contains(r.startContainer) || liveEd === r.startContainer ? '' : part([r.startContainer, r.startOffset], [liveEd.parentNode, [...liveEd.parentNode.childNodes].indexOf(liveEd)]);
+  const after = liveEd.contains(r.endContainer) || liveEd === r.endContainer ? '' : part([liveEd.parentNode, [...liveEd.parentNode.childNodes].indexOf(liveEd) + 1], [r.endContainer, r.endOffset]);
+  const own = noteText.value.split('\n').slice(live.a, live.b).join('\n').trim();
+  e.clipboardData.setData('text/plain', [before.trimEnd(), own, after.trimStart()].filter(Boolean).join('\n\n'));
+  e.preventDefault();
 });
 $('notePreview').addEventListener('click', e => { const a = e.target.closest('a[href]'); if (a && !liveEd.contains(a) && !(e.ctrlKey || e.metaKey)) e.preventDefault(); }, true);
 function liveOpenAt(e) {
