@@ -348,7 +348,6 @@ kbd { font-size: 11.5px; line-height: 1; padding: 2px 5px; border: 1px solid var
 /* notes */
 .notes { display: grid; grid-template-columns: 290px minmax(0, 1fr); gap: 14px; min-height: 540px; }
 .app:has(#view-notes:not([hidden]) .notes.side-hidden) { max-width: 1400px; }
-.app:has(#view-notes:not([hidden]) .note-body.split) { max-width: 1500px; }
 .notes.side-hidden { grid-template-columns: minmax(0, 1fr); }
 .notes.side-hidden .note-side { display: none; }
 #sideBtn { font-size: 15px; min-width: 34px; }
@@ -374,8 +373,17 @@ kbd { font-size: 11.5px; line-height: 1; padding: 2px 5px; border: 1px solid var
 .find-bar { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
 .find-bar .input { flex: 1 1 220px; }
 .note-body { display: grid; gap: 10px; min-width: 0; }
-.note-body.split { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
-.note-body.split .md { position: sticky; top: calc(var(--note-head-h, 0px) + 10px); max-height: calc(100vh - var(--note-head-h, 0px) - 20px); overflow: auto; }
+/* One view for notes: the note is shown formatted, and the part you work on opens in place as Markdown. That part is
+   a window onto the real editor (which holds the whole note): the window clips it to the lines of that part, and the
+   editor is moved up so those lines show. Its text lines up with the formatted text around it. */
+.md.live { cursor: text; }
+.md.live > [data-sl], .md.live li[data-sl] { border-radius: 6px; transition: background-color .12s; }
+.md.live > [data-sl]:hover, .md.live li[data-sl]:hover { background-color: color-mix(in srgb, var(--accent) 6%, transparent); }
+.md.live .live-ed { position: relative; overflow: clip; margin: .45em -17px; border-radius: 10px; background: color-mix(in srgb, var(--accent) 4%, var(--surface)); box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 40%, transparent); }
+.md.live .live-ed > .ed-wrap { position: absolute; left: 0; right: 0; top: 0; background: transparent; }
+.md.live .ed-wrap > .ed-in, .md.live .ed-wrap > .ed-hl, .md.live .ed-wrap > .ed-find { border-color: transparent; }
+.md.live .ed-wrap > .ed-in { min-height: 0; }
+.md.live .ed-wrap > .ed-in:focus { border-color: transparent; box-shadow: none; }
 /* the note's buttons and toolbar stay at the top of the window while you scroll through a long note */
 .note-head { position: sticky; top: 0; z-index: 20; display: flex; flex-direction: column; gap: 8px; padding: 8px 0; margin: -8px 0; background: var(--bg); transition: box-shadow .15s; }
 .note-head.stuck { box-shadow: 0 10px 12px -12px rgba(0, 0, 0, .45); }
@@ -761,11 +769,6 @@ body.wb-full .wb.full-side .wb-side { display: flex; max-height: none; }
           <button class="btn sm ghost" type="button" data-act="toggle-side" id="sideBtn" aria-pressed="true">⟨</button>
           <button class="btn sm ghost" type="button" data-act="new-note" id="sideNewBtn" hidden>＋</button>
           <span class="status" id="noteStatus"></span>
-          <div class="seg" role="group" aria-label="Anteckningsvy" data-i18n-aria="noteViewAria">
-            <button type="button" data-view="edit" aria-pressed="true" data-i18n="edit">Redigera</button>
-            <button type="button" data-view="preview" aria-pressed="false" data-i18n="preview">Förhandsvisa</button>
-            <button type="button" data-view="split" aria-pressed="false" data-i18n="viewSplit">Sida vid sida</button>
-          </div>
           <button class="btn sm" type="button" data-act="note-pin" id="notePinBtn">Fäst</button>
           <button class="btn sm" type="button" data-act="note-history" id="noteHistBtn" data-i18n="noteHist">Historik</button>
           <button class="btn sm" type="button" data-act="note-share" id="noteShareBtn" data-i18n="share">Dela ▾</button>
@@ -805,8 +808,7 @@ body.wb-full .wb.full-side .wb-side { display: flex; max-height: none; }
         </div>
         </div>
         <div class="note-body" id="noteBody">
-          <div class="ed-wrap" id="noteWrap"><pre class="ed-find" id="noteFind" aria-hidden="true"></pre><pre class="ed-find ed-measure" id="noteMeasure" aria-hidden="true"></pre><pre class="ed-hl" id="noteHl" aria-hidden="true"></pre><textarea id="noteText" class="ed-in" spellcheck="false" placeholder="# Rubrik&#10;&#10;Skriv vad som helst. Markdown fungerar: **fetstil**, `kod`, ```sql-block```, - [ ] uppgifter, | tabeller |" aria-label="Anteckningstext" data-i18n-ph="notePh" data-i18n-aria="noteAria"></textarea></div>
-          <div class="md" id="notePreview" hidden></div>
+          <div class="md live" id="notePreview"><div class="live-ed" id="liveEd" hidden><div class="ed-wrap" id="noteWrap"><pre class="ed-find" id="noteFind" aria-hidden="true"></pre><pre class="ed-find ed-measure" id="noteMeasure" aria-hidden="true"></pre><pre class="ed-hl" id="noteHl" aria-hidden="true"></pre><textarea id="noteText" class="ed-in" spellcheck="false" placeholder="# Rubrik&#10;&#10;Skriv vad som helst. Markdown fungerar: **fetstil**, `kod`, ```sql-block```, - [ ] uppgifter, | tabeller |" aria-label="Anteckningstext" data-i18n-ph="notePh" data-i18n-aria="noteAria"></textarea></div></div></div>
         </div>
       </div>
     </div>
@@ -1085,7 +1087,7 @@ body.wb-full .wb.full-side .wb-side { display: flex; max-height: none; }
       <kbd>Del</kbd><span data-i18n="k8">Ta bort vald</span>
       <kbd>/</kbd><span data-i18n="k9">Sök</span>
       <kbd>1 2 3</kbd><span data-i18n="k10">Påminnelser · Anteckningar · Inställningar</span>
-      <kbd>Ctrl E</kbd><span data-i18n="k11">Anteckningar: växla mellan redigering och förhandsvisning</span>
+      <kbd>Esc</kbd><span data-i18n="k11">Anteckningar: sluta skriva och visa hela anteckningen formaterad</span>
       <kbd>Ctrl B / I</kbd><span data-i18n="k15">Anteckningar: fetstil / kursiv</span>
       <kbd>Ctrl F</kbd><span data-i18n="k16">Anteckningar: sök i anteckningen</span>
       <kbd>Ctrl Shift L</kbd><span data-i18n="k18">Anteckningar: visa eller dölj listan med anteckningar</span>
@@ -2320,7 +2322,7 @@ const T = {
     fUpcoming: 'Upcoming', fToday: 'Today', fOverdue: 'Overdue', fRepeat: 'Recurring', fDone: 'Done', fAll: 'All',
     searchPh: 'Search  /', searchAria: 'Search reminders', noteSearchPh: 'Search notes',
     newNote: 'New note', dailyLog: 'Daily log', dailyLogTitle: 'Today’s standup note, filled from your reminders', delete: 'Delete',
-    noteViewAria: 'Note view', edit: 'Edit', preview: 'Preview', copy: 'Copy', remindMe: 'Remind me…',
+    edit: 'Edit', copy: 'Copy', remindMe: 'Remind me…',
     notePh: '# Title\n\nWrite anything. Markdown works: **bold**, `code`, ```sql blocks```, - [ ] tasks, | tables |', noteAria: 'Note text',
     notifications: 'Notifications', testAlert: 'Send a test reminder', soundLabel: 'Play a sound when a reminder is due',
     lookH: 'Look and feel', themeAria: 'Theme', palLagoon: 'Calm teal, the default', palFjord: 'Cool blue and slate', palSolarized: 'The classic editor palette',
@@ -2346,7 +2348,7 @@ const T = {
     edIcsLabel: 'Also download an Outlook calendar entry', cancel: 'Cancel', save: 'Save',
     k1: 'New reminder (from anywhere)', k2: 'Add the reminder · <kbd>Ctrl Enter</kbd> save as a note', k3: 'Move down / up the list',
     k4: 'Mark selected done', k5: 'Snooze selected', k6: 'Edit selected', k7: 'Open the first link in the selected reminder', k8: 'Delete selected',
-    k9: 'Search', k10: 'Reminders · Notes · Settings', k11: 'Notes: switch between edit and preview', k12: 'Close dialogs',
+    k9: 'Search', k10: 'Reminders · Notes · Settings', k11: 'Notes: stop writing and show the whole note formatted', k12: 'Close dialogs',
     syntaxH: 'Quick add syntax',
     sx1c: 'tomorrow 10:00', sx1: 'Dates: today, tomorrow, friday, 25/11, 2026-12-01, dec 24. Swedish works too: imorgon, på torsdag',
     sx2c: 'in 45 min', sx2: 'Relative: in 2h, in 3 days, in half an hour', sx3: 'Times in UTC are converted to your local time',
@@ -2405,7 +2407,7 @@ const T = {
     alAutoHide: 'The box disappears', alColor: 'Colour', alSticky: 'The notification in the corner of the screen stays until I close it',
     alFlash: 'Flash the tab while a reminder is waiting and Ping is in the background', testAlertShow: 'Show a test reminder',
     listen: '▶ Listen', listenTitle: 'Listen',
-    viewSplit: 'Side by side', noteHist: 'History', share: 'Share ▾', newNoteMenu: 'Templates and other kinds of notes', toolsAria: 'Formatting',
+    noteHist: 'History', share: 'Share ▾', newNoteMenu: 'Templates and other kinds of notes', toolsAria: 'Formatting',
     fmtBold: 'Bold (Ctrl+B)', fmtItalic: 'Italic (Ctrl+I)', fmtStrike: 'Strikethrough', fmtHeading: 'Heading (click again for a smaller heading)',
     fmtUl: 'Bulleted list', fmtOl: 'Numbered list', fmtTask: 'Checklist', fmtQuote: 'Quote', fmtLink: 'Link', fmtCode: 'Code in the text',
     fmtTable: 'Table', fmtHr: 'Divider', fmtRemind: 'Make a reminder from the line the cursor is on', findOpen: 'Find in this note (Ctrl+F)',
@@ -2921,7 +2923,7 @@ async function syncFile() {
     if (remote) {
       const merged = mergeData(S, remote);
       if (syncKey(merged) !== syncKey(S)) { applyMerged(merged); toast(t('loadedFromFile')); }
-      if (await pullImages(remote.images) && noteView !== 'edit') paintPreview();
+      if (await pullImages(remote.images)) paintPreview();
     }
     const images = await imagesForFile(remote && remote.images);
     const imgKey = m => Object.keys(m || {}).sort().join();
@@ -2950,7 +2952,7 @@ function applyMerged(m) {
   renderAll();
   if (!typing) {
     noteText.value = curNote ? curNote.text : '';
-    if (noteView !== 'edit') paintPreview();
+    paintPreview();
     updateNoteStatus();
   }
   for (const id of [...openAlerts.keys()]) { const r = find(id); if (!r || r.done) closeAlert(id); }
@@ -3148,7 +3150,7 @@ function inlineMd(text) {
   });
   return s.replace(/\u0000(\d+)\u0000/g, (_, i) => `<code>${esc(codes[i])}</code>`);
 }
-// A code block in Förhandsvisa: language label (click to change), wrap toggle, Copy, line numbers, folding.
+// A code block in the formatted note: language label (click to change), wrap toggle, Copy, line numbers, folding.
 function codeBlockHtml(raw, given, fenceLine) {
   const id = Hl.resolve(given), guessed = !given ? Hl.detect(raw) : null, use = id || guessed;
   const rows = use ? Hl.lines(raw, use) : raw.split('\n').map(esc);
@@ -3842,7 +3844,7 @@ setInterval(() => {
 }, 1000);
 
 // ---------------------------------------------------------------- notes
-let curNote = null, noteTimer = null, noteView = 'edit', splitTimer = null;
+let curNote = null, noteTimer = null;
 const noteText = $('noteText');
 const noteTitle = n => { const l = (n.text || '').split('\n').map(x => x.trim()).filter(Boolean); return l[0] ? l[0].replace(/^#+\s*/, '').slice(0, 80) : t('noteEmpty'); };
 const notePreviewText = n => { const l = (n.text || '').split('\n').map(x => x.trim()).filter(Boolean); return (l[1] || '').replace(/^[#>*\-\s]+/, ''); };
@@ -3865,25 +3867,187 @@ function renderNotes() {
   $('trashBtn').textContent = t('trashBtn', S.notes.filter(n => n.trashed).length);
   $('dataCount').textContent = t('dataCount', S.reminders.length, liveNotes().length);
 }
-function setNoteView(v) {
-  if (!['edit', 'preview', 'split'].includes(v)) v = 'edit';
-  noteView = v;
-  try { localStorage.setItem('ping.noteView', v); } catch (e) { }
-  document.querySelectorAll('.seg [data-view]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.view === v)));
-  $('noteBody').classList.toggle('split', v === 'split');
-  $('noteWrap').hidden = v === 'preview';
-  $('noteTools').hidden = v === 'preview';
-  $('notePreview').hidden = v === 'edit';
-  if (v !== 'edit') paintPreview();
-  if (v !== 'preview') { noteOverlay.paint(); noteText.focus(); }
-  else closeFind();
+// ---------------------------------------------------------------- notes: one view (live preview)
+// The note is always shown formatted. The part you work on (a paragraph, heading, list item, quote, table or code
+// block) opens in place as Markdown, in a window onto the real editor. The editor always holds the whole note, so the
+// toolbar, find, code suggestions, undo and the keyboard work exactly as before. When the cursor leaves the window
+// (arrow keys, a click on another part, find, undo), the part it lands in opens instead.
+const liveEd = $('liveEd');
+let live = null;            // { a, b }: the note lines [a, b) shown in the editor window; null while all of it is formatted
+let liveUnits = [], liveRows = 0, liveTimer = null;
+const liveOpen = () => !!live && !liveEd.hidden;
+function lineAt(pos) { const v = noteText.value; let n = 0; for (let i = 0; i < pos && i < v.length; i++) if (v.charCodeAt(i) === 10) n++; return n; }
+function lineStart(rows, l) { let p = 0; for (let k = 0; k < l && k < rows.length; k++) p += rows[k].length + 1; return p; }
+// The lines of the part that line L belongs to. Blank lines belong to the part above them, but are shown only when
+// the cursor is on one, so a part doesn't open with empty space around it.
+function liveRangeFor(L, rows) {
+  if (!liveUnits.length) return { a: 0, b: rows.length };
+  let k = 0;
+  for (let i = 0; i < liveUnits.length; i++) if (liveUnits[i].start <= L) k = i;
+  const a = k === 0 ? Math.min(liveUnits[0].start, L) : liveUnits[k].start, end = k + 1 < liveUnits.length ? liveUnits[k + 1].start : rows.length;
+  let b = end; while (b > a + 1 && !rows[b - 1].trim() && b - 1 > L) b--;
+  return { a, b };
 }
 function paintPreview() {
-  $('notePreview').innerHTML = renderMarkdown(noteText.value); markPreviewSugs($('notePreview')); refreshSugs(noteText.value); updateSugBar();
-  syncMap = null;
-  if (noteView === 'split') requestAnimationFrame(() => syncScroll('editor'));   // while typing, the preview follows the editor
+  clearTimeout(liveTimer); liveTimer = null;
+  const box = $('notePreview'), text = noteText.value, rows = text.split('\n');
+  const keep = liveOpen() && document.activeElement === noteText ? caretRect().top : null;   // the line being written stays put on screen
+  const tpl = document.createElement('template');
+  tpl.innerHTML = text.trim() ? renderMarkdown(text) : '';
+  markPreviewSugs(tpl.content);
+  // the parts: the top-level blocks, with each item of a list as a part of its own
+  liveUnits = [];
+  for (const el of tpl.content.children) {
+    if (el.tagName === 'UL' || el.tagName === 'OL') { for (const li of el.children) if (li.dataset.sl != null) liveUnits.push({ start: +li.dataset.sl }); }
+    else if (el.dataset.sl != null) liveUnits.push({ start: +el.dataset.sl });
+  }
+  liveUnits.sort((x, y) => x.start - y.start);
+  if (!text.trim()) live = { a: 0, b: rows.length };           // an empty note is always open for writing
+  else if (live) live = liveRangeFor(lineAt(noteText.selectionEnd), rows);
+  const where = start => !live || start < live.a ? 'before' : start < live.b ? null : 'after';
+  const parts = { before: document.createDocumentFragment(), after: document.createDocumentFragment() };
+  for (const el of [...tpl.content.children]) {
+    if (el.tagName === 'UL' || el.tagName === 'OL') {
+      // a list is split around the window: the items above it, and the items below it in a list of their own
+      let cur = null, curPlace = null, n = 0;
+      for (const li of [...el.children]) {
+        n++;
+        const place = li.dataset.sl != null ? where(+li.dataset.sl) : curPlace || 'before';
+        if (!place) { cur = null; curPlace = null; continue; }
+        if (!cur || place !== curPlace) { cur = el.cloneNode(false); if (el.tagName === 'OL' && n > 1) cur.start = n; parts[place].append(cur); curPlace = place; }
+        cur.append(li);
+      }
+    } else {
+      const place = el.dataset.sl != null ? where(+el.dataset.sl) : 'before';
+      if (place) parts[place].append(el);
+    }
+  }
+  for (const n of [...box.childNodes]) if (n !== liveEd) n.remove();
+  box.insertBefore(parts.before, liveEd); box.append(parts.after);
+  liveEd.hidden = !live;
+  liveRows = rows.length;
+  if (live) noteOverlay.fit();          // the editor can't measure itself while the window is hidden
+  liveFit();
+  if (keep != null) { const now = caretRect().top; if (Math.abs(now - keep) > 1) scrollBy(0, now - keep); }
+  refreshSugs(text); updateSugBar();
 }
-document.querySelector('.seg [data-view]').parentElement.addEventListener('click', e => { const b = e.target.closest('[data-view]'); if (b) setNoteView(b.dataset.view); });
+// Size the window to its lines, measured in the invisible copy of the editor text.
+function liveFit() {
+  if (!liveOpen()) return;
+  const meas = $('noteMeasure'), rows = noteText.value.split('\n'), a = Math.min(live.a, rows.length - 1), b = Math.min(Math.max(live.b, a + 1), rows.length);
+  meas.innerHTML = rows.map((r, i) => (i === a ? '<span data-a></span>' : '') + (i === b ? '<span data-b></span>' : '') + esc(r)).join('\n') + (b >= rows.length ? '\n<span data-b></span>' : '');
+  const A = meas.querySelector('[data-a]'), B = meas.querySelector('[data-b]');
+  const top = A ? A.offsetTop : 0, pad = 8;
+  let h = B ? B.offsetTop - top : 24;
+  meas.textContent = '';
+  if (!noteText.value) h = Math.max(h, 110);                     // room for the hint in an empty note
+  $('noteWrap').style.top = (pad - top) + 'px';
+  liveEd.style.height = (Math.max(h, 20) + 2 * pad) + 'px';
+}
+// While typing, the window grows and shrinks with its part; the rest is formatted again once typing pauses.
+function liveOnInput() {
+  const rows = noteText.value.split('\n').length;
+  if (live) live.b = Math.max(live.a + 1, live.b + rows - liveRows);
+  liveRows = rows;
+  clearTimeout(liveTimer); liveTimer = setTimeout(paintPreview, 450);
+}
+// The cursor moved: if it left the window, open the part it is in now.
+function liveSync() {
+  if (!liveOpen() || liveTimer) return;
+  const L = lineAt(noteText.selectionEnd);
+  if (L >= live.a && L < live.b) return;
+  paintPreview(); queueCaretCheck();
+}
+document.addEventListener('selectionchange', () => { if (document.activeElement === noteText) liveSync(); });
+noteText.addEventListener('selectionchange', liveSync);
+noteText.addEventListener('keyup', liveSync);
+// Open the part at text position pos and put the cursor there.
+function liveFocus(pos) {
+  noteText.setSelectionRange(pos, pos);
+  if (!live) live = { a: 0, b: 0 };
+  paintPreview();
+  noteText.focus({ preventScroll: true });
+  queueCaretCheck();
+}
+// Make sure the editor is open (at the cursor, keeping any selection), e.g. before a toolbar button changes the text.
+function liveEnsure() {
+  if (!liveOpen()) { if (!live) live = { a: 0, b: 0 }; paintPreview(); }
+  noteText.focus({ preventScroll: true });
+}
+// Show the part at pos without moving the keyboard (find uses this while you type in the find box).
+function liveShow(pos) {
+  noteText.setSelectionRange(pos, pos);
+  const L = lineAt(pos);
+  if (liveOpen() && L >= live.a && L < live.b) return;
+  if (!live) live = { a: 0, b: 0 };
+  paintPreview();
+}
+function liveClose() { if (!live || !noteText.value.trim()) return; live = null; paintPreview(); }
+// Leaving the note (clicking elsewhere on the page) shows all of it formatted; the toolbar, find and dialogs don't count.
+noteText.addEventListener('blur', () => setTimeout(() => {
+  const a = document.activeElement;
+  if (!live || a === noteText) return;
+  if (a && a !== document.body && (a.closest('#view-notes, .scrim') || popEl.contains(a))) return;
+  liveClose();
+}, 0));
+noteText.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && popEl.hidden && $('findBar').hidden && noteText.value.trim()) { e.preventDefault(); noteText.blur(); liveClose(); }
+});
+// Clicking a formatted part opens it, with the cursor where you clicked. Checkboxes, buttons, code suggestions and
+// #tags keep their own clicks, and Ctrl+click opens a link.
+$('notePreview').addEventListener('mousedown', e => {
+  if (e.button !== 0 || liveEd.contains(e.target)) return;
+  if (e.target.closest('input, button, select, label, .sug, [data-ntag-click]')) return;
+  if (e.target.closest('a[href]') && (e.ctrlKey || e.metaKey)) return;
+  e.preventDefault();
+  liveOpenAt(e);
+});
+$('notePreview').addEventListener('click', e => { const a = e.target.closest('a[href]'); if (a && !liveEd.contains(a) && !(e.ctrlKey || e.metaKey)) e.preventDefault(); }, true);
+function liveOpenAt(e) {
+  const box = $('notePreview'), rows = noteText.value.split('\n');
+  const srcOf = el => {
+    const start = +el.dataset.sl, k = liveUnits.findIndex(u => u.start === start);
+    return { start, src: rows.slice(start, k >= 0 && k + 1 < liveUnits.length ? liveUnits[k + 1].start : rows.length).join('\n') };
+  };
+  const hit = e.target.closest('[data-sl]');
+  let pos = 0;
+  if (hit && box.contains(hit)) { const u = srcOf(hit); pos = lineStart(rows, u.start) + visToSrc(u.src, visibleTextBefore(hit, e)); }
+  else {
+    // between or below the parts: the end of the part above the click (or the very start)
+    let above = null;
+    for (const el of box.querySelectorAll('[data-sl]')) if (!liveEd.contains(el) && el.getBoundingClientRect().top <= e.clientY) above = el;
+    if (above) { const u = srcOf(above); pos = lineStart(rows, u.start) + visToSrc(u.src, null); }
+  }
+  liveFocus(Math.min(pos, noteText.value.length));
+}
+// The formatted text in front of the click point, leaving out buttons and code-block headers.
+function visibleTextBefore(el, e) {
+  let node = null, off = 0;
+  if (document.caretRangeFromPoint) { const r = document.caretRangeFromPoint(e.clientX, e.clientY); if (r) { node = r.startContainer; off = r.startOffset; } }
+  else if (document.caretPositionFromPoint) { const p = document.caretPositionFromPoint(e.clientX, e.clientY); if (p) { node = p.offsetNode; off = p.offset; } }
+  if (!node || !el.contains(node)) return null;
+  if (node.nodeType !== 3) { const r = document.createRange(); r.setStart(el, 0); r.setEnd(node, off); return r.toString(); }
+  let out = '';
+  const w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, { acceptNode: n => n.parentElement.closest('button, .code-bar') ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT });
+  while (w.nextNode()) { const n = w.currentNode; if (n === node) return out + n.data.slice(0, off); out += n.data; }
+  return out;
+}
+// Where that text ends in the Markdown: follow its letters through the source, skipping the Markdown signs
+// (**, `, [](), | and so on) that aren't shown. null means "the end of the part".
+function visToSrc(src, vis) {
+  if (vis == null) return src.replace(/\s+$/, '').length;
+  let p = 0;
+  for (let i = 0; i < vis.length; i++) {
+    const c = vis[i];
+    if (/\s/.test(c)) continue;                                    // spaces and line breaks differ between the two
+    const k = src.indexOf(c, p);
+    if (k < 0) continue;
+    if (k - p > 12 && i + 1 < vis.length && !/\s/.test(vis[i + 1]) && src[k + 1] !== vis[i + 1]) continue;   // a far jump must be a real match
+    p = k + 1;
+  }
+  if (/\s$/.test(vis) && src[p] === ' ') p++;
+  return p;
+}
 $('notePreview').addEventListener('click', e => {
   const cb = e.target.closest('input[type=checkbox][data-line]');
   if (cb && curNote) {
@@ -3924,7 +4088,7 @@ function loadNote(n) {
   curNote = n || null;
   noteText.value = curNote ? curNote.text : '';
   updateNoteStatus();
-  if (noteView !== 'edit') paintPreview();
+  live = null; paintPreview();          // a note opens fully formatted (an empty one opens for writing)
   renderNotes();
 }
 function updateNoteStatus() {
@@ -3938,7 +4102,7 @@ noteText.addEventListener('input', () => {
   if (!curNote) { curNote = { id: uid(), text: '', created: Date.now(), modified: Date.now(), pinned: false }; S.notes.unshift(curNote); }
   snapshotNote(curNote);                 // keeps the version from before this editing session
   curNote.text = noteText.value; curNote.modified = Date.now();
-  if (noteView === 'split') { clearTimeout(splitTimer); splitTimer = setTimeout(paintPreview, 150); }
+  liveOnInput();
   $('noteStatus').textContent = t('saving');
   clearTimeout(noteTimer);
   noteTimer = setTimeout(() => { noteTimer = null; save(); $('noteStatus').textContent = t('savedAt', fmtTime(new Date())); renderNotes(); }, 250);
@@ -3988,9 +4152,9 @@ function overlay(ta, pre, render, after) {
   Object.defineProperty(ta, 'value', { configurable: true, get() { return proto.get.call(this); }, set(v) { proto.set.call(this, v); schedule(); } });
   ta.addEventListener('input', schedule);
   addEventListener('resize', schedule);
-  return { paint, schedule };
+  return { paint, schedule, fit };
 }
-const noteOverlay = overlay(noteText, $('noteHl'), noteHlHtml, () => { renderFind(); updateSugBar(); syncMap = null; });
+const noteOverlay = overlay(noteText, $('noteHl'), noteHlHtml, () => { renderFind(); updateSugBar(); liveFit(); });
 
 // ---------------------------------------------------------------- code in notes: typing helpers
 // Is the cursor inside a ``` block? Then which language (written on the fence, or guessed from the block).
@@ -4097,7 +4261,7 @@ function updateCodeGuess() {
 }
 function openCodeDlg() {
   if (currentTab() !== 'notes') showTab('notes');
-  if (noteView !== 'edit') setNoteView('edit');
+  liveEnsure();
   codeSel = [noteText.selectionStart, noteText.selectionEnd];
   fillCodeLangs();
   $('codeLang').value = S.settings.lastCodeLang || '';
@@ -4143,12 +4307,12 @@ function newNote(text) {
     $('noteStatus').textContent = t('newNoteStatus');
     renderNotes();
   }
-  setNoteView('edit');
+  liveFocus(noteText.value.length);   // start writing at the end
 }
 function dailyLog() {
   const today = isoDate(new Date());
   const existing = S.notes.find(n => n.daily === today && isLive(n));
-  if (existing) { loadNote(existing); setNoteView('preview'); toast(t('openedLog')); return; }
+  if (existing) { loadNote(existing); toast(t('openedLog')); return; }
   const start = sod(new Date()).getTime(), yStart = start - 86400000, end = start + 86400000;
   const doneRecently = S.reminders.filter(r => r.done && r.completedAt >= yStart).sort((a, b) => a.completedAt - b.completedAt);
   const dueToday = S.reminders.filter(r => !r.done && (isOverdue(r) || nextAlert(r) < end)).sort((a, b) => nextAlert(a) - nextAlert(b));
@@ -4241,7 +4405,7 @@ function restoreHistory() {
   const h = (curNote.history || []).slice().reverse()[histSel]; if (!h) return;
   snapshotNote(curNote, true);           // the version being replaced stays in the history
   curNote.text = h.text; curNote.modified = Date.now(); noteText.value = h.text;
-  save(); renderNotes(); updateNoteStatus(); if (noteView !== 'edit') paintPreview();
+  save(); renderNotes(); updateNoteStatus(); paintPreview();
   $('histDlg').hidden = true; toast(t('histRestored'));
 }
 
@@ -4309,7 +4473,7 @@ function insertBlock(ta, block, selectText) {
 }
 const tableTpl = () => { const c = t('col'); return `| ${c} 1 | ${c} 2 | ${c} 3 |\n| --- | --- | --- |\n|  |  |  |\n|  |  |  |`; };
 function applyFmt(kind) {
-  if (noteView === 'preview') setNoteView('edit');
+  liveEnsure();
   const ta = noteText;
   switch (kind) {
     case 'bold': return wrapSel(ta, '**', t('phBold'));
@@ -4360,7 +4524,7 @@ function openNote(id) {
   if (!n) { toast(t('noteGone')); return; }
   closeEditor(); showTab('notes'); loadNote(n); try { window.focus(); } catch (e) { }
 }
-// A reminder from one line of the note (the cursor's line, or a checklist line clicked in Förhandsvisa).
+// A reminder from one line of the note (the cursor's line, or a checklist line clicked in the formatted note).
 // Times in the line are understood the same way as in quick add: "- [ ] Ring IT imorgon 10".
 function remindFromLine(lineIdx) {
   const v = noteText.value;
@@ -4387,7 +4551,7 @@ function tickNoteTask(r) {
   if (i < 0) return;
   lines[i] = lines[i].replace('[ ]', '[x]');
   n.text = lines.join('\n'); n.modified = Date.now();
-  if (curNote === n && document.activeElement !== noteText) { noteText.value = n.text; if (noteView !== 'edit') paintPreview(); }
+  if (curNote === n && document.activeElement !== noteText) { noteText.value = n.text; paintPreview(); }
 }
 
 // ---------------------------------------------------------------- notes: sharing
@@ -4466,13 +4630,14 @@ function renderFind() {
 }
 function findStep(d) {
   if (!findHits.length) return;
-  findCur = (findCur + d + findHits.length) % findHits.length; renderFind();
+  findCur = (findCur + d + findHits.length) % findHits.length;
+  liveShow(findHits[findCur]);          // open the part of the note that holds this match
+  renderFind();
   const m = $('noteFind').querySelector('mark.cur');
   if (m) { const r = m.getBoundingClientRect(); if (r.top < headH() + 20 || r.bottom > innerHeight - 40) scrollBy(0, r.top - innerHeight / 3); }
 }
 function openFind() {
   if (currentTab() !== 'notes') showTab('notes');
-  if (noteView === 'preview') setNoteView('edit');
   const sel = noteText.value.slice(noteText.selectionStart, noteText.selectionEnd), from = noteText.selectionStart;
   $('findBar').hidden = false;
   if (sel && !sel.includes('\n')) $('findInput').value = sel;
@@ -4527,7 +4692,7 @@ function applyMarks(list) {
   [...list].sort((a, b) => b.start - a.start).forEach(sg => { out = out.slice(0, sg.start) + '`' + sg.word + '`' + out.slice(sg.end); });
   const caret = noteText.selectionStart, shift = list.reduce((sum, sg) => sum + (sg.end <= caret ? 2 : sg.start < caret ? 1 : 0), 0);
   const y = scrollY;
-  if (noteView === 'preview') { noteText.value = out; noteText.dispatchEvent(new Event('input', { bubbles: true })); paintPreview(); }
+  if (!liveOpen()) { noteText.value = out; noteText.dispatchEvent(new Event('input', { bubbles: true })); paintPreview(); }
   else { edInsert(noteText, out, 0, v.length); noteText.setSelectionRange(caret + shift, caret + shift); }
   if (scrollY !== y) scrollTo(scrollX, y);
   toast(t('sugDone', list.length));
@@ -4551,7 +4716,7 @@ function sugShowMenu(anchor) {
   noteSugs.forEach(sg => { const g = groups.get(sg.key) || { word: sg.word, kind: sg.kind, n: 0 }; g.n++; if (sg.kind === 'known') g.kind = 'known'; groups.set(sg.key, g); });
   openPop(anchor, [...groups].map(([key, g]) => [`${g.word} (${g.n}) · ${t(g.kind === 'known' ? 'sugKnown' : 'sugGuess')}`, () => applyMarks(noteSugs.filter(x => x.key === key))]));
 }
-// Underline suggestions in Förhandsvisa, leaving code, links, bold/italic, headings and #tags alone.
+// Underline suggestions in the formatted note, leaving code, links, bold/italic, headings and #tags alone.
 function markPreviewSugs(root) {
   const vocab = codeVocab(), skip = 'code, pre, a, strong, b, em, i, del, s, h1, h2, h3, h4, h5, h6, .ntag, button, .sug, .nimg-missing';
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, { acceptNode: n => n.parentElement && n.parentElement.closest(skip) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT });
@@ -4596,7 +4761,7 @@ function caretRect() {
 // Keep the line being written out from under the pinned header (and above the bottom edge).
 function keepCaretVisible() {
   const h = headH();
-  if (!h || $('noteWrap').hidden || document.activeElement !== noteText) return;
+  if (!h || liveEd.hidden || document.activeElement !== noteText) return;
   const r = caretRect();
   if (r.top < h + 8) scrollBy(0, r.top - h - 40);
   else if (r.bottom > innerHeight - 8) scrollBy(0, r.bottom - innerHeight + 40);
@@ -4621,61 +4786,6 @@ function setSide(open) {
 }
 
 
-// ---------------------------------------------------------------- notes: side by side scrolls together
-// Each block in the preview knows the note line it came from (data-sl). The same lines are measured in an invisible
-// copy of the editor text, giving pairs of matching positions. Scrolling either side moves the other so the matching
-// spot lines up just under the pinned header; between two blocks the position is interpolated, so it stays smooth.
-let syncMap = null;
-function isSplitWide() { return noteView === 'split' && !$('notePreview').hidden && getComputedStyle($('notePreview')).position === 'sticky'; }
-function buildSyncMap() {
-  const prev = $('notePreview'), meas = $('noteMeasure'), byLine = new Map();
-  prev.querySelectorAll('[data-sl]').forEach(el => { const l = +el.dataset.sl; if (!byLine.has(l)) byLine.set(l, el); });
-  meas.innerHTML = noteText.value.split('\n').map((row, i) => (byLine.has(i) ? `<span data-l="${i}"></span>` : '') + esc(row)).join('\n');
-  const origin = prev.getBoundingClientRect().top - prev.scrollTop, map = [{ e: 0, p: 0 }];
-  meas.querySelectorAll('span[data-l]').forEach(sp => {
-    const last = map[map.length - 1], e = sp.offsetTop, pp = byLine.get(+sp.dataset.l).getBoundingClientRect().top - origin;
-    if (e >= last.e && pp >= last.p) map.push({ e, p: pp });       // keep both sides in order
-  });
-  const end = { e: noteText.offsetHeight, p: prev.scrollHeight }, last = map[map.length - 1];
-  if (end.e >= last.e && end.p >= last.p) map.push(end);
-  meas.textContent = '';
-  syncMap = map;
-}
-// Position x on side `from` ('e' editor, 'p' preview) → matching position on the other side.
-function mapPos(x, from, to) {
-  const m = syncMap;
-  if (!m || m.length < 2) return null;
-  let k = 0;
-  while (k < m.length - 2 && m[k + 1][from] <= x) k++;
-  const a = m[k], b = m[k + 1], f = b[from] > a[from] ? (x - a[from]) / (b[from] - a[from]) : 0;
-  return a[to] + Math.max(0, Math.min(1, f)) * (b[to] - a[to]);
-}
-function syncScroll(lead) {
-  if (!isSplitWide()) return;
-  if (!syncMap) buildSyncMap();
-  const prev = $('notePreview'), ref = headH() + 12;   // the line just under the pinned header
-  const edTop = $('noteWrap').getBoundingClientRect().top, pvTop = prev.getBoundingClientRect().top;
-  if (lead === 'editor') {
-    const p = mapPos(ref - edTop, 'e', 'p');
-    if (p != null) prev.scrollTop = Math.max(0, p - Math.max(0, ref - pvTop));
-  } else {
-    const e = mapPos(prev.scrollTop + Math.max(0, ref - pvTop), 'p', 'e');
-    if (e != null) scrollBy(0, e - (ref - edTop));
-  }
-}
-// Whichever side you scroll leads; the other side's own scroll events are ignored for a moment so they don't echo back.
-let scrollLead = null, scrollLeadUntil = 0, scrollQueued = null;
-function onSideScroll(who) {
-  const now = performance.now();
-  if (scrollLead && scrollLead !== who && now < scrollLeadUntil) return;
-  scrollLead = who; scrollLeadUntil = now + 150;
-  if (!scrollQueued) requestAnimationFrame(() => { const w = scrollQueued; scrollQueued = null; syncScroll(w); });
-  scrollQueued = who;
-}
-addEventListener('scroll', () => { if (noteView === 'split') onSideScroll('editor'); }, { passive: true });
-$('notePreview').addEventListener('scroll', () => { if (noteView === 'split') onSideScroll('preview'); }, { passive: true });
-$('notePreview').addEventListener('load', () => { syncMap = null; }, true);       // pictures change the preview's height
-addEventListener('resize', () => { syncMap = null; });
 
 // ---------------------------------------------------------------- notes: pictures
 // Pictures are shrunk, stored in the browser's database (the main data in localStorage has a ~5 MB limit)
@@ -4688,7 +4798,7 @@ async function loadImages() {
     for (const k of (await kv.keys()).map(String).filter(k => k.startsWith('img-'))) { const id = k.slice(4); imgIds.add(id); imgCache.set(id, await kv.get(k)); }
     imgReady = true;
     await pruneImages();
-    if (imgCache.size && noteView !== 'edit') paintPreview();
+    if (imgCache.size) paintPreview();
   } catch (e) { imgReady = false; }
 }
 function referencedImages() {
@@ -6529,7 +6639,7 @@ function showTab(name) {
   if (name !== 'board') { wbFinishEdit(); if (wbFull()) wbSetFull(false); }
   ['reminders', 'notes', 'board', 'settings'].forEach(v => $('view-' + v).hidden = v !== name);
   if (name !== 'notes') flushNote();
-  if (name === 'notes') { renderNotes(); if (!curNote && liveNotes().length) loadNote(sortedNotes()[0]); }
+  if (name === 'notes') { renderNotes(); if (!curNote && liveNotes().length) loadNote(sortedNotes()[0]); else paintPreview(); }
   if (name === 'reminders') quickInput.focus();
   if (name === 'settings') renderSnapshots();
   if (name === 'board') wbShow();
@@ -6616,7 +6726,7 @@ $('langSeg').addEventListener('click', e => {
   const b = e.target.closest('[data-lang-set]'); if (!b || b.dataset.langSet === lang()) return;
   S.settings.lang = b.dataset.langSet; save();
   renderAll(); updateQuickPreview(); updateFileUi(); renderSnapshots(); updateNoteStatus(); updateSugBar();
-  if (noteView !== 'edit') paintPreview();
+  paintPreview();
 });
 $('paletteSet').addEventListener('click', e => { const b = e.target.closest('[data-palette-set]'); if (!b) return; S.settings.palette = b.dataset.paletteSet; save(); applyTheme(); });
 
@@ -6904,7 +7014,6 @@ document.addEventListener('keydown', e => {
   if ((e.ctrlKey || e.metaKey) && e.shiftKey && !e.altKey && e.key.toLowerCase() === 'l' && currentTab() === 'notes' && $('editor').hidden) { e.preventDefault(); setSide(!sideOpen()); return; }
   if ((e.ctrlKey || e.metaKey) && e.shiftKey && !e.altKey && e.key.toLowerCase() === 'm' && currentTab() === 'notes' && $('editor').hidden) { e.preventDefault(); markAllSugs(); return; }
   if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key.toLowerCase() === 'f' && currentTab() === 'notes' && $('editor').hidden && $('codeDlg').hidden) { e.preventDefault(); openFind(); return; }
-  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'e' && currentTab() === 'notes') { e.preventDefault(); setNoteView(noteView === 'edit' ? 'preview' : 'edit'); return; }
   if (e.ctrlKey || e.metaKey || e.altKey || typing(document.activeElement) || !$('editor').hidden || !$('keysDlg').hidden
       || !$('setupDlg').hidden || !$('lockDlg').hidden || !$('startupDlg').hidden || !$('codeDlg').hidden || !$('linkDlg').hidden || !$('histDlg').hidden || !$('trashDlg').hidden || !$('restoreDlg').hidden || !isActiveWindow) return;
   if (e.key === '?') { $('keysDlg').hidden = false; return; }
@@ -6988,7 +7097,6 @@ $('saveChip').addEventListener('click', () => {
 renderAll();
 purgeTrash();
 updateNoteStatus();
-try { const v = localStorage.getItem('ping.noteView'); if (v) { setNoteView(v); } } catch (e) { }
 loadImages();
 updateQuickPreview();
 updateSaveChip();

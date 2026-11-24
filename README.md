@@ -68,7 +68,7 @@ Type in the big box and press **Enter**. English and Swedish both work.
 - **Alerts:** a system notification, a box in the Ping window with Done / Snooze / Edit, and a sound. Sound, colour, size and position can be changed under Settings.
 - **Keep Ping on top** (Chrome and Edge): a small window that floats above your other windows.
 - **Outlook:** the **Outlook** button downloads a calendar entry. Open it and click Save & Close, and Outlook reminds you on your phone too.
-- **Notes:** Markdown with preview, coloured code blocks, `- [ ]` checklists, tables, pictures, templates, version history and a trash that keeps deleted notes for 30 days.
+- **Notes:** one view: the note is always shown formatted, and the part you click opens in place as Markdown, so there is no switching between editing and reading. Arrow keys move from part to part, Esc shows it all formatted again, checkboxes tick with one click, and Ctrl+click opens a link. Coloured code blocks, `- [ ]` checklists, tables, pictures, templates, version history and a trash that keeps deleted notes for 30 days.
 - **Themes:** twelve themes, each with a light and a dark version that follow the light/dark mode (or your computer's setting): Lagoon, Fjord, Solarized, Sunset, Forest, Candy, Neon, Space, Interstellar, Nature, Mountain and Desert. Most have a subtle decoration on the page background, such as stars, pines, mountains or dunes. The whiteboard follows the theme too. Choose under **Settings** (the gear icon) → Look and feel. Swedish or English.
 - **Your data:** a save file (see above), downloadable backups, restore, CSV export, and an automatic copy each day for the last 14 days.
 

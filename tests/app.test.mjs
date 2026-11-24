@@ -377,7 +377,7 @@ test('titles, notes and Markdown can never run code or inject HTML', async () =>
   const { ctx, page } = await open({ seed: { reminders: [{ id: 'x', title: evil, notes: evil, due: Date.now() - 1000, repeat: 'none', tags: ['<b>'], fired: false }], notes: [{ id: 'n', text: '# ' + evil + '\n\n' + evil + '\n\n[click](javascript:alert(1)) ![a](javascript:alert(1))\n\n```html\n' + evil + '\n```', modified: Date.now() }] } });
   await page.waitForSelector('.alert');
   await tab(page, 'notes');
-  await page.evaluate(() => setNoteView('split'));
+  await page.evaluate(() => liveFocus(0));   // the formatted note and the open editor, both at once
   await page.waitForTimeout(200);
   assert.equal(await page.evaluate(() => window.__pwned), undefined);
   assert.equal(await page.locator('#notePreview a[href^="javascript"], #notePreview img[src^="javascript"]').count(), 0);
@@ -549,7 +549,6 @@ test('notes: the list stays in view at the bottom of a long note, and picking a 
   await page.setViewportSize({ width: 1280, height: 720 });
   await tab(page, 'notes');
   await page.click('#noteList li[data-id="a"]');
-  await page.evaluate(() => setNoteView('preview'));
   await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));
   await page.waitForTimeout(100);
   const r = await page.evaluate(() => ({ y: scrollY, list: $('noteList').getBoundingClientRect().toJSON(), vh: innerHeight, inner: $('noteList').scrollHeight > $('noteList').clientHeight }));
@@ -562,6 +561,100 @@ test('notes: the list stays in view at the bottom of a long note, and picking a 
   // on a phone the list sits above the note and scrolls away as before
   await page.setViewportSize({ width: 390, height: 760 });
   assert.equal(await page.evaluate(() => getComputedStyle(document.querySelector('.note-side')).position), 'static');
+  assert.deepEqual(errors, []);
+  await ctx.close();
+});
+
+// ------------------------------------------------------------------ notes: one view (live preview)
+const LIVE_NOTE = ['# Plan', '', 'Ett stycke med **fetstil** och en [länk](https://example.com/x).', '', '## Lista', '',
+  '- [ ] Ring Anna', '- [ ] Boka möte', '- [ ] Skicka rapport', '', '1. Ett', '2. Två', '3. Tre', '', '```sql', 'SELECT 1;', '```', '', 'Sista raden.'].join('\n');
+const liveState = page => page.evaluate(() => ({ live: live && { ...live }, open: liveOpen(), line: lineAt(noteText.selectionStart), focus: document.activeElement === noteText,
+  shown: [...$('notePreview').children].filter(e => e !== liveEd).map(e => e.tagName + (e.start > 1 ? '@' + e.start : '')).join(' ') }));
+
+test('notes: one view, formatted, with no Edit/Preview buttons; a click opens just that part with the cursor there', async () => {
+  const { ctx, page, errors } = await open({ seed: { reminders: [], notes: [{ id: 'a', text: LIVE_NOTE, created: 1, modified: 1 }] } });
+  await tab(page, 'notes');
+  assert.equal(await page.locator('[data-view]').count(), 0, 'no view buttons');
+  let s = await liveState(page);
+  assert.equal(s.open, false, 'opens fully formatted');
+  assert.equal(await page.locator('#notePreview h1').innerText(), 'Plan');
+  assert.equal(await page.isVisible('#noteTools'), true, 'the toolbar is always there');
+  await page.locator('#notePreview strong', { hasText: 'fetstil' }).click();   // the middle of the word
+  s = await liveState(page);
+  assert.equal(s.open, true); assert.equal(s.focus, true);
+  assert.deepEqual(s.live, { a: 2, b: 3 }, 'only the paragraph is open');
+  assert.equal(await page.locator('#notePreview > p').count(), 1, 'the rest stays formatted (the last paragraph)');
+  const r = await page.evaluate(() => { const p = noteText.selectionStart, v = noteText.value; return { p, from: v.indexOf('fetstil'), to: v.indexOf('fetstil') + 7 }; });
+  assert.ok(r.p > r.from && r.p < r.to, `the cursor lands inside the clicked word: ${JSON.stringify(r)}`);
+  // typing changes the note and is saved; Esc shows it all formatted again
+  await page.keyboard.press('End'); await page.keyboard.type(' Mer text.');
+  await page.waitForTimeout(600);
+  assert.match((await stored(page)).notes[0].text, /example\.com\/x\)\. Mer text\./);
+  await page.keyboard.press('Escape');
+  assert.equal((await liveState(page)).open, false);
+  assert.match(await page.locator('#notePreview > p').first().innerText(), /Mer text\.$/);
+  assert.deepEqual(errors, []);
+  await ctx.close();
+});
+
+test('notes: arrow keys move from part to part, and lists split around the open item', async () => {
+  const { ctx, page, errors } = await open({ seed: { reminders: [], notes: [{ id: 'a', text: LIVE_NOTE, created: 1, modified: 1 }] } });
+  await tab(page, 'notes');
+  await page.locator('#notePreview li.task span', { hasText: 'Boka möte' }).click();
+  let s = await liveState(page);
+  assert.deepEqual(s.live, { a: 7, b: 8 }, 'just the one list item');
+  assert.match(s.shown, /^H1 P H2 UL UL OL/, 'the list is split around it: ' + s.shown);
+  await page.keyboard.press('ArrowDown');
+  s = await liveState(page);
+  assert.equal(s.line, 8); assert.deepEqual(s.live, { a: 8, b: 9 });
+  for (let i = 0; i < 3; i++) await page.keyboard.press('ArrowDown');
+  s = await liveState(page);
+  assert.equal(s.line, 11, 'on "2. Två"');
+  assert.match(s.shown, /OL OL@3/, 'the numbered list goes on from 3 after the open item: ' + s.shown);
+  await page.keyboard.press('ArrowUp'); await page.keyboard.press('ArrowUp');
+  assert.equal((await liveState(page)).line, 9, 'a blank line opens with the part above it');
+  assert.deepEqual(errors, []);
+  await ctx.close();
+});
+
+test("notes: checkboxes tick, links don't navigate on a plain click, toolbar and find open the right part", async () => {
+  const { ctx, page, errors } = await open({ seed: { reminders: [], notes: [{ id: 'a', text: LIVE_NOTE, created: 1, modified: 1 }] } });
+  await tab(page, 'notes');
+  await page.locator('#notePreview li.task input').first().click();
+  assert.match((await stored(page)).notes[0].text, /- \[x\] Ring Anna/);
+  assert.equal((await liveState(page)).open, false, "ticking a box doesn't open the editor");
+  const url = page.url();
+  await page.locator('#notePreview a', { hasText: 'länk' }).click();
+  assert.equal(page.url(), url, 'a plain click on a link edits instead of leaving');
+  assert.equal((await liveState(page)).open, true);
+  await page.keyboard.press('Escape');
+  // the toolbar works with nothing open: it opens the part at the cursor
+  await page.evaluate(() => { const k = noteText.value.indexOf('Sista'); noteText.setSelectionRange(k, k + 5); });
+  await page.click('#noteTools [data-fmt="bold"]');
+  assert.match(await page.evaluate(() => noteText.value), /\*\*Sista\*\* raden\./);
+  assert.equal((await liveState(page)).open, true);
+  // find opens the part that holds the match
+  await page.keyboard.press('Control+f');
+  await page.keyboard.type('SELECT');
+  await page.waitForTimeout(100);
+  assert.deepEqual((await liveState(page)).live, { a: 14, b: 17 }, 'the code block with the match is open');
+  assert.equal(await page.locator('#noteFind mark.cur').count(), 1);
+  assert.deepEqual(errors, []);
+  await ctx.close();
+});
+
+test('notes: a new note opens ready to write, and finished parts turn formatted as you go', async () => {
+  const { ctx, page, errors } = await open({ seed: { reminders: [], notes: [] } });
+  await tab(page, 'notes');
+  assert.equal((await liveState(page)).open, true, 'with no notes, the editor is open');
+  await page.click('#noteText');
+  await page.keyboard.type('# Ny\n\nHej **du**\n\nTredje');
+  await page.waitForTimeout(700);
+  const s = await liveState(page);
+  assert.deepEqual(s.live, { a: 4, b: 5 }, 'the part being written is open');
+  assert.match(s.shown, /^H1 P$/, 'the parts above are formatted: ' + s.shown);
+  assert.equal(await page.locator('#notePreview strong').innerText(), 'du');
+  assert.equal((await stored(page)).notes[0].text, '# Ny\n\nHej **du**\n\nTredje');
   assert.deepEqual(errors, []);
   await ctx.close();
 });
